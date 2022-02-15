@@ -1,0 +1,28 @@
+#root {
+    -fx-background-color: transparent;
+    -fx-border-style: dashed;
+    -fx-border-radius: 10;
+    -fx-border-width: 4;
+    -fx-border-color: #bebebe;
+}
+
+.button {
+    -fx-background-color: transparent;
+}
+
+.button .label {
+    -fx-font-family: iconfont;
+    -fx-text-fill: #8b8b8b;
+    -fx-font-size: 86;
+    -fx-text-alignment: center;
+}
+
+.button:hover .label {
+    -fx-text-fill: #5B5BFA;
+}
+
+.label {
+    -fx-font-size: 22;
+    -fx-text-fill: #8b8b8b;
+}
+

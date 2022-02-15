@@ -1,0 +1,27 @@
+logging:
+  config: classpath:logback/logback-spring.xml
+  file:
+    path: ./logs
+
+
+spring:
+  application:
+    name: subtitles-view
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:sqlite::resource:db/subtitles-view
+    driver-class-name: org.sqlite.JDBC
+
+
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: org.fordes.subtitles.view.mode.PO
+  configuration:
+    map-underscore-to-camel-case: false
+    cache-enabled: false
+  global-config:
+#    banner: off
+    db-config:
+      update-strategy: not_null

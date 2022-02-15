@@ -1,0 +1,101 @@
+.engine {
+    -fx-background-radius: 50px;
+    -fx-pref-height: 50px;
+    -fx-pref-width: 50px;
+    -fx-min-width: -fx-pref-width;
+    -fx-max-width: -fx-pref-width;
+    -fx-min-height: -fx-pref-height;
+    -fx-max-height: -fx-pref-height;
+    -fx-background-color: #F1F1F1;
+    -fx-font-family: iconfont;
+    -fx-text-fill: #535459;
+    -fx-font-size: 20;
+    -fx-text-alignment: center;
+}
+
+.item {
+    -fx-effect: dropshadow(gaussian, #d1d1d1, 10, 0, 0, 0);
+}
+
+.item:hover,.item:selected {
+    -fx-text-fill: #5B5BFA;
+    /*-fx-background-color: #5B5BFA;*/
+}
+
+.jfx-button {
+    -jfx-button-type: RAISED;
+}
+
+
+
+/*列表视图*/
+
+.jfx-list-cell-container {
+    -fx-alignment: center-left;
+}
+
+.jfx-list-cell-container > .label {
+    -fx-text-fill: BLACK;
+}
+
+.jfx-list-cell:odd:selected > .jfx-rippler > StackPane,
+.jfx-list-cell:even:selected > .jfx-rippler > StackPane {
+    -fx-background-color: #5b5bfa;
+}
+
+.jfx-list-cell {
+    -fx-background-insets: 0.0;
+    -fx-text-fill: BLACK;
+}
+
+
+.jfx-list-cell:odd, .jfx-list-cell:even {
+    -fx-background-color: WHITE;
+}
+
+.jfx-list-cell:filled:hover {
+    -fx-text-fill: black;
+}
+
+.jfx-list-cell .jfx-rippler {
+    -jfx-rippler-fill: #FFF;
+}
+
+.jfx-list-view {
+    -fx-background-insets: 0;
+    -jfx-cell-horizontal-margin: 0.0;
+    -jfx-cell-vertical-margin: 5.0;
+    -jfx-vertical-gap: 10;
+    -jfx-expanded: false;
+    -fx-pref-width: 200;
+}
+
+
+/*滚动条背景色*/
+.list-view .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.list-view .track {
+    -fx-background-color: transparent;
+}
+/*滚动条颜色*/
+.list-view .thumb {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.list-cell .label {
+
+}
+
+.list-cell .caption {
+    -fx-font-size: 14;
+}
+
+.search-item {
+    -fx-pref-width: 200;
+    -fx-pref-height: 40;
+    -fx-min-width: -fx-pref-width;
+    -fx-min-height: -fx-pref-height;
+}

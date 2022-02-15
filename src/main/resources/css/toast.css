@@ -1,0 +1,58 @@
+.toast {
+    -fx-cursor: hand;
+    -fx-background-color: #FFF;
+    -fx-border-insets: 0;
+    -fx-background-radius: 10;
+    -fx-padding: 10 10 10 10;
+    -fx-effect: dropshadow(gaussian, #d1d1d1, 10, 0, 0, 0);
+}
+
+.dark .toast {
+    -fx-background-color: #2d2d2d;
+    -fx-effect: dropshadow(gaussian, #202020, 10, 0, 0, 0);
+}
+
+#perform {
+    -fx-pref-height: 30;
+    -fx-pref-width: 70;
+    -fx-background-radius: 5;
+    -fx-font-size: 12;
+}
+
+.choose {
+    -fx-pref-height: 20;
+    -fx-pref-width: 38;
+    -fx-background-radius: 5;
+    -fx-font-size: 10;
+}
+
+#perform:hover {
+    -fx-background-color: #5B5BFA;
+    -fx-effect: dropshadow(gaussian, #d1d1d1, 5, 0, 0, 0);
+}
+
+.dark #perform {
+    -fx-background-color: #5B5BFA;
+}
+.dark #perform:hover {
+    -fx-background-color: #505AFA;
+    -fx-effect: dropshadow(gaussian, #202020, 5, 0, 0, 0);
+}
+
+
+
+#caption {
+
+}
+
+.dark #caption {
+    -fx-text-fill: #FFF;
+}
+
+#text {
+    -fx-text-fill: #626266;
+}
+
+.dark #text {
+    -fx-text-fill: #c6c6c7;
+}

@@ -1,0 +1,152 @@
+.screen {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.dark .screen {
+    -fx-effect: dropshadow(gaussian, #2c2a2a, 8, 0, 0, 0);
+}
+
+.full-screen {
+    -fx-padding: 0;
+    -fx-border-insets: 0;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-effect: dropshadow(gaussian, black, 0, 0, 0, 0);
+}
+
+.normal-screen {
+    -fx-padding: 20 20 20 20;
+    -fx-border-insets: 0.5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, black, 8, 0, 0, 0);
+}
+
+.content {
+    -fx-background-color: #FFF;
+    -fx-background-repeat: repeat;
+    -fx-border-radius: 0 0 8 0;
+    -fx-background-radius: 0 0 8 0;
+}
+
+.dark .content {
+    -fx-background-color: #343434;
+}
+
+.sidebar {
+    -fx-padding: 10 0 0 0;
+    -fx-background-color: #f5f5f6;
+    -fx-background-repeat: repeat;
+    -fx-border-radius: 0 0 0 8;
+    -fx-background-radius: 0 0 0 8;
+}
+
+.dark .sidebar {
+    -fx-background-color: #2d2d2d;
+}
+
+.sidebar-item  {
+    -fx-text-fill: #4d515a;
+    -fx-font-size: 14;
+    -fx-end-margin: 6 10 6 10;
+    -fx-start-margin: 6 10 6 10;
+    -fx-background-radius: 10;
+    -fx-background-color: transparent;
+}
+
+.dark .sidebar-item {
+    -fx-text-fill: #ffffff;
+}
+
+.sidebar-item:selected,
+.sidebar-item:hover {
+    -fx-background-color: #e3e3e3;
+    -fx-text-fill: #4d515a;
+}
+
+.dark .sidebar-item:selected,
+.dark .sidebar-item:hover {
+    -fx-background-color: #444444;
+    -fx-text-fill: #ffffff;
+}
+
+
+.sidebar-icon  {
+    -fx-padding: 0 10 0 0;
+    -fx-font-family: iconfont;
+    -fx-text-fill: #4d515a;
+    -fx-font-size: 24 !important;
+    -fx-text-alignment: center;
+}
+
+.dark .sidebar-icon  {
+    -fx-text-fill: #aaaaaa;
+}
+
+
+
+.sidebar .logo {
+    -fx-font-family: iconfont;
+    -fx-text-fill: #5B5BFA;
+    -fx-font-size: 36 !important;
+    -fx-text-alignment: center;
+}
+
+
+.sidebar .app-name {
+    -fx-padding: 0 0 0 5;
+    -fx-text-fill: #5B5BFA;
+    -fx-font-size: 20;
+    -fx-font-family: "butter sans Rounded";
+}
+
+.sidebar .setting {
+    -fx-background-color: transparent;
+    -fx-font-size: 20;
+    -fx-font-family: iconfont;
+    -fx-text-fill: #4d515a;
+}
+
+.dark .sidebar .setting {
+    -fx-text-fill: #aaaaaa;
+}
+
+.sidebar .setting:hover {
+    -fx-text-fill: #5B5BFA;
+}
+
+
+    /*Flat button example */
+.normal-button {
+    -jfx-button-type: FLAT;
+    -fx-background-color: #637dff;
+    -fx-text-fill: #FFF;
+}
+
+.normal-button:hover {
+    -fx-background-color: #5B5BFA;
+}
+
+.tooltip {
+    -fx-background-color: #F4F4F4;
+    -fx-text-fill: #000;
+    -fx-font-size: 14;
+}
+
+.dark .tooltip {
+    -fx-background-color: #2D2D2D;
+    -fx-text-fill: #FFF;
+}
+
+.separator *.line {
+    -fx-border-style: solid;
+    -fx-border-width: 0 0 2 0; /* 宽度 */
+    -fx-background-color: #E6E6E6;
+    -fx-border-color: #E6E6E6;
+}
+
+.dark .separator *.line {
+    -fx-background-color: #494949;
+    -fx-border-color: #494949
+}
