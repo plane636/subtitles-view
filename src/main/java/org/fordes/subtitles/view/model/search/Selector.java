@@ -11,5 +11,6 @@ public class Selector {
 
     public String attr;
 
+    public String regular;
 
 }

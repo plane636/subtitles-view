@@ -3,6 +3,7 @@ package org.fordes.subtitles.view.service;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -88,14 +89,19 @@ public class SearchService extends Service<List<Result>> {
     private static List<String> getFields(Document doc, Selector selector) {
         if (ObjectUtil.isNotEmpty(selector)) {
             return doc.select(selector.css).stream()
-                    .map(e -> getField(e, selector.format, selector.attr))
+                    .map(e -> getField(e, selector.attr, selector.regular, selector.format))
                     .collect(Collectors.toList());
-        }else return Collections.emptyList();
+        }else {
+            return Collections.emptyList();
+        }
     }
 
 
-    private static String getField(Element element, String format, String attr) {
-        String field = StrUtil.isBlank(attr)? element.text(): element.attr(attr);
-        return StrUtil.isBlank(format)? field: StrUtil.format(format, field);
+    private static String getField(Element element, String attr, String regular, String format) {
+        String attrField = StrUtil.isBlank(attr)?
+                element.text(): element.attr(attr);
+        String regField = StrUtil.isBlank(regular)?
+                StrUtil.trim(attrField): CollUtil.join(ReUtil.findAll(regular, attrField, 0), StrUtil.EMPTY);
+        return StrUtil.isBlank(format)? regField: StrUtil.format(format, regField);
     }
 }
