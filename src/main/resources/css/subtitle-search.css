@@ -13,52 +13,54 @@
     -fx-text-alignment: center;
 }
 
+.dark .engine {
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: #DEDEDE;
+}
+
 .item {
     -fx-effect: dropshadow(gaussian, #d1d1d1, 10, 0, 0, 0);
 }
 
-.item:hover,.item:selected {
-    -fx-text-fill: #5B5BFA;
-    /*-fx-background-color: #5B5BFA;*/
+.dark .item {
+    -fx-effect: dropshadow(gaussian, #202020, 10, 0, 0, 0);
 }
 
 .jfx-button {
     -jfx-button-type: RAISED;
 }
 
-
-
-/*列表视图*/
-
 .jfx-list-cell-container {
     -fx-alignment: center-left;
 }
 
-.jfx-list-cell-container > .label {
-    -fx-text-fill: BLACK;
+.dark .jfx-list-view,.jfx-list-cell {
+    -fx-background-color: transparent;
 }
 
-.jfx-list-cell:odd:selected > .jfx-rippler > StackPane,
-.jfx-list-cell:even:selected > .jfx-rippler > StackPane {
-    -fx-background-color: #5b5bfa;
+.jfx-list-cell, .jfx-list-cell > .jfx-rippler > StackPane {
+    -fx-background-radius: 8;
+}
+
+.jfx-list-cell:selected > .jfx-rippler > StackPane {
+    -fx-background-color: #f5f5f6;
+}
+
+.dark .jfx-list-cell:selected > .jfx-rippler > StackPane {
+    -fx-background-color: #404040;
 }
 
 .jfx-list-cell {
     -fx-background-insets: 0.0;
-    -fx-text-fill: BLACK;
-}
-
-
-.jfx-list-cell:odd, .jfx-list-cell:even {
-    -fx-background-color: WHITE;
-}
-
-.jfx-list-cell:filled:hover {
-    -fx-text-fill: black;
 }
 
 .jfx-list-cell .jfx-rippler {
-    -jfx-rippler-fill: #FFF;
+    -jfx-rippler-fill: #f5f5f5;
+    -fx-padding: 0 5 0 0;
+}
+
+.dark .jfx-list-cell .jfx-rippler {
+    -jfx-rippler-fill: #555555;
 }
 
 .jfx-list-view {
@@ -70,23 +72,20 @@
     -fx-pref-width: 200;
 }
 
-
-/*滚动条背景色*/
-.list-view .scroll-bar {
-    -fx-background-color: transparent;
-}
-
-.list-view .track {
-    -fx-background-color: transparent;
-}
-/*滚动条颜色*/
-.list-view .thumb {
-    -fx-background-radius: 0;
-    -fx-border-radius: 0;
-}
-
 .list-cell .label {
+    -fx-text-fill: #000;
+}
 
+.dark .list-cell .label, .dark #searchField {
+    -fx-text-fill: #FFF;
+}
+
+.list-cell:selected .label {
+    -fx-text-fill: #5B5BFA;
+}
+
+.dark .list-cell:selected .label {
+    -fx-text-fill: #4b67dc
 }
 
 .list-cell .caption {
@@ -98,4 +97,9 @@
     -fx-pref-height: 40;
     -fx-min-width: -fx-pref-width;
     -fx-min-height: -fx-pref-height;
+}
+
+#searchField {
+    -fx-font-size: 14;
+    -fx-prompt-text-fill: gray;
 }

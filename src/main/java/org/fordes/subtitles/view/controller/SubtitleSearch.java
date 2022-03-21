@@ -45,7 +45,7 @@ public class SubtitleSearch implements Initializable {
 
     private ToggleGroup engineGroup;
 
-    private static final SearchService service = new SearchService();
+    private static final SearchService SERVICE = new SearchService();
 
     //TODO 分页待适配
 
@@ -59,18 +59,18 @@ public class SubtitleSearch implements Initializable {
                     StyleClassConstant.SUBTITLE_SEARCH_ITEM);
             engine.setToggleGroup(engineGroup);
             engine.setUserData(e);
-            engine.setTooltip(new Tooltip(e.getRemark()));
+            engine.setTooltip(new Tooltip(e.getName()));
             engine.setText(e.getIcon());
             engine.setOnAction(this::engineActionHandle);
             nodesList.addAnimatedNode(engine);
         });
         //监听搜索服务运行状态，控制loading
-        service.runningProperty().addListener((observableValue, aBoolean, t1) -> loading.setVisible(t1));
+        SERVICE.runningProperty().addListener((observableValue, aBoolean, t1) -> loading.setVisible(t1));
         //搜索完成，载入新结果
-        service.setOnSucceeded(event -> {
-            if (!service.getValue().isEmpty()) {
+        SERVICE.setOnSucceeded(event -> {
+            if (!SERVICE.getValue().isEmpty()) {
                 listView.getItems().clear();
-                service.getValue().forEach(result -> listView.getItems().add(buildItem(result)));
+                SERVICE.getValue().forEach(result -> listView.getItems().add(buildItem(result)));
             }
         });
         //选择默认接口
@@ -103,7 +103,7 @@ public class SubtitleSearch implements Initializable {
         JFXTextField field = (JFXTextField) event.getSource();
         if (StrUtil.isNotBlank(field.getText())) {
             SearchCases cases = (SearchCases) engineGroup.getSelectedToggle().getUserData();
-            service.search(cases.getCases(),field.getText());
+            SERVICE.search(cases.getCases(),field.getText());
         }
     }
 
@@ -129,7 +129,7 @@ public class SubtitleSearch implements Initializable {
                 if (ObjectUtil.isEmpty(data.getNext())) {
                     //TODO 没有继续搜索即为文件，发送初始化事件，启动编辑器
                 }else {
-                    service.search(data.getNext(), data.getParams());
+                    SERVICE.search(data.getNext(), data.getParams());
                 }
             }
         });
