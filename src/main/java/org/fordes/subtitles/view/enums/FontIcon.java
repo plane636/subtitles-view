@@ -24,7 +24,10 @@ public enum FontIcon {
     ENGINE_DDZM("\ue63b"),
     ENGINE_ASSRT("\ue609"),
     ENGINE_ZMK("\ue623"),
-    ENGINE("\ue60f");
+    ENGINE("\ue60f"),
+
+    PLACE_THE_LEFT("\uec70"),
+    PLACE_THE_RIGHT("\ue61a");
 
 
     private final String unicode;

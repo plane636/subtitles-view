@@ -3,10 +3,13 @@ package org.fordes.subtitles.view.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.Pane;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.constant.CommonConstant;
+import org.fordes.subtitles.view.enums.FontIcon;
 import org.fordes.subtitles.view.model.ApplicationInfo;
 
 import java.net.URL;
@@ -17,6 +20,12 @@ import java.util.ResourceBundle;
  */
 @Slf4j
 public class MainController implements Initializable {
+
+    @FXML
+    private ColumnConstraints sidebarColumn;
+
+    @FXML
+    private Label drawer;
 
     @FXML
     private SidebarBefore sidebarBeforeController;
@@ -106,5 +115,13 @@ public class MainController implements Initializable {
         event.consume();
         ApplicationInfo.stage.setX(event.getScreenX() - xOffset);
         ApplicationInfo.stage.setY(event.getScreenY() - yOffset);
+    }
+
+    @FXML
+    private void onDrawer(MouseEvent event) {
+        sidebarColumn.setPrefWidth(sidebarColumn.getPrefWidth() > 0 ? 0: CommonConstant.SIDE_BAR_WIDTH);
+        drawer.setText(sidebarColumn.getPrefWidth() > 0 ?
+                FontIcon.PLACE_THE_LEFT.toString(): FontIcon.PLACE_THE_RIGHT.toString());
+        event.consume();
     }
 }

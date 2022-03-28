@@ -2,10 +2,11 @@
 
 <?import com.jfoenix.controls.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.*?>
 <?import org.fordes.subtitles.view.enums.FontIcon?>
 <?import java.lang.String?>
-<GridPane fx:id="root" prefHeight="400.0" prefWidth="600.0" stylesheets="/css/subtitle-search.css"
+<GridPane prefHeight="400.0" prefWidth="600.0" stylesheets="/css/subtitle-search.css"
           GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS"
           xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="org.fordes.subtitles.view.controller.SubtitleSearch">
@@ -17,71 +18,47 @@
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
         <ColumnConstraints/>
     </columnConstraints>
-    <children>
-        <GridPane style="-fx-background-color: transparent" GridPane.rowIndex="1">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-            </rowConstraints>
+    <GridPane GridPane.rowIndex="1">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
 
-            <JFXListView fx:id="listView" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
-                         GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-            </JFXListView>
-            <JFXSpinner fx:id="loading" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                        minWidth="-Infinity" prefHeight="50.0" prefWidth="50.0" visible="false"
-                        GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER"
-                        GridPane.vgrow="ALWAYS"/>
-            <GridPane.margin>
-                <Insets bottom="30.0" left="40.0" right="30.0"/>
-            </GridPane.margin>
-        </GridPane>
-        <JFXNodesList fx:id="nodesList" rotate="180.0" spacing="15" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS"
-                      GridPane.rowIndex="1" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
-            <GridPane.margin>
-                <Insets bottom="50.0" right="50.0"/>
-            </GridPane.margin>
-            <JFXButton fx:id="engineChoose">
-                <styleClass>
-                    <String fx:value="engine"/>
-                </styleClass>
-                <FontIcon fx:constant="ENGINE"/>
-            </JFXButton>
-            <!--            <ToggleButton fx:id="engine1" onAction="#actionHandle" userData="点点字幕">-->
-            <!--                <FontIcon fx:constant="ENGINE_DDZM"/>-->
-            <!--                <styleClass>-->
-            <!--                    <String fx:value="engine"/>-->
-            <!--                    <String fx:value="item"/>-->
-            <!--                </styleClass>-->
-            <!--                <toggleGroup>-->
-            <!--                    <ToggleGroup fx:id="engineGroup"/>-->
-            <!--                </toggleGroup>-->
-            <!--            </ToggleButton>-->
-            <!--            <ToggleButton fx:id="engine2" onAction="#actionHandle" toggleGroup="$engineGroup" userData="字幕库">-->
-            <!--                <styleClass>-->
-            <!--                    <String fx:value="engine"/>-->
-            <!--                    <String fx:value="item"/>-->
-            <!--                </styleClass>-->
-            <!--                <FontIcon fx:constant="ENGINE_ZMK"/>-->
-            <!--            </ToggleButton>-->
-            <!--            <ToggleButton fx:id="engine3" onAction="#actionHandle" toggleGroup="$engineGroup" userData="伪射手网">-->
-            <!--                <styleClass>-->
-            <!--                    <String fx:value="engine"/>-->
-            <!--                    <String fx:value="item"/>-->
-            <!--                </styleClass>-->
-            <!--                <FontIcon fx:constant="ENGINE_ASSRT"/>-->
-            <!--            </ToggleButton>-->
-        </JFXNodesList>
-
-        <JFXTextField fx:id="searchField"
-                      maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="400.0"
-                      onAction="#searchBeginHandle"
-                      GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS"
-                      GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-            <GridPane.margin>
-                <Insets left="40.0"/>
-            </GridPane.margin>
-        </JFXTextField>
-    </children>
+        <JFXListView fx:id="listView" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+                     GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+        </JFXListView>
+        <JFXSpinner fx:id="loading" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                    minWidth="-Infinity" prefHeight="50.0" prefWidth="50.0" visible="false"
+                    GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER"
+                    GridPane.vgrow="ALWAYS"/>
+        <GridPane.margin>
+            <Insets bottom="30.0" left="40.0" right="30.0"/>
+        </GridPane.margin>
+    </GridPane>
+    <JFXNodesList fx:id="nodesList" rotate="180.0" spacing="15" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS"
+                  GridPane.rowIndex="1" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
+        <GridPane.margin>
+            <Insets bottom="50.0" right="50.0"/>
+        </GridPane.margin>
+        <JFXButton>
+            <styleClass>
+                <String fx:value="engine"/>
+            </styleClass>
+            <FontIcon fx:constant="ENGINE"/>
+            <tooltip>
+                <Tooltip text="切换搜索字幕引擎"/>
+            </tooltip>
+        </JFXButton>
+    </JFXNodesList>
+    <JFXTextField fx:id="searchField"
+                  maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="400.0"
+                  onAction="#searchBeginHandle"
+                  GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS"
+                  GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+        <GridPane.margin>
+            <Insets left="40.0"/>
+        </GridPane.margin>
+    </JFXTextField>
 </GridPane>

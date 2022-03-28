@@ -5,6 +5,7 @@ import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import lombok.extern.slf4j.Slf4j;
@@ -41,20 +42,25 @@ public class SearchService extends Service<List<Result>> {
             @Override
             protected List<Result> call() {
                 List<Result> result = CollUtil.newArrayList();
-
                 try {
                     if (ObjectUtil.isEmpty(cases.next)) {
                         //TODO 下载以及解压等流程
                     }else {
                         Connection connection = Jsoup.connect(StrUtil.format(cases.url, params));
                         Document doc = connection.get();
+                        log.debug("字幕搜索：{}，参数：{}", JSONUtil.toJsonStr(cases), params);
 
                         List<String> captions = getFields(doc, cases.captionQuery);
+                        log.debug("captions：{}：{}", captions.size(), JSONUtil.toJsonStr(captions));
+
                         List<String> texts = getFields(doc, cases.textQuery);
+                        log.debug("texts：{}：{}", texts.size(), JSONUtil.toJsonStr(texts));
+
                         List<List<String>> paramList = Arrays.stream(cases.params)
                                 .map(e -> getFields(doc, e)).collect(Collectors.toList());
+                        log.debug("paramList：{}：{}", paramList.size(), JSONUtil.toJsonStr(paramList));
 
-
+                        //组合结果
                         for (int i = 0; i < captions.size(); i++) {
                             List<String> param = new ArrayList<>(paramList.size());
                             for (List<String> p : paramList) {
@@ -98,10 +104,10 @@ public class SearchService extends Service<List<Result>> {
 
 
     private static String getField(Element element, String attr, String regular, String format) {
-        String attrField = StrUtil.isBlank(attr)?
-                element.text(): element.attr(attr);
-        String regField = StrUtil.isBlank(regular)?
-                StrUtil.trim(attrField): CollUtil.join(ReUtil.findAll(regular, attrField, 0), StrUtil.EMPTY);
-        return StrUtil.isBlank(format)? regField: StrUtil.format(format, regField);
+        String attrField = StrUtil.isBlank(attr) ?
+                element.text() : element.attr(attr);
+        String regField = StrUtil.isBlank(regular) ?
+                StrUtil.trim(attrField) : CollUtil.join(ReUtil.findAll(regular, attrField, 0), StrUtil.EMPTY);
+        return StrUtil.isBlank(format) ? regField : StrUtil.format(format, regField);
     }
 }

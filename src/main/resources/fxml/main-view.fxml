@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
+<?import org.fordes.subtitles.view.enums.FontIcon?>
 <?import java.lang.String?>
 <GridPane fx:id="root" onMouseDragged="#mouseDraggedHandle" onMouseMoved="#mouseMoveHandle"
           onMousePressed="#mousePressedHandle" prefHeight="800.0" prefWidth="1200.0"
@@ -15,7 +17,7 @@
         <RowConstraints/>
     </rowConstraints>
     <columnConstraints>
-        <ColumnConstraints maxWidth="250.0" minWidth="250.0" prefWidth="250.0"/>
+        <ColumnConstraints fx:id="sidebarColumn" hgrow="NEVER" prefWidth="250.0"/>
         <ColumnConstraints/>
     </columnConstraints>
     <fx:include fx:id="titleBar" source="title-bar.fxml" onMouseDragged="#titleBarDraggedHandle"
@@ -44,6 +46,11 @@
         <fx:include fx:id="subtitleSearch" source="subtitle-search.fxml" visible="false"/>
         <fx:include fx:id="toolBox" source="tool-box.fxml" visible="false"/>
     </GridPane>
+    <Label fx:id="drawer" onMouseClicked="#onDrawer" GridPane.columnIndex="1" GridPane.halignment="LEFT"
+           GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+        <FontIcon fx:constant="PLACE_THE_LEFT"/>
+    </Label>
+
     <fx:include source="toast.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1"
                 GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM"
                 GridPane.hgrow="NEVER" GridPane.vgrow="NEVER"/>

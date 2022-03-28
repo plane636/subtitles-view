@@ -191,3 +191,22 @@
     -fx-background-color: #46464b;
     -fx-border-color: #46464b;
 }
+
+#drawer {
+    -fx-border-insets: 0;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0 5 5 0;
+    -fx-background-color: transparent;
+    -fx-text-fill: transparent;
+    -fx-font-family: iconfont;
+    -fx-font-size: 42;
+    -fx-text-alignment: left;
+}
+
+#drawer:hover {
+    -fx-text-fill: #e3e3e3 !important;
+}
+
+.dark #drawer:hover {
+    -fx-text-fill: #444444 !important;
+}

@@ -13,6 +13,14 @@
     -fx-text-alignment: center;
 }
 
+.engine:hover {
+    -fx-text-fill: #5B5BFA;
+}
+
+.dark .engine:hover {
+    -fx-text-fill: #4b67dc;
+}
+
 .dark .engine {
     -fx-background-color: #2d2d2d;
     -fx-text-fill: #DEDEDE;
@@ -85,7 +93,7 @@
 }
 
 .dark .list-cell:selected .label {
-    -fx-text-fill: #4b67dc
+    -fx-text-fill: #4b67dc;
 }
 
 .list-cell .caption {

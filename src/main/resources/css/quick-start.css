@@ -6,13 +6,61 @@
     -fx-border-color: #bebebe;
 }
 
+.error {
+    -fx-border-color: #e74c3c !important;
+}
+
+.error #clues, .error .button .label {
+    -fx-text-fill: #e74c3c !important;
+}
+
+.dark .error {
+    -fx-border-color: #c0392b !important;
+}
+
+.dark .error #clues, .dark .error .button .label {
+    -fx-text-fill: #c0392b !important;
+}
+
+.warning {
+    -fx-border-color: #f1c40f !important;
+}
+
+.warning #clues, .warning .button .label {
+    -fx-text-fill: #f1c40f !important;
+}
+
+.dark .warning {
+    -fx-border-color: #f39c12 !important;
+}
+
+.dark .warning #clues, .dark .warning .button .label {
+    -fx-text-fill: #f39c12 !important;
+}
+
+.success {
+    -fx-border-color: #2ecc71 !important;
+}
+
+.success #clues, .success .button .label {
+    -fx-text-fill: #2ecc71 !important;
+}
+
+.dark .success {
+    -fx-border-color: #27ae60 !important;
+}
+
+.dark .success #clues, .dark .success .button .label {
+    -fx-text-fill: #27ae60 !important;
+}
+
 .button {
-    -fx-background-color: transparent;
+    -fx-background-color: transparent !important;
 }
 
 .button .label {
     -fx-font-family: iconfont;
-    -fx-text-fill: #8b8b8b;
+    -fx-text-fill: #909090;
     -fx-font-size: 86;
     -fx-text-alignment: center;
 }
@@ -23,6 +71,6 @@
 
 .label {
     -fx-font-size: 22;
-    -fx-text-fill: #8b8b8b;
+    -fx-text-fill: #909090;
 }
 

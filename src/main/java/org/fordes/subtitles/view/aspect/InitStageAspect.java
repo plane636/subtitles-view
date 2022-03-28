@@ -24,7 +24,7 @@ import org.fordes.subtitles.view.annotation.Tray;
 import org.fordes.subtitles.view.core.StageReadyEvent;
 import org.fordes.subtitles.view.mapper.SearchCasesMapper;
 import org.fordes.subtitles.view.model.ApplicationInfo;
-import org.fordes.subtitles.view.utils.FileUtil;
+import org.fordes.subtitles.view.utils.FileUtils;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
@@ -67,7 +67,7 @@ public class InitStageAspect {
                 //加载字体
                 if (ArrayUtil.isNotEmpty(property.fonts())) {
                     for (String path : property.fonts()) {
-                        Font.loadFont(FileUtil.getStream(path), 0);
+                        Font.loadFont(FileUtils.getStream(path), 0);
                     }
                 }
 
@@ -101,7 +101,7 @@ public class InitStageAspect {
 
                 if (ArrayUtil.isNotEmpty(property.icons())) {
                     for (String icon : property.icons()) {
-                        stage.getIcons().add(new Image(FileUtil.getStream(icon)));
+                        stage.getIcons().add(new Image(FileUtils.getStream(icon)));
                     }
                 }
 
@@ -111,7 +111,7 @@ public class InitStageAspect {
                 if (tray.value()) {
                     System.setProperty("java.awt.headless", String.valueOf(tray.headless()));
                     if (SystemTray.isSupported() && StrUtil.isNotEmpty(tray.image())) {
-                        TrayIcon trayIcon = new TrayIcon(ImageIO.read(FileUtil.getStream(tray.image())));
+                        TrayIcon trayIcon = new TrayIcon(ImageIO.read(FileUtils.getStream(tray.image())));
                         trayIcon.setToolTip(tray.toolTip());
                         trayIcon.setImageAutoSize(tray.imageAutoSize());
                         trayIcon.setActionCommand(tray.actionCommand());

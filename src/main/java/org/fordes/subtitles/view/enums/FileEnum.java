@@ -21,14 +21,14 @@ public enum FileEnum {
     TS("ts", true, false, false),
 
     //音频
-    MP3("", true, false, false),
-    FLAC("", true, false, false),
-    AAC("", true, false, false),
+    MP3("mp3", true, false, false),
+    FLAC("flac", true, false, false),
+    AAC("aac", true, false, false),
 
     //字幕
-    LRC("", true, false, false),
-    SRT("", true, false, false),
-    ASS("", true, false, false);
+    LRC("lrc", true, false, false),
+    SRT("srt", true, false, false),
+    ASS("ass", true, false, false);
 
     public final String suffix;
 

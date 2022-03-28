@@ -8,6 +8,7 @@
 <?import org.fordes.subtitles.view.enums.FontIcon?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="/css/quick-start.css"
           fx:id="root" fx:controller="org.fordes.subtitles.view.controller.QuickStart"
+          onDragOver="#onDragOver" onDragExited="#onDragExited" onDragDropped="#onDragDropped"
           GridPane.halignment="CENTER" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
@@ -34,6 +35,6 @@
             <Tooltip text="可以选择视频或者字幕文件~" />
         </tooltip>
     </Button>
-    <Label text="拖放或选择文件以继续"
+    <Label fx:id="clues" text="拖放或选择文件以继续"
            GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM"/>
 </GridPane>
