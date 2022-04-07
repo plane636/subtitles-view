@@ -1,6 +1,8 @@
 package org.fordes.subtitles.view.controller;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.jfoenix.controls.JFXListView;
@@ -17,8 +19,12 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
+import org.fordes.subtitles.view.event.ToastChooseEvent;
+import org.fordes.subtitles.view.event.ToastConfirmEvent;
 import org.fordes.subtitles.view.model.ApplicationInfo;
+import org.fordes.subtitles.view.model.CustomListViewSkin;
 import org.fordes.subtitles.view.model.PO.SearchCases;
+import org.fordes.subtitles.view.model.search.Cases;
 import org.fordes.subtitles.view.model.search.Result;
 import org.fordes.subtitles.view.service.SearchService;
 
@@ -47,7 +53,11 @@ public class SubtitleSearch implements Initializable {
 
     private static final SearchService SERVICE = new SearchService();
 
-    //TODO 分页待适配
+    private static final Dict SEARCH_KEY = Dict.create();
+
+    private static final String KEYWORD = "keyword";
+
+    static final String VERTICAL_BAR_NAME = "vbar";
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -56,7 +66,7 @@ public class SubtitleSearch implements Initializable {
         ApplicationInfo.searchCases.forEach(e -> {
             ToggleButton engine = new ToggleButton();
             engine.getStyleClass().addAll(StyleClassConstant.SUBTITLE_SEARCH_ENGINE,
-                    StyleClassConstant.SUBTITLE_SEARCH_ITEM);
+                    StyleClassConstant.SUBTITLE_SEARCH_ENGINE_ITEM);
             engine.setToggleGroup(engineGroup);
             engine.setUserData(e);
             engine.setTooltip(new Tooltip(e.getName()));
@@ -68,16 +78,43 @@ public class SubtitleSearch implements Initializable {
         SERVICE.runningProperty().addListener((observableValue, aBoolean, t1) -> loading.setVisible(t1));
         //搜索完成，载入新结果
         SERVICE.setOnSucceeded(event -> {
-            if (!SERVICE.getValue().isEmpty()) {
-                listView.getItems().clear();
-                SERVICE.getValue().forEach(result -> listView.getItems().add(buildItem(result)));
+            Result val = SERVICE.getValue();
+            if (ObjectUtil.isNotNull(val) && !val.getData().isEmpty()) {
+                    if (Result.Type.SEARCH.equals(val.getType())) {
+                        listView.getItems().clear();
+                    }
+                    listView.setUserData(val.getPage());
+                    val.getData().forEach(result -> listView.getItems().add(buildItem(result)));
+            }else {
+                ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("暂无结果", "换一个资源试试吧~", "确定", () -> {}));
             }
         });
+        //搜索出错
+        //TODO 待补充
+        SERVICE.setOnFailed(event -> ApplicationInfo.stage.fireEvent(new ToastChooseEvent("搜索出错",
+                "请等待后尝试重试\n或者前往项目主页反馈", "去反馈","取消",
+                () -> {},
+                () -> {})));
+
+        //为listview添加skin，反射获取滚动条，监听滚动条判断分页
+        CustomListViewSkin<StackPane> skin = new CustomListViewSkin<>(listView);
+        listView.setSkin(skin);
+        try {
+            skin.getVirtualScrollBar(VERTICAL_BAR_NAME).valueProperty().addListener((observableValue, number, t1) -> {
+                if (t1.floatValue() == 1 && listView.getUserData() != null) {
+                    SERVICE.search(Result.Type.PAGE, (Cases) listView.getUserData(), SEARCH_KEY);
+                }
+            });
+        } catch (IllegalAccessException e) {
+            log.error(ExceptionUtil.stacktraceToString(e));
+        }
+
         //选择默认接口
         if (!engineGroup.getToggles().isEmpty()) {
             Toggle engine = CollUtil.getFirst(engineGroup.getToggles());
             engine.setSelected(true);
-            searchField.setPromptText(StrUtil.format("从{}搜索", ((SearchCases) engine.getUserData()).getName()));
+            searchField.setPromptText(StrUtil
+                    .format("从{}搜索", ((SearchCases) engine.getUserData()).getName()));
         }
     }
 
@@ -88,10 +125,14 @@ public class SubtitleSearch implements Initializable {
      */
     private void engineActionHandle(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
-        SearchCases cases = (SearchCases) source.getUserData();
         source.setSelected(true);
         nodesList.animateList(false);
-        searchField.setPromptText(StrUtil.format("从{}搜索", cases.getName()));
+        if (!source.equals(engineGroup.getSelectedToggle())) {
+            SearchCases cases = (SearchCases) source.getUserData();
+            searchField.setPromptText(StrUtil.format("从{}搜索", cases.getName()));
+            listView.getItems().clear();
+            SERVICE.cancel();
+        }
     }
 
     /**
@@ -103,33 +144,36 @@ public class SubtitleSearch implements Initializable {
         JFXTextField field = (JFXTextField) event.getSource();
         if (StrUtil.isNotBlank(field.getText())) {
             SearchCases cases = (SearchCases) engineGroup.getSelectedToggle().getUserData();
-            SERVICE.search(cases.getCases(),field.getText());
+            SEARCH_KEY.clear();
+            SEARCH_KEY.set(KEYWORD, field.getText());
+            SERVICE.search(Result.Type.SEARCH, cases.getCases(), SEARCH_KEY);
         }
     }
 
 
-    private StackPane buildItem(Result result) {
+    private StackPane buildItem(Result.Item rsi) {
         StackPane root = new StackPane();
-        root.getStyleClass().add("search-item");
-        Label caption = new Label(result.getCaption());
-        caption.getStyleClass().add("caption");
-        Label text = new Label(result.getText());
-        text.getStyleClass().add("text");
+        root.getStyleClass().add(StyleClassConstant.SUBTITLE_SEARCH_ITEM);
+        Label caption = new Label(rsi.caption);
+        caption.getStyleClass().add(StyleClassConstant.SUBTITLE_SEARCH_ITEM_CAPTION);
+        Label text = new Label(rsi.text);
+        text.getStyleClass().add(StyleClassConstant.SUBTITLE_SEARCH_ITEM_TEXT);
         root.getChildren().addAll(caption, text);
 
         StackPane.setAlignment(caption, Pos.TOP_LEFT);
         StackPane.setMargin(caption, new Insets(5, 0, 0, 0));
         StackPane.setAlignment(text, Pos.BOTTOM_LEFT);
         StackPane.setMargin(caption, new Insets(0, 0, 5, 0));
-        root.setUserData(result);
+        root.setUserData(rsi);
         root.setOnMouseClicked(e -> {
-            if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount() == 2) {
+            if (MouseButton.PRIMARY.equals(e.getButton()) && 2 == e.getClickCount()) {
                 StackPane item = (StackPane) e.getSource();
-                Result data = (Result)item.getUserData();
-                if (ObjectUtil.isEmpty(data.getNext())) {
+                Result.Item data = (Result.Item)item.getUserData();
+                if (ObjectUtil.isNull(data.next)) {
                     //TODO 没有继续搜索即为文件，发送初始化事件，启动编辑器
+                    log.info("初始化事件：准备打开文件 => {}", data.text);
                 }else {
-                    SERVICE.search(data.getNext(), data.getParams());
+                    SERVICE.search(Result.Type.SEARCH, data.next, data.params);
                 }
             }
         });

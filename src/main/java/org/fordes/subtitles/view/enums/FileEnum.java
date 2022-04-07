@@ -15,10 +15,10 @@ public enum FileEnum {
 
     //视频
     MP4("mp4", true, true, false),
-    MKV("mkv", true, false, false),
-    AVI("avi", true, false, false),
-    RMVB("rmvb", true, false, false),
-    TS("ts", true, false, false),
+    MKV("mkv", true, true, false),
+    AVI("avi", true, true, false),
+    RMVB("rmvb", true, true, false),
+    TS("ts", true, true, false),
 
     //音频
     MP3("mp3", true, false, false),
@@ -26,21 +26,27 @@ public enum FileEnum {
     AAC("aac", true, false, false),
 
     //字幕
-    LRC("lrc", true, false, false),
-    SRT("srt", true, false, false),
-    ASS("ass", true, false, false);
+    LRC("lrc", true, false, true),
+    SRT("srt", true, false, true),
+    ASS("ass", true, false, true);
 
     public final String suffix;
 
     public final boolean support;
 
-    public final boolean isMedia;
+    public final boolean media;
 
-    public final boolean isSubtitle;
+    public final boolean subtitle;
+
+    public static final String[] SUPPORT_SUBTITLE = Arrays.stream(FileEnum.values())
+            .filter(e -> e.subtitle && e.support).map(e -> e.suffix).toArray(String[]::new);
+
+    public static final String[] SUPPORT_MEDIA = Arrays.stream(FileEnum.values())
+            .filter(e -> e.media && e.support).map(e -> e.suffix).toArray(String[]::new);
 
     public static boolean isMedia(String suffix) {
         return Arrays.stream(FileEnum.values())
-                .filter(e -> e.isMedia)
+                .filter(e -> e.media)
                 .anyMatch(e -> StrUtil.equalsIgnoreCase(e.suffix, suffix));
     }
 
@@ -48,5 +54,19 @@ public enum FileEnum {
         return Arrays.stream(FileEnum.values())
                 .filter(e -> e.support)
                 .anyMatch(e -> StrUtil.equalsIgnoreCase(e.suffix, suffix));
+    }
+
+    public static boolean check(String suffix, boolean isSupport, boolean isMedia, boolean isSubtitle) {
+        FileEnum val = of(suffix);
+        return val != null && (val.support == isSupport) && (val.media == isMedia) && (val.subtitle == isSubtitle);
+    }
+
+    public static FileEnum of(String name) {
+        for (FileEnum value : FileEnum.values()) {
+            if (StrUtil.equalsIgnoreCase(name, value.suffix)) {
+                return value;
+            }
+        }
+        return null;
     }
 }

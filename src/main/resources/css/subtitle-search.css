@@ -13,10 +13,12 @@
     -fx-text-alignment: center;
 }
 
+.engine:selected,
 .engine:hover {
     -fx-text-fill: #5B5BFA;
 }
 
+.dark .engine:selected,
 .dark .engine:hover {
     -fx-text-fill: #4b67dc;
 }

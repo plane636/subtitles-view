@@ -1,20 +1,43 @@
 package org.fordes.subtitles.view.model.search;
 
+import cn.hutool.core.map.MapUtil;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author fordes on 2022/2/12
  */
-@Getter
+@Data
 @Builder
 public class Result {
 
-    private String caption;
+    private Type type;
 
-    private String text;
+    private Cases page;
 
-    private Cases next;
+    private List<Item> data;
 
-    private String[] params;
+    @Builder
+    public static class Item {
+
+        public Cases next;
+
+        public String caption;
+
+        public String text;
+
+        public boolean isFile = false;
+
+        public Map<String, Object> params = MapUtil.newHashMap();
+    }
+
+    public static enum Type {
+        //普通搜索
+        SEARCH(),
+        //分页
+        PAGE()
+    }
 }
