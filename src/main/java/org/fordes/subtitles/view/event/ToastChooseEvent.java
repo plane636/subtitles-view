@@ -35,6 +35,16 @@ public class ToastChooseEvent extends AbstractToastEvent {
         this.handler2 = handler2;
     }
 
+    public ToastChooseEvent(String caption, String text, String choose1, ToastHandler handler1) {
+        super(TOAST_CHOOSE_EVENT_TYPE);
+        this.caption = caption;
+        this.text = text;
+        this.choose1 = choose1;
+        this.choose2 = AbstractToastEvent.CANCEL;
+        this.handler1 = handler1;
+        this.handler2 = () -> {};
+    }
+
     @Override
     public void invokeHandler(ToastEventHandler handler) {
         handler.onChooseEvent(caption, text, choose1, choose2, handler1, handler2);

@@ -92,8 +92,7 @@ public class SubtitleSearch implements Initializable {
         //搜索出错
         //TODO 待补充
         SERVICE.setOnFailed(event -> ApplicationInfo.stage.fireEvent(new ToastChooseEvent("搜索出错",
-                "请等待后尝试重试\n或者前往项目主页反馈", "去反馈","取消",
-                () -> {},
+                "请等待后尝试重试\n或者前往项目主页反馈", "去反馈",
                 () -> {})));
 
         //为listview添加skin，反射获取滚动条，监听滚动条判断分页

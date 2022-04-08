@@ -27,6 +27,14 @@ public class ToastConfirmEvent extends AbstractToastEvent {
         this.handler = handler;
     }
 
+    public ToastConfirmEvent(String caption, String text) {
+        super(TOAST_CONFIRM_EVENT_TYPE);
+        this.caption = caption;
+        this.text = text;
+        this.perform = AbstractToastEvent.CONFIRM;
+        this.handler = () -> {};
+    }
+
     @Override
     public void invokeHandler(ToastEventHandler handler) {
         handler.onConfirmEvent(caption, text, perform, this.handler);
