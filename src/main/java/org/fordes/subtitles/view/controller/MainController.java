@@ -1,16 +1,20 @@
 package org.fordes.subtitles.view.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.GridPane;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.constant.CommonConstant;
 import org.fordes.subtitles.view.enums.FontIcon;
+import org.fordes.subtitles.view.event.FileOpenEvent;
 import org.fordes.subtitles.view.model.ApplicationInfo;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,6 +23,7 @@ import java.util.ResourceBundle;
  * @author fordes on 2022/1/19
  */
 @Slf4j
+@Component
 public class MainController implements Initializable {
 
     @FXML
@@ -31,7 +36,17 @@ public class MainController implements Initializable {
     private SidebarBefore sidebarBeforeController;
 
     @FXML
-    private Pane quickStart, subtitleSearch, toolBox;
+    private SidebarAfter sidebarAfterController;
+
+    @FXML
+    private SidebarBottom sidebarBottomController;
+
+    @FXML
+    private GridPane content;
+
+    @FXML
+    private Parent quickStart, subtitleSearch, toolBox, setting, export, mainEditor, syncEditor, voiceConvert,
+            sidebarBefore, sidebarAfter;
 
     private static double xOffset = 0;
     private static double yOffset = 0;
@@ -41,12 +56,68 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //绑定侧边按键和对应面板显示
-        sidebarBeforeController.getQuickStart().selectedProperty()
-                .addListener((observableValue, aBoolean, t1) -> quickStart.setVisible(t1));
-        sidebarBeforeController.getSubtitleSearch().selectedProperty()
-                .addListener((observableValue, aBoolean, t1) -> subtitleSearch.setVisible(t1));
-        sidebarBeforeController.getToolBox().selectedProperty()
-                .addListener((observableValue, aBoolean, t1) -> toolBox.setVisible(t1));
+        sidebarBeforeController.getQuickStart().setOnAction(event -> {
+            sidebarBeforeController.getQuickStart().setSelected(true);
+            quickStart.setVisible(true);
+        });
+        sidebarBeforeController.getSubtitleSearch().setOnAction(event -> {
+            sidebarBeforeController.getSubtitleSearch().setSelected(true);
+            subtitleSearch.setVisible(true);
+        });
+        sidebarBeforeController.getToolBox().setOnAction(event -> {
+            sidebarBeforeController.getToolBox().setSelected(true);
+            toolBox.setVisible(true);
+        });
+        sidebarAfterController.getMainEditor().setOnAction(event -> {
+            sidebarAfterController.getMainEditor().setSelected(true);
+            mainEditor.setVisible(true);
+        });
+        sidebarAfterController.getSyncEditor().setOnAction(event -> {
+            sidebarAfterController.getSyncEditor().setSelected(true);
+            syncEditor.setVisible(true);
+        });
+        sidebarAfterController.getExport().setOnAction(event -> {
+            sidebarAfterController.getExport().setSelected(true);
+            export.setVisible(true);
+        });
+        sidebarBottomController.getSetting().setOnAction(event -> {
+            setting.setVisible(true);
+            sidebarAfterController.getItemGroup().selectToggle(null);
+            sidebarBeforeController.getItemGroup().selectToggle(null);
+        });
+
+        content.getChildren().forEach(node ->
+                node.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
+                    if (t1) {
+                        content.getChildren().forEach(e -> e.setVisible(e.equals(node)));
+                    }
+                }));
+
+        sidebarBefore.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
+            sidebarAfter.setVisible(!t1);
+            if (t1) {
+                sidebarBeforeController.getQuickStart().fireEvent(new ActionEvent());
+            }
+        });
+
+        sidebarAfter.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
+            if (t1) {
+                sidebarAfterController.getMainEditor().fireEvent(new ActionEvent());
+            }
+        });
+
+        voiceConvert.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
+            if (t1) {
+                sidebarAfterController.getItemGroup().selectToggle(null);
+                sidebarBeforeController.getItemGroup().selectToggle(null);
+            }
+        });
+
+        ApplicationInfo.stage.addEventHandler(FileOpenEvent.FILE_OPEN_EVENT, fileOpenEvent -> {
+            log.error("文件打开事件 => {}", fileOpenEvent.getOpenFile().getPath());
+            voiceConvert.setVisible(true);
+//            sidebarBefore.setVisible(!sidebarBefore.isVisible());
+        });
     }
 
     @FXML
@@ -119,9 +190,9 @@ public class MainController implements Initializable {
 
     @FXML
     private void onDrawer(MouseEvent event) {
-        sidebarColumn.setPrefWidth(sidebarColumn.getPrefWidth() > 0 ? 0: CommonConstant.SIDE_BAR_WIDTH);
+        sidebarColumn.setPrefWidth(sidebarColumn.getPrefWidth() > 0 ? 0 : CommonConstant.SIDE_BAR_WIDTH);
         drawer.setText(sidebarColumn.getPrefWidth() > 0 ?
-                FontIcon.PLACE_THE_LEFT.toString(): FontIcon.PLACE_THE_RIGHT.toString());
+                FontIcon.PLACE_THE_LEFT.toString() : FontIcon.PLACE_THE_RIGHT.toString());
         event.consume();
     }
 }

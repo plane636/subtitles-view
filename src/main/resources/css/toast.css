@@ -1,15 +1,15 @@
 .toast {
     -fx-cursor: hand;
-    -fx-background-color: #FFF;
+    -fx-background-color: -fx-white-0;
     -fx-border-insets: 0;
     -fx-background-radius: 10;
     -fx-padding: 10 10 10 10;
-    -fx-effect: dropshadow(gaussian, #d1d1d1, 10, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, -fx-white-4, 10, 0, 0, 0);
 }
 
 .dark .toast {
-    -fx-background-color: #2d2d2d;
-    -fx-effect: dropshadow(gaussian, #202020, 10, 0, 0, 0);
+    -fx-background-color: -fx-dark-3;
+    -fx-effect: dropshadow(gaussian, -fx-dark-1, 10, 0, 0, 0);
 }
 
 #perform {
@@ -21,38 +21,40 @@
 
 .choose {
     -fx-pref-height: 20;
-    -fx-pref-width: 38;
+    -fx-pref-width: 40;
     -fx-background-radius: 5;
     -fx-font-size: 10;
 }
 
 #perform:hover {
-    -fx-background-color: #5B5BFA;
-    -fx-effect: dropshadow(gaussian, #d1d1d1, 5, 0, 0, 0);
+    -fx-background-color: -fx-focus-0;
+    -fx-effect: dropshadow(gaussian, -fx-white-4, 5, 0, 0, 0);
 }
 
 .dark #perform {
-    -fx-background-color: #5B5BFA;
+    -fx-background-color: -fx-focus-1;
 }
 .dark #perform:hover {
-    -fx-background-color: #505AFA;
-    -fx-effect: dropshadow(gaussian, #202020, 5, 0, 0, 0);
+    -fx-background-color: -fx-focus-1;
+    -fx-effect: dropshadow(gaussian, -fx-dark-2, 5, 0, 0, 0);
 }
 
 
 
-#caption {
-
+#_caption {
+    -fx-font-size: 14;
+    -fx-text-fill: -fx-dark-0 !important;
 }
 
-.dark #caption {
-    -fx-text-fill: #FFF;
+.dark #_caption {
+    -fx-text-fill: -fx-white-1 !important;
 }
 
-#text {
-    -fx-text-fill: #626266;
+#_text {
+    -fx-font-size: 13;
+    -fx-text-fill: -fx-white-5 !important;
 }
 
-.dark #text {
-    -fx-text-fill: #c6c6c7;
+.dark #_text {
+    -fx-text-fill: -fx-white-4 !important;
 }

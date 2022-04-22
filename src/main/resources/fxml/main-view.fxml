@@ -31,10 +31,11 @@
             <RowConstraints maxHeight="80.0" minHeight="80.0" prefHeight="80.0" vgrow="SOMETIMES"/>
         </rowConstraints>
         <fx:include fx:id="sidebarBefore" source="sidebar-before.fxml"/>
+        <fx:include fx:id="sidebarAfter" source="sidebar-after.fxml" visible="false"/>
         <fx:include fx:id="sidebarBottom" source="sidebar-bottom.fxml" GridPane.rowIndex="1"/>
     </GridPane>
 
-    <GridPane styleClass="content" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+    <GridPane fx:id="content" styleClass="content" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
               GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
@@ -45,8 +46,13 @@
         <fx:include fx:id="quickStart" source="quick-start.fxml"/>
         <fx:include fx:id="subtitleSearch" source="subtitle-search.fxml" visible="false"/>
         <fx:include fx:id="toolBox" source="tool-box.fxml" visible="false"/>
+        <fx:include fx:id="setting" source="setting.fxml" visible="false"/>
+        <fx:include fx:id="export" source="export.fxml" visible="false"/>
+        <fx:include fx:id="mainEditor" source="main-editor.fxml" visible="false"/>
+        <fx:include fx:id="syncEditor" source="sync-editor.fxml" visible="false"/>
+        <fx:include fx:id="voiceConvert" source="voice-convert.fxml" visible="false"/>
     </GridPane>
-    <Label fx:id="drawer" onMouseClicked="#onDrawer" GridPane.columnIndex="1" GridPane.halignment="LEFT"
+    <Label fx:id="drawer" styleClass="drawer" onMouseClicked="#onDrawer" GridPane.columnIndex="1" GridPane.halignment="LEFT"
            GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
         <FontIcon fx:constant="PLACE_THE_LEFT"/>
     </Label>

@@ -1,5 +1,6 @@
 package org.fordes.subtitles.view.utils;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReUtil;
@@ -68,10 +69,10 @@ public class FileUtils {
      * 选择路径
      * @return 文件夹选择器
      */
-    public static DirectoryChooser choosePath() {
+    public static DirectoryChooser choosePath(String path) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle(CommonConstant.TITLE_PATH);
-        directoryChooser.setInitialDirectory(new File(CommonConstant.PATH_HOME));
+        directoryChooser.setInitialDirectory(FileUtil.file(StrUtil.isNotEmpty(path)? path: CommonConstant.PATH_HOME));
         return directoryChooser;
     }
 }

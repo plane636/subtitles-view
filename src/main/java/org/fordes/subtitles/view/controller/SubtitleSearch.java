@@ -5,13 +5,13 @@ import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXNodesList;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -19,23 +19,26 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
+import org.fordes.subtitles.view.event.FileOpenEvent;
 import org.fordes.subtitles.view.event.ToastChooseEvent;
 import org.fordes.subtitles.view.event.ToastConfirmEvent;
+import org.fordes.subtitles.view.mapper.SearchCasesMapper;
 import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.fordes.subtitles.view.model.CustomListViewSkin;
 import org.fordes.subtitles.view.model.PO.SearchCases;
 import org.fordes.subtitles.view.model.search.Cases;
 import org.fordes.subtitles.view.model.search.Result;
 import org.fordes.subtitles.view.service.SearchService;
+import org.springframework.stereotype.Component;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import javax.annotation.Resource;
 
 /**
  * @author fordes on 2022/2/6
  */
 @Slf4j
-public class SubtitleSearch implements Initializable {
+@Component
+public class SubtitleSearch extends DelayInitController {
 
     @FXML
     private JFXSpinner loading;
@@ -49,6 +52,9 @@ public class SubtitleSearch implements Initializable {
     @FXML
     private JFXNodesList nodesList;
 
+    @Resource
+    private SearchCasesMapper casesMapper;
+
     private ToggleGroup engineGroup;
 
     private static final SearchService SERVICE = new SearchService();
@@ -60,10 +66,10 @@ public class SubtitleSearch implements Initializable {
     static final String VERTICAL_BAR_NAME = "vbar";
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void delayInit() {
         //读取字幕搜索接口
         engineGroup = new ToggleGroup();
-        ApplicationInfo.searchCases.forEach(e -> {
+        casesMapper.selectList(new QueryWrapper<>()).forEach(e -> {
             ToggleButton engine = new ToggleButton();
             engine.getStyleClass().addAll(StyleClassConstant.SUBTITLE_SEARCH_ENGINE,
                     StyleClassConstant.SUBTITLE_SEARCH_ENGINE_ITEM);
@@ -74,17 +80,18 @@ public class SubtitleSearch implements Initializable {
             engine.setOnAction(this::engineActionHandle);
             nodesList.addAnimatedNode(engine);
         });
+
         //监听搜索服务运行状态，控制loading
         SERVICE.runningProperty().addListener((observableValue, aBoolean, t1) -> loading.setVisible(t1));
         //搜索完成，载入新结果
         SERVICE.setOnSucceeded(event -> {
             Result val = SERVICE.getValue();
             if (ObjectUtil.isNotNull(val) && !val.getData().isEmpty()) {
-                    if (Result.Type.SEARCH.equals(val.getType())) {
-                        listView.getItems().clear();
-                    }
-                    listView.setUserData(val.getPage());
-                    val.getData().forEach(result -> listView.getItems().add(buildItem(result)));
+                if (Result.Type.SEARCH.equals(val.getType())) {
+                    listView.getItems().clear();
+                }
+                listView.setUserData(val.getPage());
+                val.getData().forEach(result -> listView.getItems().add(buildItem(result)));
             }else {
                 ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("暂无结果", "换一个资源试试吧~", "确定", () -> {}));
             }
@@ -115,8 +122,8 @@ public class SubtitleSearch implements Initializable {
             searchField.setPromptText(StrUtil
                     .format("从{}搜索", ((SearchCases) engine.getUserData()).getName()));
         }
+        super.delayInit();
     }
-
 
     /**
      * 搜索引擎（选中）切换事件
@@ -169,8 +176,9 @@ public class SubtitleSearch implements Initializable {
                 StackPane item = (StackPane) e.getSource();
                 Result.Item data = (Result.Item)item.getUserData();
                 if (ObjectUtil.isNull(data.next)) {
-                    //TODO 没有继续搜索即为文件，发送初始化事件，启动编辑器
-                    log.info("初始化事件：准备打开文件 => {}", data.text);
+                    if (StrUtil.isNotEmpty(data.text)) {
+                        ApplicationInfo.stage.fireEvent(new FileOpenEvent(data.text));
+                    }
                 }else {
                     SERVICE.search(Result.Type.SEARCH, data.next, data.params);
                 }

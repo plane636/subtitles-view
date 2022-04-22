@@ -1,5 +1,6 @@
 package org.fordes.subtitles.view.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -7,13 +8,14 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.enums.FontIcon;
-import org.fordes.subtitles.view.event.ToastConfirmEvent;
 import org.fordes.subtitles.view.model.ApplicationInfo;
+import org.springframework.stereotype.Component;
 
 /**
  * @author fordes on 2022/1/19
  */
 @Slf4j
+@Component
 public class TitleBar {
 
     @FXML
@@ -27,9 +29,10 @@ public class TitleBar {
 
     @FXML
     private void closed(ActionEvent actionEvent) {
-        ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("标题", "内容", "确认按钮", () -> {
-
-        }));
+        //TODO
+        ApplicationInfo.stage.close();
+        Platform.exit();
+        System.exit(0);
     }
 
     @FXML

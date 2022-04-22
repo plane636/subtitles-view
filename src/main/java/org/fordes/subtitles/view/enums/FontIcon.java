@@ -27,7 +27,10 @@ public enum FontIcon {
     ENGINE("\ue60f"),
 
     PLACE_THE_LEFT("\uec70"),
-    PLACE_THE_RIGHT("\ue61a");
+    PLACE_THE_RIGHT("\ue61a"),
+
+    SETTING_PREFERENCES("\ue63c"),
+    SETTING_INTERFACE("\ue62d");
 
 
     private final String unicode;

@@ -59,7 +59,6 @@ public class SearchService extends Service<Result> {
                             .createGet(url, true)
                             .execute();
                     if (ObjectUtil.isEmpty(cases.next)) {
-                        //TODO 下载以及解压等流程
                         File outFile = response.completeFileNameFromHeader(FileUtil.mkdir(CommonConstant.DOWNLOAD_PATH));
                         FileUtil.writeFromStream(response.bodyStream(), outFile);
                         log.debug("下载文件成功！{}", outFile.getPath());

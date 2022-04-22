@@ -12,8 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.constant.CommonConstant;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.enums.FileEnum;
+import org.fordes.subtitles.view.event.FileOpenEvent;
 import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.fordes.subtitles.view.utils.FileUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 
@@ -21,6 +23,7 @@ import java.io.File;
  * @author fordes on 2022/2/6
  */
 @Slf4j
+@Component
 public class QuickStart {
     @FXML
     private Label clues;
@@ -82,7 +85,7 @@ public class QuickStart {
     private void onDragDropped(DragEvent dragEvent) {
         try {
             if (dragFile != null) {
-                log.info("打开文件操作");
+                ApplicationInfo.stage.fireEvent(new FileOpenEvent(dragFile));
             }
         } catch (Exception e) {
             clues.setText(OPEN_FILE_ERROR);

@@ -10,6 +10,7 @@ import org.fordes.subtitles.view.event.AbstractToastEvent;
 import org.fordes.subtitles.view.handler.ToastEventHandler;
 import org.fordes.subtitles.view.handler.ToastHandler;
 import org.fordes.subtitles.view.model.ApplicationInfo;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,6 +18,7 @@ import java.util.ResourceBundle;
 /**
  * @author fordes on 2022/1/28
  */
+@Component
 public class Toast implements Initializable {
 
     @FXML

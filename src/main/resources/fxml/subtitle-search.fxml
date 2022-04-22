@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import org.fordes.subtitles.view.enums.FontIcon?>
 <?import java.lang.String?>
-<GridPane prefHeight="400.0" prefWidth="600.0" stylesheets="/css/subtitle-search.css"
+<GridPane fx:id="root" prefHeight="400.0" prefWidth="600.0" stylesheets="/css/subtitle-search.css"
           GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS"
           xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="org.fordes.subtitles.view.controller.SubtitleSearch">

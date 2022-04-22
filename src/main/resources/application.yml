@@ -20,8 +20,8 @@ mybatis-plus:
   type-aliases-package: org.fordes.subtitles.view.mode.PO
   configuration:
     map-underscore-to-camel-case: false
-    cache-enabled: false
+    cache-enabled: true
   global-config:
-#    banner: off
+    banner: off
     db-config:
       update-strategy: not_null

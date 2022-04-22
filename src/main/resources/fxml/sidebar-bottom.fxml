@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.*?>
 <?import org.fordes.subtitles.view.enums.FontIcon?>
+<?import java.lang.String?>
 <GridPane xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
           fx:controller="org.fordes.subtitles.view.controller.SidebarBottom">
@@ -18,13 +19,19 @@
     </rowConstraints>
     <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
                GridPane.valignment="TOP" GridPane.vgrow="ALWAYS"/>
-    <Label styleClass="logo" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+    <Label GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
         <FontIcon fx:constant="LOGO"/>
+        <styleClass>
+            <String fx:value="logo"/>
+        </styleClass>
     </Label>
     <Label styleClass="app-name" text="SubView" GridPane.columnIndex="1" GridPane.halignment="LEFT"
            GridPane.valignment="CENTER"/>
-    <Button fx:id="setting" onAction="#onSetting" mnemonicParsing="false" styleClass="setting" GridPane.columnIndex="2" GridPane.halignment="CENTER"
+    <Button fx:id="setting" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="CENTER"
             GridPane.valignment="CENTER">
+        <styleClass>
+            <String fx:value="setting"/>
+        </styleClass>
         <FontIcon fx:constant="SETTING"/>
     </Button>
 </GridPane>
