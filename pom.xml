@@ -24,6 +24,13 @@
         <sqlite.version>3.36.0.3</sqlite.version>
         <mybatis-plus.version>3.5.1</mybatis-plus.version>
         <sevenzipjbinding.version>16.02-2.01</sevenzipjbinding.version>
+        <javapackager.version>1.6.6</javapackager.version>
+
+        <!--javapackager configuration-->
+        <platform>win</platform>
+        <bundleJre>true</bundleJre>
+        <generateInstaller>false</generateInstaller>
+        <customizedJre>true</customizedJre>
     </properties>
 
     <repositories>
@@ -169,7 +176,7 @@
             <plugin>
                 <groupId>io.github.fvarrui</groupId>
                 <artifactId>javapackager</artifactId>
-                <version>1.6.6</version>
+                <version>${javapackager.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -177,14 +184,14 @@
                             <goal>package</goal>
                         </goals>
                         <configuration>
-                            <customizedJre>false</customizedJre>
+                            <customizedJre>${customizedJre}</customizedJre>
                             <!-- mandatory -->
                             <mainClass>org.fordes.subtitles.view.SubtitlesViewApplication</mainClass>
                             <!-- optional -->
-                            <bundleJre>true</bundleJre>
-                            <generateInstaller>false</generateInstaller>
+                            <bundleJre>${bundleJre}</bundleJre>
+                            <generateInstaller>${generateInstaller}</generateInstaller>
                             <administratorRequired>true</administratorRequired>
-                            <platform>auto</platform>
+                            <platform>${platform}</platform>
                         </configuration>
                     </execution>
                 </executions>
