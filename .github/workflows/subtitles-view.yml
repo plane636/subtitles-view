@@ -1,0 +1,45 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: '适用平台 (auto|linux|mac|windows)'     
+        required: true
+        default: 'windows'
+      bundleJre:
+        description: '输出jre (true|false)'     
+        required: true
+        default: 'true'
+      generateInstaller:
+        description: '生成安装程序 (generateInstaller: )'     
+        required: true
+        default: 'false'
+      customizedJre:
+        description: '定制jre (true|false)'     
+        required: true
+        default: 'false'
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build with Maven
+      run: mvn --file pom.xml -Dplatform=${{github.event.inputs.platform}} -DbundleJre=${{github.event.inputs.bundleJre}} -DgenerateInstaller=${{github.event.inputs.generateInstaller}} -DcustomizedJre=${{github.event.inputs.customizedJre}} -B package 
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: subtitles-view
+        path: ./target/subtitles-view/**
