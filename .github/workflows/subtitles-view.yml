@@ -13,7 +13,7 @@ on:
       platform:
         description: '适用平台 (auto|linux|mac|windows)'     
         required: true
-        default: 'auto'
+        default: 'windows'
       bundleJre:
         description: '输出jre (true|false)'     
         required: true
