@@ -6,7 +6,7 @@
     <name>subtitles-view</name>
     <groupId>org.fordes</groupId>
     <artifactId>subtitles-view</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>2.0.0-Alpha</version>
     <description>subtitles-view</description>
 
 
@@ -18,7 +18,7 @@
         <lombok.version>1.18.22</lombok.version>
         <hutool.version>5.7.18</hutool.version>
         <javafx.version>11.0.2</javafx.version>
-        <jfoenix.version>9.0.10</jfoenix.version>
+        <jfoenix.version>9.0.0</jfoenix.version>
         <jSystemThemeDetector.version>3.8</jSystemThemeDetector.version>
         <jsoup.version>1.14.3</jsoup.version>
         <sqlite.version>3.36.0.3</sqlite.version>
@@ -27,10 +27,9 @@
         <javapackager.version>1.6.6</javapackager.version>
 
         <!--javapackager configuration-->
-        <platform>win</platform>
         <bundleJre>true</bundleJre>
         <generateInstaller>false</generateInstaller>
-        <customizedJre>true</customizedJre>
+        <customizedJre>false</customizedJre>
     </properties>
 
     <repositories>
@@ -179,19 +178,51 @@
                 <version>${javapackager.version}</version>
                 <executions>
                     <execution>
+                        <id>bundling-for-windows</id>
                         <phase>package</phase>
                         <goals>
                             <goal>package</goal>
                         </goals>
                         <configuration>
-                            <customizedJre>${customizedJre}</customizedJre>
-                            <!-- mandatory -->
+                            <platform>windows</platform>
+                            <createZipball>true</createZipball>
                             <mainClass>org.fordes.subtitles.view.SubtitlesViewApplication</mainClass>
-                            <!-- optional -->
                             <bundleJre>${bundleJre}</bundleJre>
+                            <customizedJre>${customizedJre}</customizedJre>
                             <generateInstaller>${generateInstaller}</generateInstaller>
                             <administratorRequired>true</administratorRequired>
-                            <platform>${platform}</platform>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>bundling-for-linux</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <platform>linux</platform>
+                            <createTarball>true</createTarball>
+                            <mainClass>org.fordes.subtitles.view.SubtitlesViewApplication</mainClass>
+                            <bundleJre>${bundleJre}</bundleJre>
+                            <customizedJre>${customizedJre}</customizedJre>
+                            <generateInstaller>${generateInstaller}</generateInstaller>
+                            <administratorRequired>true</administratorRequired>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>bundling-for-mac</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <platform>mac</platform>
+                            <createTarball>true</createTarball>
+                            <mainClass>org.fordes.subtitles.view.SubtitlesViewApplication</mainClass>
+                            <bundleJre>${bundleJre}</bundleJre>
+                            <customizedJre>${customizedJre}</customizedJre>
+                            <generateInstaller>${generateInstaller}</generateInstaller>
+                            <administratorRequired>true</administratorRequired>
                         </configuration>
                     </execution>
                 </executions>
