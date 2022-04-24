@@ -21,6 +21,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.TextFlow;
 import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.enums.ServiceType;
@@ -52,7 +53,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Setting extends DelayInitController {
 
     @FXML
-    private GridPane tips, infoPanel;
+    private GridPane infoPanel;
+
+    @FXML
+    private TextFlow tips;
 
     @FXML
     private ToggleGroup themeGroup, editorModeGroup, exitModeGroup;

@@ -14,16 +14,12 @@
     -fx-text-fill: -fx-white-0;
 }
 
-.text-area,
 .text-field {
     -fx-font-size: 15;
     -fx-text-fill: -fx-dark-0;
     -fx-background-position: 5;
     -fx-border-radius: 5;
     -fx-background-color: -fx-white-2;
-}
-
-.text-field {
     -fx-pref-width: 300;
     -fx-pref-height: 40;
     -fx-min-width: -fx-pref-width;
@@ -32,7 +28,6 @@
     -fx-max-height: -fx-pref-height;
 }
 
-.dark .text-area,
 .dark .text-field {
     -fx-text-fill: -fx-white-0;
     -fx-background-color: -fx-dark-5;
@@ -63,39 +58,27 @@
     -fx-text-fill: -fx-focus-1 !important;
 }
 
-.tips,
-.text-area,
-.text-area .scroll-pane,
-.text-area .scroll-pane .content {
+.tips {
     -fx-border-width: 0;
     -fx-border-insets: 0;
     -fx-background-insets: 0;
-    -fx-text-fill: -fx-focus-0;
-    -fx-background-color: -fx-white-2;
-    -fx-font-size: 14;
-}
-
-.text-area .text {
-    -fx-line-spacing: 8px;
-}
-
-.text-area .scroll-bar:vertical {
-    -fx-opacity: 0;
-}
-
-
-.tips {
     -fx-background-radius: 8;
     -fx-border-radius: 8;
     -fx-background-color: -fx-white-2;
+    -fx-line-spacing: 8px;
+    -fx-font-size: 14;
 }
 
-.dark .tips,
-.dark .text-area,
-.dark .text-area .scroll-pane,
-.dark .text-area .scroll-pane .content {
+ .tips .text {
+     -fx-fill: -fx-focus-0;
+ }
+
+ .dark .tips .text {
+     -fx-fill: -fx-focus-1;
+ }
+
+.dark .tips {
     -fx-background-color: -fx-dark-5;
-    -fx-text-fill: -fx-focus-1;
 }
 
 .icon {
