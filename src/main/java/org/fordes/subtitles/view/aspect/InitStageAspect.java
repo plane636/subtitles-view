@@ -19,6 +19,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.fordes.subtitles.view.annotation.InitStage;
 import org.fordes.subtitles.view.annotation.Tray;
+import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.core.StageReadyEvent;
 import org.fordes.subtitles.view.event.ThemeChangeEvent;
 import org.fordes.subtitles.view.mapper.ConfigMapper;
@@ -76,6 +77,13 @@ public class InitStageAspect {
                 ApplicationInfo.stage.initStyle(property.style());
                 ApplicationInfo.stage.setTitle(property.title());
                 ApplicationInfo.stage.setFullScreenExitHint(property.fullScreenExitHint());
+                //监听全屏状态，切换样式
+                ApplicationInfo.stage.fullScreenProperty().addListener((observableValue, aBoolean, t1) -> {
+                    ApplicationInfo.root.getStyleClass().remove(t1 ?
+                            StyleClassConstant.NORMAL_SCREEN : StyleClassConstant.FULL_SCREEN);
+                    ApplicationInfo.root.getStyleClass().add(t1 ?
+                            StyleClassConstant.FULL_SCREEN : StyleClassConstant.NORMAL_SCREEN);
+                });
                 ApplicationInfo.stage.setScene(scene);
 
                 //加载字体
@@ -101,6 +109,7 @@ public class InitStageAspect {
                 setSysTray(property);
                 ApplicationInfo.config = configMapper.selectOne(new QueryWrapper<>());
                 ApplicationInfo.stage.fireEvent(new ThemeChangeEvent(ApplicationInfo.config.getTheme()));
+                return;
             }
         }
     }

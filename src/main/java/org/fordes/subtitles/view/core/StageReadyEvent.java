@@ -11,8 +11,11 @@ public class StageReadyEvent extends ApplicationEvent {
 
     public final Stage stage;
 
-    public StageReadyEvent(Stage stage) {
+    public final long interval;
+
+    public StageReadyEvent(Stage stage, long interval) {
         super(stage);
         this.stage = stage;
+        this.interval = interval;
     }
 }
