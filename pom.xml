@@ -27,9 +27,12 @@
         <javapackager.version>1.6.6</javapackager.version>
 
         <!--javapackager configuration-->
+        <platform>windows</platform>
         <bundleJre>true</bundleJre>
         <generateInstaller>false</generateInstaller>
         <customizedJre>false</customizedJre>
+        <createZipball>true</createZipball>
+        <createTarball>false</createTarball>
     </properties>
 
     <repositories>
@@ -178,51 +181,20 @@
                 <version>${javapackager.version}</version>
                 <executions>
                     <execution>
-                        <id>bundling-for-windows</id>
+                        <id>package</id>
                         <phase>package</phase>
                         <goals>
                             <goal>package</goal>
                         </goals>
                         <configuration>
-                            <platform>windows</platform>
-                            <createZipball>true</createZipball>
+                            <platform>${platform}</platform>
                             <mainClass>org.fordes.subtitles.view.SubtitlesViewApplication</mainClass>
                             <bundleJre>${bundleJre}</bundleJre>
                             <customizedJre>${customizedJre}</customizedJre>
                             <generateInstaller>${generateInstaller}</generateInstaller>
-                            <administratorRequired>true</administratorRequired>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>bundling-for-linux</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package</goal>
-                        </goals>
-                        <configuration>
-                            <platform>linux</platform>
-                            <createTarball>true</createTarball>
-                            <mainClass>org.fordes.subtitles.view.SubtitlesViewApplication</mainClass>
-                            <bundleJre>${bundleJre}</bundleJre>
-                            <customizedJre>${customizedJre}</customizedJre>
-                            <generateInstaller>${generateInstaller}</generateInstaller>
-                            <administratorRequired>true</administratorRequired>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>bundling-for-mac</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package</goal>
-                        </goals>
-                        <configuration>
-                            <platform>mac</platform>
-                            <createTarball>true</createTarball>
-                            <mainClass>org.fordes.subtitles.view.SubtitlesViewApplication</mainClass>
-                            <bundleJre>${bundleJre}</bundleJre>
-                            <customizedJre>${customizedJre}</customizedJre>
-                            <generateInstaller>${generateInstaller}</generateInstaller>
-                            <administratorRequired>true</administratorRequired>
+                            <administratorRequired>false</administratorRequired>
+                            <createZipball>${createZipball}</createZipball>
+                            <createTarball>${createTarball}</createTarball>
                         </configuration>
                     </execution>
                 </executions>
