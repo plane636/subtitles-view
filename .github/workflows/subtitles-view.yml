@@ -5,23 +5,31 @@ name: CI Build
 
 on:
   push:
+    paths-ignore:
+      - 'README.md'
     branches: [ main ]
   pull_request:
+    paths-ignore:
+      - 'README.md'
     branches: [ main ]
 
   workflow_dispatch:
     inputs:
-      bundleJre:
-        description: '输出jre (true|false)'
-        required: true
-        default: 'true'
       generateInstaller:
-        description: '生成安装程序 (true|false)'
+        description: 'generateInstaller'
         required: true
+        type: choice
+        options:
+          - 'true'
+          - 'false'
         default: 'false'
       customizedJre:
-        description: '定制jre (true|false)'
+        description: 'customizedJre'
         required: true
+        type: choice
+        options:
+          - 'true'
+          - 'false'
         default: 'false'
 
 jobs:
@@ -36,7 +44,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: mvn --file pom.xml -Dplatform=windows -DbundleJre=${{github.event.inputs.bundleJre}} -DgenerateInstaller=${{github.event.inputs.generateInstaller}} -DcustomizedJre=${{github.event.inputs.customizedJre}} -DcreateZipball=true -DcreateTarball=false -B package
+        run: mvn --file pom.xml -Dplatform=windows -DgenerateInstaller=${{github.event.inputs.bundleJre}} -DcustomizedJre=${{github.event.inputs.customizedJre}} -DcreateZipball=true -DcreateTarball=false -B package
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -55,7 +63,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: mvn --file pom.xml -Dplatform=linux -DbundleJre=${{github.event.inputs.bundleJre}} -DgenerateInstaller=${{github.event.inputs.generateInstaller}} -DcustomizedJre=${{github.event.inputs.customizedJre}} -DcreateZipball=false -DcreateTarball=true -B package
+        run: mvn --file pom.xml -Dplatform=linux -DgenerateInstaller=${{github.event.inputs.bundleJre}} -DcustomizedJre=${{github.event.inputs.customizedJre}} -DcreateZipball=false -DcreateTarball=true -B package
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -74,7 +82,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: mvn --file pom.xml -Dplatform=mac -DbundleJre=${{github.event.inputs.bundleJre}} -DgenerateInstaller=${{github.event.inputs.generateInstaller}} -DcustomizedJre=${{github.event.inputs.customizedJre}} -DcreateZipball=false -DcreateTarball=true -B package
+        run: mvn --file pom.xml -Dplatform=mac -DgenerateInstaller=${{github.event.inputs.bundleJre}} -DcustomizedJre=${{github.event.inputs.customizedJre}} -DcreateZipball=false -DcreateTarball=true -B package
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
