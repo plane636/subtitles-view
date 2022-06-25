@@ -1,20 +1,23 @@
 package org.fordes.subtitles.view.controller;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXNodesList;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.skins.JFXListViewSkin;
+import com.sun.javafx.scene.control.VirtualScrollBar;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +27,6 @@ import org.fordes.subtitles.view.event.ToastChooseEvent;
 import org.fordes.subtitles.view.event.ToastConfirmEvent;
 import org.fordes.subtitles.view.mapper.SearchCasesMapper;
 import org.fordes.subtitles.view.model.ApplicationInfo;
-import org.fordes.subtitles.view.model.CustomListViewSkin;
 import org.fordes.subtitles.view.model.PO.SearchCases;
 import org.fordes.subtitles.view.model.search.Cases;
 import org.fordes.subtitles.view.model.search.Result;
@@ -61,9 +63,7 @@ public class SubtitleSearch extends DelayInitController {
 
     private static final Dict SEARCH_KEY = Dict.create();
 
-    private static final String KEYWORD = "keyword";
-
-    static final String VERTICAL_BAR_NAME = "vbar";
+    static final String KEYWORD = "keyword";
 
     @Override
     public void delayInit() {
@@ -77,7 +77,15 @@ public class SubtitleSearch extends DelayInitController {
             engine.setUserData(e);
             engine.setTooltip(new Tooltip(e.getName()));
             engine.setText(e.getIcon());
-            engine.setOnAction(this::engineActionHandle);
+            engine.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+                if (t1) {
+                    SearchCases cases = (SearchCases) engine.getUserData();
+                    searchField.setPromptText(StrUtil.format("从{}搜索", cases.getName()));
+                    listView.getItems().clear();
+                    SERVICE.cancel();
+                    nodesList.animateList(false);
+                }
+            });
             nodesList.addAnimatedNode(engine);
         });
 
@@ -102,18 +110,18 @@ public class SubtitleSearch extends DelayInitController {
                 "请等待后尝试重试\n或者前往项目主页反馈", "去反馈",
                 () -> {})));
 
-        //为listview添加skin，反射获取滚动条，监听滚动条判断分页
-        CustomListViewSkin<StackPane> skin = new CustomListViewSkin<>(listView);
+        //为listview添加skin，反射获取垂直滚动条，监听滚动条判断分页
+        JFXListViewSkin<StackPane> skin = new JFXListViewSkin<>(listView);
         listView.setSkin(skin);
-        try {
-            skin.getVirtualScrollBar(VERTICAL_BAR_NAME).valueProperty().addListener((observableValue, number, t1) -> {
-                if (t1.floatValue() == 1 && listView.getUserData() != null) {
-                    SERVICE.search(Result.Type.PAGE, (Cases) listView.getUserData(), SEARCH_KEY);
-                }
-            });
-        } catch (IllegalAccessException e) {
-            log.error(ExceptionUtil.stacktraceToString(e));
-        }
+
+        VirtualFlow<?> virtualFlow = (VirtualFlow<?>) ReflectUtil.getFieldValue(skin, "flow");
+        VirtualScrollBar vbar = (VirtualScrollBar) ReflectUtil.getFieldValue(virtualFlow, "vbar");
+
+        vbar.valueProperty().addListener((observableValue, number, t1) -> {
+            if (t1.floatValue() == 1 && listView.getUserData() != null) {
+                SERVICE.search(Result.Type.PAGE, (Cases) listView.getUserData(), SEARCH_KEY);
+            }
+        });
 
         //选择默认接口
         if (!engineGroup.getToggles().isEmpty()) {
@@ -123,22 +131,6 @@ public class SubtitleSearch extends DelayInitController {
                     .format("从{}搜索", ((SearchCases) engine.getUserData()).getName()));
         }
         super.delayInit();
-    }
-
-    /**
-     * 搜索引擎（选中）切换事件
-     * @param event source
-     */
-    private void engineActionHandle(ActionEvent event) {
-        ToggleButton source = (ToggleButton) event.getSource();
-        source.setSelected(true);
-        nodesList.animateList(false);
-        if (!source.equals(engineGroup.getSelectedToggle())) {
-            SearchCases cases = (SearchCases) source.getUserData();
-            searchField.setPromptText(StrUtil.format("从{}搜索", cases.getName()));
-            listView.getItems().clear();
-            SERVICE.cancel();
-        }
     }
 
     /**
