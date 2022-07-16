@@ -25,6 +25,7 @@
         <mybatis-plus.version>3.5.1</mybatis-plus.version>
         <sevenzipjbinding.version>16.02-2.01</sevenzipjbinding.version>
         <javapackager.version>1.6.6</javapackager.version>
+        <juniversalchardet.version>2.4.0</juniversalchardet.version>
 
         <!--javapackager configuration-->
         <platform>windows</platform>
@@ -149,6 +150,14 @@
             <artifactId>sevenzipjbinding-all-platforms</artifactId>
             <version>${sevenzipjbinding.version}</version>
         </dependency>
+
+        <!--文件编码检测-->
+        <dependency>
+            <groupId>com.github.albfernandez</groupId>
+            <artifactId>juniversalchardet</artifactId>
+            <version>${juniversalchardet.version}</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
