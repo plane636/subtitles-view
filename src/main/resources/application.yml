@@ -7,8 +7,9 @@ logging:
 spring:
   application:
     name: subtitles-view
-  profiles:
-    active: dev
+  config:
+    activate:
+      on-profile:
   datasource:
     url: jdbc:sqlite::resource:db/subtitles-view
     driver-class-name: org.sqlite.JDBC
