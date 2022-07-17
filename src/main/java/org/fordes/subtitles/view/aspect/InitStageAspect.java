@@ -2,6 +2,7 @@ package org.fordes.subtitles.view.aspect;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.resource.ClassPathResource;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -57,6 +58,9 @@ public class InitStageAspect {
     public void handle(JoinPoint point) throws IOException {
         for (Object arg : point.getArgs()) {
             if (arg instanceof StageReadyEvent) {
+                //读取设置
+                ApplicationInfo.config = configMapper.selectOne(new QueryWrapper<>());
+                Assert.notNull(ApplicationInfo.config);
 
                 //获取注解值
                 MethodSignature signature = (MethodSignature) point.getSignature();
@@ -107,7 +111,7 @@ public class InitStageAspect {
                 setThemeDetector(property);
                 //设置系统托盘
                 setSysTray(property);
-                ApplicationInfo.config = configMapper.selectOne(new QueryWrapper<>());
+
                 ApplicationInfo.stage.fireEvent(new ThemeChangeEvent(ApplicationInfo.config.getTheme()));
                 return;
             }
