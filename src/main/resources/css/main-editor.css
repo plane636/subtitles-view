@@ -1,0 +1,27 @@
+.bar .item {
+    -fx-font-family: iconfont;
+    -fx-text-fill: -fx-white-5;
+    -fx-text-alignment: center;
+    -fx-padding: 0;
+    -fx-font-size: 20;
+}
+
+.bar .item:selected, .bar .item:hover {
+    -fx-text-fill: -fx-focus-0;
+}
+
+.dark .bar .item:selected, .dark .bar .item:hover {
+    -fx-text-fill: -fx-focus-0;
+}
+
+.dark .bar .item {
+    -fx-text-fill: -fx-white-4;
+}
+
+.text-area {
+    -fx-text-fill: -fx-dark-0;
+}
+
+.dark .text-area {
+    -fx-text-fill: -fx-white-0;
+}

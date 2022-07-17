@@ -24,4 +24,6 @@ public class StyleClassConstant {
     public static final String SUBTITLE_SEARCH_ITEM_CAPTION = "caption";
 
     public static final String SUBTITLE_SEARCH_ITEM_TEXT = "text";
+
+    public static final String CONTENT_EXCLUSIVE = "content-exclusive";
 }

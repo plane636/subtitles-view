@@ -56,6 +56,11 @@
     -fx-background-radius: 0 0 8 0;
 }
 
+.content-exclusive {
+    -fx-border-radius: 0 0 8 8;
+    -fx-background-radius: 0 0 8 8;
+}
+
 .dark .content {
     -fx-background-color: -fx-dark-3;
 }
@@ -162,6 +167,10 @@
 
 .dark .normal-button, .normal-button:hover {
     -fx-background-color: -fx-focus-1;
+}
+
+.font-icon {
+    -fx-font-family: iconfont;
 }
 
 .tooltip {
@@ -306,7 +315,7 @@
     /*-fx-pref-width: 200;*/
 }
 
-/*RadioButton*/
+    /*RadioButton*/
 .jfx-radio-button {
     -fx-font-size: 15;
     -fx-text-fill: -fx-dark-0;

@@ -30,8 +30,17 @@ public enum FontIcon {
     PLACE_THE_RIGHT("\ue61a"),
 
     SETTING_PREFERENCES("\ue63c"),
-    SETTING_INTERFACE("\ue62d");
+    SETTING_INTERFACE("\ue62d"),
 
+    EDIT_BAR_SEARCH("\ue754"),
+    EDIT_BAR_REPLACE("\ue674"),
+    EDIT_BAR_JUMP("\ue695"),
+    EDIT_BAR_FONT("\ue61d"),
+    EDIT_BAR_HIDE("\ue60b"),
+    EDIT_BAR_TIMELINE("\ue64f"),
+    EDIT_BAR_CODE("\ue629"),
+
+    EDIT_BAR_REF("\ue62c");
 
     private final String unicode;
 

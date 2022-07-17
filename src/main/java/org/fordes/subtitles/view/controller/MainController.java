@@ -1,6 +1,5 @@
 package org.fordes.subtitles.view.controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
@@ -11,6 +10,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.constant.CommonConstant;
+import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.enums.FontIcon;
 import org.fordes.subtitles.view.event.FileOpenEvent;
 import org.fordes.subtitles.view.model.ApplicationInfo;
@@ -51,7 +51,7 @@ public class MainController implements Initializable {
     private static double xOffset = 0;
     private static double yOffset = 0;
     private static int bit = 0;
-    private final static double RESIZE_WIDTH = 10.00;
+    private final static double RESIZE_WIDTH = 5.00;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -93,30 +93,15 @@ public class MainController implements Initializable {
                     }
                 }));
 
-        sidebarBefore.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
-            sidebarAfter.setVisible(!t1);
-            if (t1) {
-                sidebarBeforeController.getQuickStart().fireEvent(new ActionEvent());
-            }
-        });
-
-        sidebarAfter.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
-            if (t1) {
-                sidebarAfterController.getMainEditor().fireEvent(new ActionEvent());
-            }
-        });
-
-        voiceConvert.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
-            if (t1) {
-                sidebarAfterController.getItemGroup().selectToggle(null);
-                sidebarBeforeController.getItemGroup().selectToggle(null);
-            }
-        });
 
         ApplicationInfo.stage.addEventHandler(FileOpenEvent.FILE_OPEN_EVENT, fileOpenEvent -> {
-            log.error("文件打开事件 => {}", fileOpenEvent.getOpenFile().getPath());
-            voiceConvert.setVisible(true);
-//            sidebarBefore.setVisible(!sidebarBefore.isVisible());
+            if (fileOpenEvent.getType().media) {
+                sidebarAfterController.getItemGroup().selectToggle(null);
+                sidebarBeforeController.getItemGroup().selectToggle(null);
+            }else {
+                sidebarBefore.setVisible(false);
+                sidebarAfter.setVisible(true);
+            }
         });
     }
 
@@ -190,9 +175,15 @@ public class MainController implements Initializable {
 
     @FXML
     private void onDrawer(MouseEvent event) {
-        sidebarColumn.setPrefWidth(sidebarColumn.getPrefWidth() > 0 ? 0 : CommonConstant.SIDE_BAR_WIDTH);
-        drawer.setText(sidebarColumn.getPrefWidth() > 0 ?
-                FontIcon.PLACE_THE_LEFT.toString() : FontIcon.PLACE_THE_RIGHT.toString());
+        if (sidebarColumn.getPrefWidth() > 0) {
+            sidebarColumn.setPrefWidth(0);
+            drawer.setText(FontIcon.PLACE_THE_LEFT.toString());
+            content.getStyleClass().add(StyleClassConstant.CONTENT_EXCLUSIVE);
+        } else {
+            sidebarColumn.setPrefWidth(CommonConstant.SIDE_BAR_WIDTH);
+            drawer.setText(FontIcon.PLACE_THE_RIGHT.toString());
+            content.getStyleClass().remove(StyleClassConstant.CONTENT_EXCLUSIVE);
+        }
         event.consume();
     }
 }
