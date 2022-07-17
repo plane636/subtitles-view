@@ -89,6 +89,17 @@ public class SubtitleSearch extends DelayInitController {
             nodesList.addAnimatedNode(engine);
         });
 
+        //选择默认接口
+        if (engineGroup.getToggles().isEmpty()) {
+            ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("未找到搜索源", "字幕搜索无法使用！"));
+            searchField.setDisable(true);
+        } else {
+            Toggle engine = CollUtil.getFirst(engineGroup.getToggles());
+            engine.setSelected(true);
+            searchField.setPromptText(StrUtil
+                    .format("从{}搜索", ((SearchCases) engine.getUserData()).getName()));
+        }
+
         //监听搜索服务运行状态，控制loading
         SERVICE.runningProperty().addListener((observableValue, aBoolean, t1) -> loading.setVisible(t1));
         //搜索完成，载入新结果
@@ -123,13 +134,6 @@ public class SubtitleSearch extends DelayInitController {
             }
         });
 
-        //选择默认接口
-        if (!engineGroup.getToggles().isEmpty()) {
-            Toggle engine = CollUtil.getFirst(engineGroup.getToggles());
-            engine.setSelected(true);
-            searchField.setPromptText(StrUtil
-                    .format("从{}搜索", ((SearchCases) engine.getUserData()).getName()));
-        }
         super.delayInit();
     }
 
