@@ -19,9 +19,11 @@
 }
 
 .text-area {
+    -fx-background-color: -fx-white-0;
     -fx-text-fill: -fx-dark-0;
 }
 
 .dark .text-area {
+    -fx-background-color: -fx-dark-3;
     -fx-text-fill: -fx-white-0;
 }

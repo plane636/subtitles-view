@@ -21,6 +21,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextFlow;
 import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,6 @@ import org.fordes.subtitles.view.utils.FileUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.awt.*;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -114,7 +114,7 @@ public class Setting extends DelayInitController {
 
     void initPreference() {
         //编辑器 字体/字体大小
-        fontFace.getItems().addAll(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+        fontFace.getItems().addAll(Font.getFontNames());
         fontSize.getItems().addAll(CollUtil.newArrayList(10, 12, 14, 16, 18, 20, 24, 36));
 
         //读取配置设置默认值

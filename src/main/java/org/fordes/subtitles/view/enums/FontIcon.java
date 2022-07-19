@@ -40,7 +40,13 @@ public enum FontIcon {
     EDIT_BAR_TIMELINE("\ue64f"),
     EDIT_BAR_CODE("\ue629"),
 
-    EDIT_BAR_REF("\ue62c");
+    EDIT_BAR_REF("\ue62c"),
+
+    EDIT_BAR_OPTION("\ue86c"),
+
+    EDIT_BAR_REPLACE_ITEM("\ue63e"),
+
+    EDIT_BAR_REPLACE_ALL("\ue642");
 
     private final String unicode;
 

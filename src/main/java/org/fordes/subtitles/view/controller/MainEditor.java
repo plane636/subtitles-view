@@ -3,21 +3,21 @@ package org.fordes.subtitles.view.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Font;
-import javafx.scene.text.TextFlow;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.enums.EditToolEventEnum;
 import org.fordes.subtitles.view.event.EditToolEvent;
 import org.fordes.subtitles.view.event.FileOpenEvent;
+import org.fordes.subtitles.view.event.ToastConfirmEvent;
 import org.fordes.subtitles.view.model.ApplicationInfo;
+import org.fordes.subtitles.view.model.DTO.Subtitle;
+import org.fordes.subtitles.view.utils.SubtitleUtil;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -36,26 +36,31 @@ public class MainEditor extends DelayInitController {
     private HBox toolbarPanel;
     @FXML
     private RowConstraints toolbarRow;
-    @FXML
-    private ToggleGroup editToolGroup;
-    @FXML
-    private TextFlow textFlow;
 
-    private File subtitleFile;
+    private Subtitle subtitle;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ApplicationInfo.stage.addEventHandler(FileOpenEvent.FILE_OPEN_EVENT, fileOpenEvent -> {
-            if (!fileOpenEvent.getType().media) {
-                subtitleFile = fileOpenEvent.getOpenFile();
+            if (fileOpenEvent.getRecord().getFormat().subtitle) {
+                subtitle = (Subtitle) fileOpenEvent.getRecord();
+                log.debug("主编辑器 => {}", subtitle.getFile().getPath());
+                try {
+                    //TODO 需要loading
+                    SubtitleUtil.readSubtitleFile(subtitle);
+                }catch (Exception e) {
+                    ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("读取失败！","字幕文件已经损坏"));
+                }
                 root.setVisible(true);
-                log.debug("主编辑器 => {}", fileOpenEvent.getOpenFile().getPath());
             }
         });
 
         //载入设置
         root.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
-            editor.setFont(new Font(ApplicationInfo.config.getFontFace(), ApplicationInfo.config.getFontSize()));
+            if (t1) {
+                editor.setFont(new Font(ApplicationInfo.config.getFontFace(), ApplicationInfo.config.getFontSize()));
+                editor.setText(SubtitleUtil.subtitleDisplay(subtitle.getTimedTextFile(), false));
+            }
         });
 
         super.initialize(url, resourceBundle);
@@ -65,12 +70,14 @@ public class MainEditor extends DelayInitController {
     public void delayInit() {
 
         //工具栏按钮，点击按钮发送编辑工具事件 唤起编辑工具
-        editToolGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
-            if (t1 == null) {
-                ApplicationInfo.stage.fireEvent(new EditToolEvent(editor, null));
-            } else if (t1.getUserData() != null) {
-                EditToolEventEnum type = EditToolEventEnum.valueOf((String) t1.getUserData());
-                ApplicationInfo.stage.fireEvent(new EditToolEvent(editor, type));
+        toolbarPanel.getChildren().forEach(node -> {
+            if (node.getUserData() != null) {
+                node.setOnMouseClicked(event -> {
+                    if (node.getUserData() != null) {
+                        EditToolEventEnum type = EditToolEventEnum.valueOf((String) node.getUserData());
+                        ApplicationInfo.stage.fireEvent(new EditToolEvent(editor, subtitle, type));
+                    }
+                });
             }
         });
 
@@ -80,11 +87,11 @@ public class MainEditor extends DelayInitController {
 
         KeyCodeCombination ctrlF = new KeyCodeCombination(KeyCode.F, KeyCodeCombination.CONTROL_DOWN);
         ApplicationInfo.stage.getScene().getAccelerators().put(ctrlF, ()
-                -> ApplicationInfo.stage.fireEvent(new EditToolEvent(null, EditToolEventEnum.SEARCH)));
+                -> ApplicationInfo.stage.fireEvent(new EditToolEvent(editor, subtitle, EditToolEventEnum.SEARCH)));
 
         KeyCodeCombination ctrlR = new KeyCodeCombination(KeyCode.R, KeyCodeCombination.CONTROL_DOWN);
         ApplicationInfo.stage.getScene().getAccelerators().put(ctrlR, ()
-                -> ApplicationInfo.stage.fireEvent(new EditToolEvent(null, EditToolEventEnum.REPLACE)));
+                -> ApplicationInfo.stage.fireEvent(new EditToolEvent(editor, subtitle, EditToolEventEnum.REPLACE)));
 
         super.delayInit();
     }

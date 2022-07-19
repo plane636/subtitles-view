@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
-<GridPane xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1"
-          maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="100.0" prefWidth="300.0"
-          fx:id="root" fx:controller="org.fordes.subtitles.view.controller.EditTool" style="-fx-background-color: red">
+<?import org.fordes.subtitles.view.enums.*?>
+<?import java.lang.*?>
+<GridPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="100.0" prefWidth="300.0"
+          styleClass="transparent" stylesheets="/css/edit-tool.css" xmlns="http://javafx.com/javafx/11"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.fordes.subtitles.view.controller.EditTool">
     <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
@@ -14,13 +16,364 @@
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
     </columnConstraints>
-    <Label fx:id="testLab" text="To be continue" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
-           GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-        <font>
-            <Font size="20.0"/>
-        </font>
-    </Label>
+    <!--查找面板-->
+    <GridPane maxHeight="50" maxWidth="350" prefHeight="50.0" prefWidth="350.0" styleClass="toolPanel" userData="SEARCH"
+              visible="false" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+        <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" maxWidth="200.0" minWidth="200.0" prefWidth="200.0"/>
+            <ColumnConstraints hgrow="NEVER" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+            <ColumnConstraints hgrow="NEVER" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+            <ColumnConstraints hgrow="NEVER" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <TextField prefHeight="50" prefWidth="200" promptText="查找">
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="left-item"/>
+            </styleClass>
+        </TextField>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="1">
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+            </styleClass>
+            <FontIcon fx:constant="EDIT_BAR_SEARCH"/>
+            <tooltip>
+                <Tooltip text="查找下一个"/>
+            </tooltip>
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="3" onAction="#onClose">
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+            </styleClass>
+            <tooltip>
+                <Tooltip text="关闭"/>
+            </tooltip>
+            <FontIcon fx:constant="SCENE_CLOSE"/>
+        </Button>
+        <MenuBar maxHeight="-Infinity" maxWidth="-Infinity" minHeight="50.0" minWidth="50.0"
+                 prefHeight="50.0" prefWidth="50.0" GridPane.columnIndex="2">
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="right-item"/>
+            </styleClass>
+            <Menu mnemonicParsing="false">
+                <styleClass>
+                    <String fx:value="no-border"/>
+                    <String fx:value="transparent"/>
+                </styleClass>
+                <graphic>
+                    <Label styleClass="font-icon">
+                        <FontIcon fx:constant="EDIT_BAR_OPTION"/>
+                    </Label>
+                </graphic>
+                <CheckMenuItem mnemonicParsing="false" selected="true" text="区分大小写"/>
+                <CheckMenuItem mnemonicParsing="false" text="正则表达式"/>
+            </Menu>
+        </MenuBar>
+    </GridPane>
+    <!--替换面板-->
+    <GridPane maxHeight="100" maxWidth="350" prefHeight="100.0" prefWidth="350.0" styleClass="toolPanel"
+              userData="REPLACE" visible="false" GridPane.rowSpan="2" GridPane.halignment="RIGHT"
+              GridPane.valignment="TOP">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="200.0" prefWidth="200.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <TextField prefHeight="50" prefWidth="200" promptText="查找">
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="left-top-item"/>
+            </styleClass>
+        </TextField>
+        <TextField prefHeight="50" prefWidth="200" promptText="替换" GridPane.columnSpan="2" GridPane.rowIndex="1">
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="left-bottom-item"/>
+            </styleClass>
+        </TextField>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="1">
+            <tooltip>
+                <Tooltip text="查找下一个"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+            </styleClass>
+            <FontIcon fx:constant="EDIT_BAR_SEARCH"/>
+        </Button>
+        <MenuBar maxHeight="-Infinity" maxWidth="-Infinity" minHeight="50.0" minWidth="50.0"
+                 prefHeight="50.0" prefWidth="50.0" GridPane.columnIndex="2">
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+            </styleClass>
+            <Menu mnemonicParsing="false">
+                <styleClass>
+                    <String fx:value="no-border"/>
+                    <String fx:value="transparent"/>
+                </styleClass>
+                <graphic>
+                    <Label styleClass="font-icon">
+                        <FontIcon fx:constant="EDIT_BAR_OPTION"/>
+                    </Label>
+                </graphic>
+                <CheckMenuItem mnemonicParsing="false" selected="true" text="区分大小写"/>
+                <CheckMenuItem mnemonicParsing="false" text="正则表达式"/>
+            </Menu>
+        </MenuBar>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="3" onAction="#onClose">
+            <tooltip>
+                <Tooltip text="关闭"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+                <String fx:value="right-top-item"/>
+            </styleClass>
+            <FontIcon fx:constant="SCENE_CLOSE"/>
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <tooltip>
+                <Tooltip text="替换"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+            </styleClass>
+            <FontIcon fx:constant="EDIT_BAR_REPLACE_ITEM"/>
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="3" GridPane.rowIndex="1">
+            <tooltip>
+                <Tooltip text="全部替换"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+                <String fx:value="right-bottom-item"/>
+            </styleClass>
+            <FontIcon fx:constant="EDIT_BAR_REPLACE_ALL"/>
+        </Button>
+    </GridPane>
+    <!--跳转面板-->
+    <GridPane maxHeight="50" maxWidth="250" prefHeight="50.0" prefWidth="250.0" styleClass="toolPanel" userData="JUMP"
+              visible="false" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="150" minWidth="150" prefWidth="150"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <TextField prefHeight="50" prefWidth="150" promptText="跳转至">
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="left-item"/>
+            </styleClass>
+        </TextField>
+        <Button id="edit_tool_jump_btn" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="1">
+            <tooltip>
+                <Tooltip text="跳转至(指定行)"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+            </styleClass>
+            <FontIcon fx:constant="EDIT_BAR_REPLACE_ITEM"/>
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="2" onAction="#onClose">
+            <tooltip>
+                <Tooltip text="关闭"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+                <String fx:value="right-item"/>
+            </styleClass>
+            <FontIcon fx:constant="SCENE_CLOSE"/>
+        </Button>
+    </GridPane>
+    <!--编码面板-->
+    <GridPane maxHeight="50" maxWidth="250" prefHeight="50.0" prefWidth="250.0" styleClass="toolPanel" userData="CODE"
+              visible="false" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="150" minWidth="150" prefWidth="150"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <Button onAction="#applyCode" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="1">
+            <tooltip>
+                <Tooltip text="确认以生效"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+            </styleClass>
+            <FontIcon fx:constant="EDIT_BAR_REPLACE_ITEM"/>
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="2" onAction="#onClose">
+            <tooltip>
+                <Tooltip text="关闭"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+                <String fx:value="right-item"/>
+            </styleClass>
+            <FontIcon fx:constant="SCENE_CLOSE"/>
+        </Button>
+        <ChoiceBox fx:id="code_choice" prefHeight="50" prefWidth="150" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <tooltip>
+                <Tooltip text="如无乱码请勿更改"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="left-item"/>
+            </styleClass>
+        </ChoiceBox>
+    </GridPane>
+    <!--样式面板-->
+    <GridPane maxHeight="50" maxWidth="340" prefHeight="50.0" prefWidth="340.0" styleClass="toolPanel" userData="FONT"
+              visible="false" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="160.0" minWidth="160.0" prefWidth="160.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.0" minWidth="80.0" prefWidth="80.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints/>
+        </rowConstraints>
+        <ChoiceBox fx:id="font_family" prefHeight="50" prefWidth="160">
+            <tooltip>
+                <Tooltip text="更改字体"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="left-item"/>
+            </styleClass>
+        </ChoiceBox>
+        <JFXComboBox fx:id="font_size" editable="true" prefHeight="50" prefWidth="80" GridPane.columnIndex="1">
+            <tooltip>
+                <Tooltip text="字体显示大小"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+            </styleClass>
+        </JFXComboBox>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="3" onAction="#onClose">
+            <tooltip>
+                <Tooltip text="关闭"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+                <String fx:value="right-item"/>
+            </styleClass>
+            <FontIcon fx:constant="SCENE_CLOSE"/>
+        </Button>
+        <Button onAction="#applyFont" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="2">
+            <tooltip>
+                <Tooltip text="恢复默认"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+            </styleClass>
+            <FontIcon fx:constant="EDIT_BAR_REF"/>
+        </Button>
+    </GridPane>
+    <!--时间轴面板-->
+    <GridPane maxHeight="50" maxWidth="340" prefHeight="50.0" prefWidth="340.0" styleClass="toolPanel" userData="TIMELINE"
+              visible="false" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="160.0" minWidth="160.0" prefWidth="160.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.0" minWidth="80.0" prefWidth="80.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints/>
+        </rowConstraints>
+        <TextField fx:id="timeline_input" prefHeight="50" prefWidth="160" promptText="时间或偏移量(秒)">
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="left-item"/>
+            </styleClass>
+            <tooltip>
+                <Tooltip text="更改时间轴起点，可输入：xx:xx:xx:xx格式；同时支持+90、-100形式，单位为秒"/>
+            </tooltip>
+        </TextField>
+        <ChoiceBox fx:id="timeline_option" prefHeight="50" prefWidth="80" GridPane.columnIndex="1">
+            <tooltip>
+                <Tooltip text="处理范围"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+            </styleClass>
+        </ChoiceBox>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="3" onAction="#onClose">
+            <tooltip>
+                <Tooltip text="关闭"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+                <String fx:value="right-item"/>
+            </styleClass>
+            <FontIcon fx:constant="SCENE_CLOSE"/>
+        </Button>
+        <Button onAction="#applyTimeline" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="2">
+            <tooltip>
+                <Tooltip text="执行"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+            </styleClass>
+            <FontIcon fx:constant="EDIT_BAR_REPLACE_ITEM"/>
+        </Button>
+    </GridPane>
     <GridPane.margin>
-        <Insets top="10.0" right="10.0"/>
+        <Insets right="30.0" top="30.0"/>
     </GridPane.margin>
 </GridPane>

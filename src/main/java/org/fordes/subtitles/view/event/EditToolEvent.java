@@ -5,6 +5,7 @@ import javafx.event.EventType;
 import javafx.scene.control.TextArea;
 import lombok.Getter;
 import org.fordes.subtitles.view.enums.EditToolEventEnum;
+import org.fordes.subtitles.view.model.DTO.Subtitle;
 
 
 /**
@@ -20,11 +21,15 @@ public class EditToolEvent extends Event {
     private final TextArea source;
 
     @Getter
+    private final Subtitle subtitle;
+
+    @Getter
     private final EditToolEventEnum type;
 
-    public EditToolEvent(TextArea source, EditToolEventEnum type) {
+    public EditToolEvent(TextArea source, Subtitle subtitle, EditToolEventEnum type) {
         super(EVENT_TYPE);
         this.source = source;
+        this.subtitle = subtitle;
         this.type = type;
     }
 

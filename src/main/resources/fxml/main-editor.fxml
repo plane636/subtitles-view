@@ -9,7 +9,7 @@
 <GridPane fx:id="root" prefHeight="1000.0" prefWidth="800.0" stylesheets="/css/main-editor.css"
           GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS"
           xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="org.fordes.subtitles.view.controller.MainEditor">
+          fx:controller="org.fordes.subtitles.view.controller.MainEditor" visible="false">
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
     </columnConstraints>
@@ -20,14 +20,11 @@
     </rowConstraints>
     <HBox fx:id="toolbarPanel" maxHeight="50.0" prefHeight="50.0" prefWidth="200.0" styleClass="bar"
           GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-        <ToggleButton mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" userData="SEARCH"
-                      HBox.hgrow="NEVER">
+        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" userData="SEARCH"
+                HBox.hgrow="NEVER">
             <HBox.margin>
                 <Insets left="30.0"/>
             </HBox.margin>
-            <toggleGroup>
-                <ToggleGroup fx:id="editToolGroup"/>
-            </toggleGroup>
             <FontIcon fx:constant="EDIT_BAR_SEARCH"/>
             <tooltip>
                 <Tooltip text="查找关键字"/>
@@ -38,9 +35,9 @@
                 <String fx:value="font-icon"/>
                 <String fx:value="item"/>
             </styleClass>
-        </ToggleButton>
-        <ToggleButton mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" toggleGroup="$editToolGroup"
-                      userData="REPLACE" HBox.hgrow="NEVER">
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0"
+                userData="REPLACE" HBox.hgrow="NEVER">
             <FontIcon fx:constant="EDIT_BAR_REPLACE"/>
             <tooltip>
                 <Tooltip text="替换关键字"/>
@@ -51,9 +48,9 @@
                 <String fx:value="font-icon"/>
                 <String fx:value="item"/>
             </styleClass>
-        </ToggleButton>
-        <ToggleButton mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" toggleGroup="$editToolGroup"
-                      userData="JUMP" HBox.hgrow="NEVER">
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0"
+                userData="JUMP" HBox.hgrow="NEVER">
             <FontIcon fx:constant="EDIT_BAR_JUMP"/>
             <styleClass>
                 <String fx:value="no-border"/>
@@ -64,9 +61,9 @@
             <tooltip>
                 <Tooltip text="跳转至指定行"/>
             </tooltip>
-        </ToggleButton>
-        <ToggleButton mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" toggleGroup="$editToolGroup"
-                      userData="CODE" HBox.hgrow="NEVER">
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0"
+                userData="CODE" HBox.hgrow="NEVER">
             <FontIcon fx:constant="EDIT_BAR_CODE"/>
             <styleClass>
                 <String fx:value="no-border"/>
@@ -77,9 +74,9 @@
             <tooltip>
                 <Tooltip text="更改文件读写编码（适用于显示乱码）"/>
             </tooltip>
-        </ToggleButton>
-        <ToggleButton mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" toggleGroup="$editToolGroup"
-                      userData="FONT" HBox.hgrow="NEVER">
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0"
+                userData="FONT" HBox.hgrow="NEVER">
             <FontIcon fx:constant="EDIT_BAR_FONT"/>
             <styleClass>
                 <String fx:value="no-border"/>
@@ -90,9 +87,9 @@
             <tooltip>
                 <Tooltip text="更改编辑器字体样式和大小"/>
             </tooltip>
-        </ToggleButton>
-        <ToggleButton mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" toggleGroup="$editToolGroup"
-                      userData="TIMELINE" HBox.hgrow="NEVER">
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0"
+                userData="TIMELINE" HBox.hgrow="NEVER">
             <FontIcon fx:constant="EDIT_BAR_TIMELINE"/>
             <styleClass>
                 <String fx:value="no-border"/>
@@ -103,9 +100,9 @@
             <tooltip>
                 <Tooltip text="新建时间轴行"/>
             </tooltip>
-        </ToggleButton>
-        <ToggleButton mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" toggleGroup="$editToolGroup"
-                      userData="REF" HBox.hgrow="NEVER">
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0"
+                userData="REF" HBox.hgrow="NEVER">
             <FontIcon fx:constant="EDIT_BAR_REF"/>
             <styleClass>
                 <String fx:value="no-border"/>
@@ -116,8 +113,8 @@
             <tooltip>
                 <Tooltip text="刷新"/>
             </tooltip>
-        </ToggleButton>
-        <JFXButton mnemonicParsing="false" onAction="#hideToolbar" prefHeight="50.0" prefWidth="50.0"
+        </Button>
+        <Button mnemonicParsing="false" onAction="#hideToolbar" prefHeight="50.0" prefWidth="50.0"
                    HBox.hgrow="NEVER">
             <FontIcon fx:constant="EDIT_BAR_HIDE"/>
             <styleClass>
@@ -129,7 +126,7 @@
             <tooltip>
                 <Tooltip text="收起工具栏"/>
             </tooltip>
-        </JFXButton>
+        </Button>
     </HBox>
     <Separator prefWidth="10.0" GridPane.hgrow="ALWAYS" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
         <GridPane.margin>
@@ -143,7 +140,6 @@
         </GridPane.margin>
         <styleClass>
             <String fx:value="no-border"/>
-            <String fx:value="transparent"/>
         </styleClass>
     </TextArea>
     <fx:include source="edit-tool.fxml" visible="false" GridPane.rowIndex="1"

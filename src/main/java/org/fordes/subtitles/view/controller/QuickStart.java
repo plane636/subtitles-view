@@ -48,7 +48,7 @@ public class QuickStart {
 
         //读取文件信息
         if (FileUtil.exist(file) && FileEnum.isSupport(FileUtil.getSuffix(file))) {
-            log.info("读取到文件");
+            ApplicationInfo.stage.fireEvent(new FileOpenEvent(dragFile));
         } else {
             root.getStyleClass().clear();
             clues.setText(TIPS_DEFAULT);

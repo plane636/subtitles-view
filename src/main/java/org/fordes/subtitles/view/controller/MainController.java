@@ -95,7 +95,7 @@ public class MainController implements Initializable {
 
 
         ApplicationInfo.stage.addEventHandler(FileOpenEvent.FILE_OPEN_EVENT, fileOpenEvent -> {
-            if (fileOpenEvent.getType().media) {
+            if (fileOpenEvent.getRecord().getFormat().media) {
                 sidebarAfterController.getItemGroup().selectToggle(null);
                 sidebarBeforeController.getItemGroup().selectToggle(null);
             }else {

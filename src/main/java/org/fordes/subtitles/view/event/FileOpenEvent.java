@@ -4,9 +4,12 @@ import cn.hutool.core.io.FileUtil;
 import javafx.event.Event;
 import javafx.event.EventType;
 import lombok.Getter;
-import org.fordes.subtitles.view.enums.FileEnum;
+import org.fordes.subtitles.view.model.ApplicationInfo;
+import org.fordes.subtitles.view.model.PO.FileRecord;
+import org.fordes.subtitles.view.utils.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author fordes on 2022/4/8
@@ -16,20 +19,23 @@ public class FileOpenEvent extends Event {
     public static final EventType<FileOpenEvent> FILE_OPEN_EVENT = new EventType(ANY, "fileOpenEvent");
 
     @Getter
-    private final File openFile;
-
-    @Getter
-    private final FileEnum type;
+    private FileRecord record;
 
     public FileOpenEvent(File openFile) {
         super(FILE_OPEN_EVENT);
-        this.openFile = openFile;
-        this.type = FileEnum.of(FileUtil.getSuffix(openFile));
+        try {
+            this.record = FileUtils.readFileInfo(openFile);
+        }catch (IOException e) {
+            ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("出错了","打开文件失败！"));
+        }
     }
 
     public FileOpenEvent(String filePath) {
         super(FILE_OPEN_EVENT);
-        this.openFile = FileUtil.file(filePath);
-        this.type = FileEnum.of(FileUtil.getSuffix(filePath));
+        try {
+            this.record = FileUtils.readFileInfo(FileUtil.file(filePath));
+        }catch (IOException e) {
+            ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("出错了","打开文件失败！"));
+        }
     }
 }

@@ -3,6 +3,7 @@ package org.fordes.subtitles.view.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.event.FileOpenEvent;
 import org.fordes.subtitles.view.model.ApplicationInfo;
+import org.fordes.subtitles.view.model.DTO.Video;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -17,10 +18,15 @@ import java.util.ResourceBundle;
 @Component
 public class VoiceConvert extends DelayInitController {
 
+    private Video video;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ApplicationInfo.stage.addEventHandler(FileOpenEvent.FILE_OPEN_EVENT, fileOpenEvent -> {
-            root.setVisible(fileOpenEvent.getType().media);
+            if (fileOpenEvent.getRecord().getFormat().media) {
+                video = (Video) fileOpenEvent.getRecord();
+                root.setVisible(true);
+            }
         });
         super.initialize(url, resourceBundle);
     }

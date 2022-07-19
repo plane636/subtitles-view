@@ -11,9 +11,14 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.fordes.subtitles.view.constant.CommonConstant;
 import org.fordes.subtitles.view.enums.FileEnum;
+import org.fordes.subtitles.view.model.DTO.Subtitle;
+import org.fordes.subtitles.view.model.DTO.Video;
+import org.fordes.subtitles.view.model.PO.FileRecord;
+import org.fordes.subtitles.view.utils.submerge.utils.EncodeUtils;
 import org.springframework.lang.NonNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -74,5 +79,29 @@ public class FileUtils {
         directoryChooser.setTitle(CommonConstant.TITLE_PATH);
         directoryChooser.setInitialDirectory(FileUtil.file(StrUtil.isNotEmpty(path)? path: CommonConstant.PATH_HOME));
         return directoryChooser;
+    }
+
+    /**
+     * 读取文件信息
+     * @param file 文件
+     * @return 文件信息实例
+     */
+    public static <T> FileRecord readFileInfo(File file) throws IOException {
+        String suffix = FileUtil.extName(file);
+        FileRecord info;
+        FileEnum type = FileEnum.of(FileUtil.getSuffix(file));
+
+        assert type != null;
+        if (type.media) {
+            info =  new Video().setFormat(type);
+        }else {
+            info = new Subtitle().setCharset(EncodeUtils.guessEncoding(file)).setFormat(type);
+        }
+
+        return info.setFile(file)
+                .setFile_name(file.getName())
+                .setPath(file.getPath())
+                .setSize(FileUtil.readableFileSize(file))
+                .setFile_modify_time(FileUtil.lastModifiedTime(file));
     }
 }
