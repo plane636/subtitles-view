@@ -1,14 +1,19 @@
 package org.fordes.subtitles.view.utils.submerge.utils;
 
+import cn.hutool.core.io.CharsetDetector;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.CharsetUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 
+@Slf4j
 public class EncodeUtils {
 
 	/**
@@ -32,7 +37,19 @@ public class EncodeUtils {
 	 * @throws IOException
 	 */
 	public static String guessEncoding(InputStream is) throws IOException {
-		return guessEncoding(IoUtil.readBytes(is));
+		//先使用hutool的charset检测
+		Charset charset = CharsetDetector.detect(is);
+		if (charset != null) {
+			return charset.name();
+		}
+		//使用juniversalchardet检测
+		String code =  guessEncoding(IoUtil.readBytes(is));
+		if (code != null) {
+			return code;
+		}
+		//默认使用UTF-8
+		log.debug("文件编码检测失败，使用默认编码UTF-8");
+		return CharsetUtil.UTF_8;
 	}
 
 	/**
