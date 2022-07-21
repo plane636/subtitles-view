@@ -29,10 +29,6 @@
         <JFXListView fx:id="listView" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
                      GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
         </JFXListView>
-        <JFXSpinner fx:id="loading" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                    minWidth="-Infinity" prefHeight="50.0" prefWidth="50.0" visible="false"
-                    GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER"
-                    GridPane.vgrow="ALWAYS"/>
         <GridPane.margin>
             <Insets bottom="30.0" left="40.0" right="30.0"/>
         </GridPane.margin>

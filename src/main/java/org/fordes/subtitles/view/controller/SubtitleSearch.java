@@ -8,7 +8,6 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXNodesList;
-import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.skins.JFXListViewSkin;
 import com.sun.javafx.scene.control.VirtualScrollBar;
@@ -23,6 +22,7 @@ import javafx.scene.layout.StackPane;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.event.FileOpenEvent;
+import org.fordes.subtitles.view.event.LoadingEvent;
 import org.fordes.subtitles.view.event.ToastChooseEvent;
 import org.fordes.subtitles.view.event.ToastConfirmEvent;
 import org.fordes.subtitles.view.mapper.SearchCasesMapper;
@@ -41,9 +41,6 @@ import javax.annotation.Resource;
 @Slf4j
 @Component
 public class SubtitleSearch extends DelayInitController {
-
-    @FXML
-    private JFXSpinner loading;
 
     @FXML
     private JFXListView<StackPane> listView;
@@ -101,7 +98,8 @@ public class SubtitleSearch extends DelayInitController {
         }
 
         //监听搜索服务运行状态，控制loading
-        SERVICE.runningProperty().addListener((observableValue, aBoolean, t1) -> loading.setVisible(t1));
+        SERVICE.runningProperty().addListener((observableValue, aBoolean, t1)
+                -> ApplicationInfo.stage.fireEvent(new LoadingEvent(t1)));
         //搜索完成，载入新结果
         SERVICE.setOnSucceeded(event -> {
             Result val = SERVICE.getValue();

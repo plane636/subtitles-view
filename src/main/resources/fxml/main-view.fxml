@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import org.fordes.subtitles.view.enums.FontIcon?>
 <?import java.lang.String?>
+<?import com.jfoenix.controls.JFXSpinner?>
 <GridPane fx:id="root" onMouseDragged="#mouseDraggedHandle" onMouseMoved="#mouseMoveHandle"
           onMousePressed="#mousePressedHandle" prefHeight="800.0" prefWidth="1200.0"
           xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
@@ -35,7 +36,8 @@
         <fx:include fx:id="sidebarBottom" source="sidebar-bottom.fxml" GridPane.rowIndex="1"/>
     </GridPane>
 
-    <GridPane fx:id="content" styleClass="content" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+    <GridPane fx:id="content" styleClass="content" GridPane.columnIndex="1" GridPane.halignment="CENTER"
+              GridPane.hgrow="ALWAYS"
               GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
@@ -52,12 +54,17 @@
         <fx:include fx:id="syncEditor" source="sync-editor.fxml" visible="false"/>
         <fx:include fx:id="voiceConvert" source="voice-convert.fxml" visible="false"/>
     </GridPane>
-    <Label fx:id="drawer" styleClass="drawer" onMouseClicked="#onDrawer" GridPane.columnIndex="1" GridPane.halignment="LEFT"
-           GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+    <Label fx:id="drawer" styleClass="drawer" onMouseClicked="#onDrawer" GridPane.columnIndex="1" GridPane.rowIndex="1"
+           GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
         <FontIcon fx:constant="PLACE_THE_LEFT"/>
     </Label>
-
     <fx:include source="toast.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1"
                 GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM"
                 GridPane.hgrow="NEVER" GridPane.vgrow="NEVER"/>
+    <!--全局loading-->
+    <JFXSpinner fx:id="loading" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                minWidth="-Infinity" prefHeight="50.0" prefWidth="50.0" visible="false"
+                GridPane.columnIndex="1" GridPane.rowIndex="1"
+                GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER"
+                GridPane.vgrow="ALWAYS"/>
 </GridPane>

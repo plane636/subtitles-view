@@ -1,5 +1,6 @@
 package org.fordes.subtitles.view.controller;
 
+import com.jfoenix.controls.JFXSpinner;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
@@ -13,6 +14,7 @@ import org.fordes.subtitles.view.constant.CommonConstant;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.enums.FontIcon;
 import org.fordes.subtitles.view.event.FileOpenEvent;
+import org.fordes.subtitles.view.event.LoadingEvent;
 import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,9 @@ import java.util.ResourceBundle;
 @Slf4j
 @Component
 public class MainController implements Initializable {
+
+    @FXML
+    private JFXSpinner loading;
 
     @FXML
     private ColumnConstraints sidebarColumn;
@@ -103,6 +108,9 @@ public class MainController implements Initializable {
                 sidebarAfter.setVisible(true);
             }
         });
+
+        ApplicationInfo.stage.addEventHandler(LoadingEvent.EVENT_TYPE, loadingEvent
+                -> loading.setVisible(loadingEvent.isAlive()));
     }
 
     @FXML
