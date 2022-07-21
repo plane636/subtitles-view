@@ -1,11 +1,12 @@
 package org.fordes.subtitles.view.utils.submerge.subtitle.config;
 
 
+import lombok.Data;
 import org.fordes.subtitles.view.utils.submerge.constant.FontName;
 
 import java.io.Serializable;
 
-
+@Data
 public class Font implements Serializable {
 
 	/**
@@ -37,47 +38,5 @@ public class Font implements Serializable {
 	 * Outline width
 	 */
 	private int outlineWidth = 2;
-
-	// ===================== getter and setter start =====================
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getSize() {
-		return this.size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-
-	public String getColor() {
-		return this.color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-	public String getOutlineColor() {
-		return this.outlineColor;
-	}
-
-	public void setOutlineColor(String outlineColor) {
-		this.outlineColor = outlineColor;
-	}
-
-	public int getOutlineWidth() {
-		return this.outlineWidth;
-	}
-
-	public void setOutlineWidth(int outlineWidth) {
-		this.outlineWidth = outlineWidth;
-	}
 
 }

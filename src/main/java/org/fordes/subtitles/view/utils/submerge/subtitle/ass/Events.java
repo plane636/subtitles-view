@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.fordes.subtitles.view.utils.submerge.subtitle.common.SubtitleLine;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Events extends SubtitleLine<ASSTime> {
+public class Events extends SubtitleLine<ASSTime> implements Serializable{
 
 	/**
 	 * Serial

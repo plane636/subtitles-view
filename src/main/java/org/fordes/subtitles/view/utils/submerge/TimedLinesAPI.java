@@ -26,20 +26,16 @@ public class TimedLinesAPI {
 
 		// Binary search will find the first "random" match
 		int iAnyMatch = Collections.binarySearch(lines, new SubtitleLine<>(new SubtitleTime(time, null)),
-				new Comparator<TimedLine>() {
+				(compare, base) -> {
 
-					@Override
-					public int compare(TimedLine compare, TimedLine base) {
+					LocalTime search = base.getTime().getStart();
+					LocalTime start = compare.getTime().getStart();
 
-						LocalTime search = base.getTime().getStart();
-						LocalTime start = compare.getTime().getStart();
-
-						if (getDelay(search, start) < tolerance) {
-							return 0;
-						}
-
-						return start.compareTo(search);
+					if (getDelay(search, start) < tolerance) {
+						return 0;
 					}
+
+					return start.compareTo(search);
 				});
 
 		if (iAnyMatch < 0) {
@@ -69,9 +65,7 @@ public class TimedLinesAPI {
 		}
 
 		// return the closest match
-		return matches.stream()
-				.sorted((m1, m2) -> getDelay(m1.getTime().getStart(), time) - getDelay(m2.getTime().getStart(), time))
-				.findFirst().get();
+		return matches.stream().min((m1, m2) -> getDelay(m1.getTime().getStart(), time) - getDelay(m2.getTime().getStart(), time)).get();
 	}
 
 	/**
@@ -107,22 +101,18 @@ public class TimedLinesAPI {
 	public TimedLine intersected(List<? extends TimedLine> lines, LocalTime time) {
 
 		int index = Collections.binarySearch(lines, new SubtitleLine<>(new SubtitleTime(time, null)),
-				new Comparator<TimedLine>() {
+				(compare, base) -> {
 
-					@Override
-					public int compare(TimedLine compare, TimedLine base) {
+					LocalTime search = base.getTime().getStart();
+					LocalTime start = compare.getTime().getStart();
+					LocalTime end = compare.getTime().getEnd();
 
-						LocalTime search = base.getTime().getStart();
-						LocalTime start = compare.getTime().getStart();
-						LocalTime end = compare.getTime().getEnd();
-
-						if ((start.isBefore(search) || start.equals(search))
-								&& (end.isAfter(search) || start.equals(search))) {
-							return 0;
-						}
-
-						return start.compareTo(search);
+					if ((start.isBefore(search) || start.equals(search))
+							&& (end.isAfter(search) || start.equals(search))) {
+						return 0;
 					}
+
+					return start.compareTo(search);
 				});
 
 		return index < 0 ? null : lines.get(index);
@@ -139,23 +129,19 @@ public class TimedLinesAPI {
 	public TimedLine intersected(List<? extends TimedLine> lines, LocalTime start, LocalTime end) {
 
 		int index = Collections.binarySearch(lines, new SubtitleLine<>(new SubtitleTime(start, end)),
-				new Comparator<TimedLine>() {
+				(compare, base) -> {
 
-					@Override
-					public int compare(TimedLine compare, TimedLine base) {
+					LocalTime searchStart = base.getTime().getStart();
+					LocalTime searchEnd = base.getTime().getEnd();
 
-						LocalTime searchStart = base.getTime().getStart();
-						LocalTime searchEnd = base.getTime().getEnd();
+					LocalTime start1 = compare.getTime().getStart();
+					LocalTime end1 = compare.getTime().getEnd();
 
-						LocalTime start = compare.getTime().getStart();
-						LocalTime end = compare.getTime().getEnd();
-
-						if (searchStart.isBefore(start) && searchEnd.isAfter(end)) {
-							return 0;
-						}
-
-						return compare.compareTo(base);
+					if (searchStart.isBefore(start1) && searchEnd.isAfter(end1)) {
+						return 0;
 					}
+
+					return compare.compareTo(base);
 				});
 
 		return index < 0 ? null : lines.get(index);

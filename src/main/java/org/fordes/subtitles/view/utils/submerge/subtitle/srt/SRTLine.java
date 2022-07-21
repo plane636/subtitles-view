@@ -1,5 +1,7 @@
 package org.fordes.subtitles.view.utils.submerge.subtitle.srt;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.fordes.subtitles.view.utils.submerge.subtitle.common.SubtitleLine;
 
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.List;
  * Class <SRTLine> represents an abstract line of SRT, meaning text, timecodes and index
  *
  */
+@Data
+@EqualsAndHashCode(callSuper = false)
 public class SRTLine extends SubtitleLine<SRTTime> {
 
 	private static final long serialVersionUID = -1220593401999895814L;
@@ -34,13 +38,4 @@ public class SRTLine extends SubtitleLine<SRTTime> {
 		return sb.append(NEW_LINE).toString();
 	}
 
-	// ===================== getter and setter start =====================
-
-	public int getId() {
-		return this.id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 }

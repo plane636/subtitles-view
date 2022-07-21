@@ -6,6 +6,7 @@ import org.fordes.subtitles.view.utils.submerge.subtitle.common.TimedTextFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +17,7 @@ import java.util.TreeSet;
  *
  */
 @Data
-public class ASSSub implements TimedTextFile {
+public class ASSSub implements TimedTextFile, Serializable {
 
 	/**
 	 * Serial
@@ -93,7 +94,6 @@ public class ASSSub implements TimedTextFile {
 		sb.append(EVENTS).append(NEW_LINE);
 		sb.append(FORMAT).append(SEP).append(Events.FORMAT_STRING).append(NEW_LINE);
 		this.events.forEach(e -> sb.append(e.toString()).append(NEW_LINE));
-
 		return sb.toString();
 	}
 

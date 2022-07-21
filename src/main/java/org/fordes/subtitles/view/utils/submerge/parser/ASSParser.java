@@ -29,14 +29,12 @@ public class ASSParser extends BaseParser<ASSSub> {
     protected void parse(BufferedReader br, ASSSub sub) throws IOException, InvalidAssSubException {
 
         String line = readFirstTextLine(br);
-
-        if (line != null && !("[script info]").equalsIgnoreCase(line.trim())) {
+        if (line != null && !StrUtil.equalsAnyIgnoreCase("[script info]", StrUtil.trim(line))) {
             throw new InvalidAssSubException("The line that says “[Script Info]” must be the first line in the script.");
         }
 
         // [Script Info]
         sub.setScriptInfo(parseScriptInfo(br));
-
         while ((line = readFirstTextLine(br)) != null) {
             if (line.matches("(?i:^\\[v.*styles\\+?]$)")) {
                 // [V4+ Styles]
@@ -79,24 +77,18 @@ public class ASSParser extends BaseParser<ASSSub> {
         Set<Events> events = new TreeSet<>();
         String line = readFirstTextLine(br);
 
-        while (line != null && !line.startsWith("[")) {
-
-            if (line.startsWith(Events.DIALOGUE) && !line.startsWith(COMMENTS_MARK)) {
+        while (line != null && !StrUtil.startWith(line, StrUtil.C_BRACKET_START)) {
+            if (StrUtil.startWith(line, Events.DIALOGUE)) {
                 String info = findInfo(line, Events.DIALOGUE);
-
                 String[] dialogLine = StrUtil.splitToArray(info, Events.SEP);
                 //StringUtils.splitByWholeSeparatorPreserveAllTokens(info, Events.SEP);
 
-
-                // The last field will always be the Text field, so that it can contain
-                // commas.
                 int lengthDialog = dialogLine.length;
                 int lengthFormat = eventsFormat.length;
 
                 if (lengthDialog < lengthFormat) {
                     throw new InvalidAssSubException("Incorrect dialog line : " + info);
                 }
-
                 if (lengthDialog > lengthFormat) {
                     // The text field contains commas
                     StringJoiner joiner = new StringJoiner(Events.SEP);
@@ -106,7 +98,6 @@ public class ASSParser extends BaseParser<ASSSub> {
                     dialogLine[lengthFormat - 1] = joiner.toString();
                     dialogLine = Arrays.copyOfRange(dialogLine, 0, lengthFormat);
                 }
-
                 events.add(parseDialog(eventsFormat, dialogLine));
             }
 
@@ -115,7 +106,6 @@ public class ASSParser extends BaseParser<ASSSub> {
         }
 
         reset(br, line);
-
         return events;
     }
 
@@ -141,21 +131,30 @@ public class ASSParser extends BaseParser<ASSSub> {
         List<V4Style> styles = new ArrayList<>();
         String line = readFirstTextLine(br);
         int index = 1;
-        while (line != null && !line.startsWith("[")) {
+        while (line != null && !StrUtil.startWith(line, StrUtil.BRACKET_START)) {
             if (line.startsWith(V4Style.STYLE) && !line.startsWith(COMMENTS_MARK)) {
-                String[] textLine = line.split(":");
+                String[] textLine = line.split(StrUtil.COLON);
                 if (textLine.length > 1) {
                     String[] styleLine = textLine[1].split(V4Style.SEP);
                     styles.add(parseV4Style(styleFormat, styleLine, index));
                     index++;
                 }
             }
-
             line = markAndRead(br);
         }
 
-        reset(br, line);
+        while (line != null && !StrUtil.startWith(line, StrUtil.BRACKET_START)) {
+            if (StrUtil.startWith(line, V4Style.STYLE)) {
+                List<String> textLine = StrUtil.split(line, StrUtil.COLON);
+                if (!textLine.isEmpty()) {
+                    String[] styleLine = StrUtil.splitToArray(textLine.get(1), V4Style.SEP);
+                    styles.add(parseV4Style(styleFormat, styleLine, index));
+                    index++;
+                }
+            }
+        }
 
+        reset(br, line);
         return styles;
     }
 
@@ -190,16 +189,15 @@ public class ASSParser extends BaseParser<ASSSub> {
                     default:
                         String error = callProperty(events, property, value);
                         if (error != null) {
-                            throw new InvalidAssSubException("Invalid property (" + property + ") " + value);
+                            throw new InvalidAssSubException(StrUtil.format("Invalid property ({}) {}", property, value));
                         }
                         break;
                 }
             } catch (DateTimeException e) {
-                throw new InvalidAssSubException("Invalid time for property " + property + " : " + value);
+                throw new InvalidAssSubException(StrUtil.format("Invalid property ({}) {}", property, value));
             }
 
         }
-
         return events;
     }
 
@@ -226,8 +224,7 @@ public class ASSParser extends BaseParser<ASSSub> {
             String property = StringUtils.uncapitalize(styleFormat[i].trim());
             String value = styleLine[i].trim();
 
-            if (property.toLowerCase().indexOf("colour") > -1) {
-                // Colors can be number (bgr) or string (&HBBGGRR or &HAABBGGRR)
+            if (StrUtil.containsIgnoreCase(property, "colour")) {
                 try {
                     Integer.parseInt(value);
                 } catch (NumberFormatException e) {
@@ -294,15 +291,13 @@ public class ASSParser extends BaseParser<ASSSub> {
         ScriptInfo scriptInfo = new ScriptInfo();
         String line = readFirstTextLine(br);
 
-        while (line != null && !line.startsWith("[")) {
+        while (line != null && !StrUtil.startWith(line, StrUtil.BRACKET_START)) {
 
             if (!line.startsWith(COMMENTS_MARK)) {
 
                 String[] split = line.split(ScriptInfo.SEP);
                 if (split.length > 1) {
-                    String property = StrUtil.cleanBlank(split[0]);
-                    //StringUtils.deleteWhitespace(split[0]);
-                    property = StringUtils.uncapitalize(property);
+                    String property = StrUtil.lowerFirst(StrUtil.cleanBlank(split[0]));
 
                     StringJoiner joiner = new StringJoiner(ScriptInfo.SEP);
                     for (int i = 1; i < split.length; i++) {
@@ -315,16 +310,12 @@ public class ASSParser extends BaseParser<ASSSub> {
                     if (error != null) {
                         throw new InvalidAssSubException("Script info : " + error);
                     }
-
                 }
-
             }
-
             line = markAndRead(br);
         }
 
         reset(br, line);
-
         return scriptInfo;
     }
 
@@ -382,11 +373,10 @@ public class ASSParser extends BaseParser<ASSSub> {
         if (StrUtil.isEmpty(line)) {
             throw new InvalidAssSubException("Missing format definition in " + sectionName + " section");
         }
-        if (!line.trim().startsWith(ASSSub.FORMAT)) {
-            String capitalized = StringUtils.capitalize(sectionName);
-            throw new InvalidAssSubException(capitalized + " definition must start with 'Format' line");
+        if (!StrUtil.startWith(line.trim(), ASSSub.FORMAT)) {
+            throw new InvalidAssSubException(StrUtil.upperFirst(sectionName) + " definition must start with 'Format' line");
         }
-        return findInfo(line, ASSSub.FORMAT).split(V4Style.SEP);
+        return StrUtil.splitToArray(findInfo(line, ASSSub.FORMAT), V4Style.SEP);
     }
 
     /**
@@ -397,13 +387,10 @@ public class ASSParser extends BaseParser<ASSSub> {
      * @return info or null if the info is empty / not found
      */
     private static String findInfo(String line, String search) {
-
-        String info = null;
-        String sep = ":";
-        if (line.trim().toLowerCase().startsWith(search.toLowerCase()) && line.indexOf(sep) > 0) {
-            info = line.substring(line.indexOf(sep) + 1).trim();
+        if (StrUtil.startWithIgnoreCase(line.trim(), search) && line.indexOf(StrUtil.COLON) > 0) {
+            return line.substring(line.indexOf(StrUtil.COLON) + 1).trim();
         }
-        return StrUtil.isEmpty(info) ? null : info;
+        return null;
     }
 
 }

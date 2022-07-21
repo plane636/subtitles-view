@@ -7,22 +7,21 @@ import java.util.List;
 
 /**
  * Simple object that contains a text line with a time
- *
  */
 public interface TimedLine extends Serializable, Comparable<TimedLine>, Comparator<TimedLine> {
 
-	/**
-	 * Get the text lines
-	 * 
-	 * @return textLines
-	 */
-	List<String> getTextLines();
+    /**
+     * Get the text lines
+     *
+     * @return textLines
+     */
+    List<String> getTextLines();
 
-	/**
-	 * Get the timed object
-	 * 
-	 * @return the time
-	 */
-	TimedObject getTime();
+    /**
+     * Get the timed object
+     *
+     * @return the time
+     */
+    TimedObject getTime();
 
 }

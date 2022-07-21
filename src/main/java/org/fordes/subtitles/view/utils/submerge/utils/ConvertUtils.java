@@ -9,11 +9,11 @@ import org.fordes.subtitles.view.utils.submerge.subtitle.common.TimedObject;
 import org.fordes.subtitles.view.utils.submerge.subtitle.config.Font;
 import org.fordes.subtitles.view.utils.submerge.subtitle.config.SimpleSubConfig;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
-public class ConvertionUtils {
+public class ConvertUtils {
 
 	private static final String RGX_XML_TAG = "<[^>]+>";
 	private static final String RGX_ASS_FORMATTING = "\\{[^\\}]*\\}";
@@ -31,11 +31,9 @@ public class ConvertionUtils {
 	 */
 	public static Events createEvent(TimedLine line, String style) {
 
-		List<String> newLine = new ArrayList<>();
+		List<String> newLine = line.getTextLines().stream()
+				.map(ConvertUtils::toASSString).collect(Collectors.toList());
 
-		for (String text : line.getTextLines()) {
-			newLine.add(toASSString(text));
-		}
 		TimedObject timeLine = line.getTime();
 		ASSTime time = new ASSTime(timeLine.getStart(), timeLine.getEnd());
 

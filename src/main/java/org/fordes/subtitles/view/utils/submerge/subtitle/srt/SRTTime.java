@@ -3,15 +3,16 @@ package org.fordes.subtitles.view.utils.submerge.subtitle.srt;
 
 import org.fordes.subtitles.view.utils.submerge.subtitle.common.SubtitleTime;
 
+import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 
 
-public class SRTTime extends SubtitleTime {
+public class SRTTime extends SubtitleTime implements Serializable {
 
-	private static final long serialVersionUID = -5787808223967579723L;
+	private static final long serialVersionUID = -5784108223967579723L;
 
 	public static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(SRTTime.PATTERN);
 	public static final String PATTERN = "HH:mm:ss,SSS";

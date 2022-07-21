@@ -1,6 +1,7 @@
 package org.fordes.subtitles.view.utils.submerge;
 
 
+import cn.hutool.core.util.StrUtil;
 import org.fordes.subtitles.view.utils.submerge.subtitle.ass.ASSSub;
 import org.fordes.subtitles.view.utils.submerge.subtitle.ass.Events;
 import org.fordes.subtitles.view.utils.submerge.subtitle.common.TimedLine;
@@ -10,204 +11,198 @@ import org.fordes.subtitles.view.utils.submerge.subtitle.config.SimpleSubConfig;
 import org.fordes.subtitles.view.utils.submerge.subtitle.srt.SRTLine;
 import org.fordes.subtitles.view.utils.submerge.subtitle.srt.SRTSub;
 import org.fordes.subtitles.view.utils.submerge.subtitle.srt.SRTTime;
-import org.fordes.subtitles.view.utils.submerge.utils.ConvertionUtils;
+import org.fordes.subtitles.view.utils.submerge.utils.ConvertUtils;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Service used to manage subtitles
  */
 public class SubmergeAPI {
 
-	/**
-	 * Change the framerate of a subtitle
-	 * 
-	 * @param timedFile the subtitle
-	 * @param sourceFramerate le source framerate. Ex: 25.000
-	 * @param targetFramerate the target framerate. Ex: 23.976
-	 */
-	public void convertFramerate(TimedTextFile timedFile, double sourceFramerate, double targetFramerate) {
+    /**
+     * Change the framerate of a subtitle
+     *
+     * @param timedFile       the subtitle
+     * @param sourceFramerate le source framerate. Ex: 25.000
+     * @param targetFramerate the target framerate. Ex: 23.976
+     */
+    public void convertFramerate(TimedTextFile timedFile, double sourceFramerate, double targetFramerate) {
 
-		double ratio = sourceFramerate / targetFramerate;
+        double ratio = sourceFramerate / targetFramerate;
+        timedFile.getTimedLines().forEach(timedLine -> {
+            TimedObject time = timedLine.getTime();
+            long s = Math.round(time.getStart().toNanoOfDay() * ratio);
+            long e = Math.round(time.getEnd().toNanoOfDay() * ratio);
 
-		for (TimedLine timedLine : timedFile.getTimedLines()) {
+            time.setStart(LocalTime.ofNanoOfDay(s));
+            time.setEnd(LocalTime.ofNanoOfDay(e));
+        });
+    }
 
-			TimedObject time = timedLine.getTime();
-			long s = Math.round(time.getStart().toNanoOfDay() * ratio);
-			long e = Math.round(time.getEnd().toNanoOfDay() * ratio);
+    /**
+     * TimedTextFile to SRT conversion
+     *
+     * @param timedFile the TimedTextFile
+     * @return the SRTSub object
+     */
+    public SRTSub toSRT(TimedTextFile timedFile) {
 
-			time.setStart(LocalTime.ofNanoOfDay(s));
-			time.setEnd(LocalTime.ofNanoOfDay(e));
-		}
-	}
+        SRTSub srt = new SRTSub();
 
-	/**
-	 * TimedTextFile to SRT conversion
-	 * 
-	 * @param timedFile the TimedTextFile
-	 * @return the SRTSub object
-	 */
-	public SRTSub toSRT(TimedTextFile timedFile) {
+        int i = 0;
+        for (TimedLine timedLine : timedFile.getTimedLines()) {
 
-		SRTSub srt = new SRTSub();
+            int id = ++i;
+            TimedObject time = timedLine.getTime();
+            SRTTime srtTime = new SRTTime(time.getStart(), time.getEnd());
 
-		int i = 0;
-		for (TimedLine timedLine : timedFile.getTimedLines()) {
+            List<String> textLines = timedLine.getTextLines();
+            List<String> newLines = new ArrayList<>();
 
-			int id = ++i;
-			TimedObject time = timedLine.getTime();
-			LocalTime start = time.getStart();
-			LocalTime end = time.getEnd();
-			SRTTime srtTime = new SRTTime(start, end);
+            for (String textLine : textLines) {
+                newLines.add(ConvertUtils.toSRTString(textLine));
+            }
 
-			List<String> textLines = timedLine.getTextLines();
-			List<String> newLines = new ArrayList<>();
+            SRTLine srtLine = new SRTLine(id, srtTime, newLines);
 
-			for (String textLine : textLines) {
-				newLines.add(ConvertionUtils.toSRTString(textLine));
-			}
+            srt.add(srtLine);
+        }
 
-			SRTLine srtLine = new SRTLine(id, srtTime, newLines);
+        return srt;
+    }
 
-			srt.add(srtLine);
-		}
+    /**
+     * SubInput to ASS conversion
+     *
+     * @param config the configuration object
+     * @return the ASSSub object
+     */
+    public ASSSub toASS(SimpleSubConfig config) {
 
-		return srt;
-	}
+        return mergeToAss(config);
+    }
 
-	/**
-	 * SubInput to ASS conversion
-	 * 
-	 * @param config the configuration object
-	 * @return the ASSSub object
-	 */
-	public ASSSub toASS(SimpleSubConfig config) {
+    /**
+     * Merge several subtitles into one ASS
+     *
+     * @param configs : configuration object of the subtitles
+     * @return
+     */
+    public ASSSub mergeToAss(SimpleSubConfig... configs) {
 
-		return mergeToAss(config);
-	}
+        ASSSub ass = new ASSSub();
+        Set<Events> ev = ass.getEvents();
 
-	/**
-	 * Merge several subtitles into one ASS
-	 * 
-	 * @param configs : configuration object of the subtitles
-	 * @return
-	 */
-	public ASSSub mergeToAss(SimpleSubConfig... configs) {
+        for (SimpleSubConfig config : configs) {
+            ass.getStyle().add(ConvertUtils.createV4Style(config));
+            TimedTextFile sub = config.getSub();
+            sub.getTimedLines().forEach(line -> ev.add(ConvertUtils.createEvent(line, config.getStyleName())));
+        }
 
-		ASSSub ass = new ASSSub();
-		Set<Events> ev = ass.getEvents();
+        return ass;
+    }
 
-		for (SimpleSubConfig config : configs) {
-			ass.getStyle().add(ConvertionUtils.createV4Style(config));
-			TimedTextFile sub = config.getSub();
-			sub.getTimedLines().forEach(line -> ev.add(ConvertionUtils.createEvent(line, config.getStyleName())));
-		}
+    /**
+     * Transform all multi-lines subtitles to single-line
+     *
+     * @param timedFile the TimedTextFile
+     */
+    public void mergeTextLines(TimedTextFile timedFile) {
+        timedFile.getTimedLines().forEach(item -> {
+            List<String> textLines = item.getTextLines();
+            if (textLines.size() > 1) {
+                textLines.set(0, String.join(StrUtil.SPACE, textLines));
+                textLines.subList(1, textLines.size()).clear();
+            }
+        });
+    }
 
-		return ass;
-	}
+    /**
+     * Synchronise the timecodes of a subtitle from another one
+     *
+     * @param fileToAdjust  the subtitle to modify
+     * @param referenceFile the subtitle to take the timecodes from
+     * @param delay         the number of milliseconds allowed to differ
+     */
+    public void adjustTimecodes(TimedTextFile fileToAdjust, TimedTextFile referenceFile, int delay) {
 
-	/**
-	 * Transform all multi-lines subtitles to single-line
-	 * 
-	 * @param timedFile the TimedTextFile
-	 */
-	public void mergeTextLines(TimedTextFile timedFile) {
+        TimedLinesAPI linesAPI = new TimedLinesAPI();
+        List<? extends TimedLine> timedLines = new ArrayList<>(fileToAdjust.getTimedLines());
+        List<? extends TimedLine> referenceLines = new ArrayList<>(referenceFile.getTimedLines());
 
-		for (TimedLine timedLine : timedFile.getTimedLines()) {
-			List<String> textLines = timedLine.getTextLines();
-			if (textLines.size() > 1) {
-				textLines.set(0, textLines.stream().collect(Collectors.joining(" ")));
-				textLines.subList(1, textLines.size()).clear();
-			}
-		}
-	}
+        for (TimedLine lineToAdjust : timedLines) {
 
-	/**
-	 * Synchronise the timecodes of a subtitle from another one
-	 * 
-	 * @param fileToAdjust the subtitle to modify
-	 * @param referenceFile the subtitle to take the timecodes from
-	 * @param delay the number of milliseconds allowed to differ
-	 */
-	public void adjustTimecodes(TimedTextFile fileToAdjust, TimedTextFile referenceFile, int delay) {
+            TimedObject originalTime = lineToAdjust.getTime();
+            LocalTime originalStart = originalTime.getStart();
 
-		TimedLinesAPI linesAPI = new TimedLinesAPI();
-		List<? extends TimedLine> timedLines = new ArrayList<>(fileToAdjust.getTimedLines());
-		List<? extends TimedLine> referenceLines = new ArrayList<>(referenceFile.getTimedLines());
+            TimedLine referenceLine = linesAPI.closestByStart(referenceLines, originalStart, delay);
 
-		for (TimedLine lineToAdjust : timedLines) {
+            if (referenceLine != null) {
+                LocalTime targetStart = referenceLine.getTime().getStart();
+                LocalTime targetEnd = referenceLine.getTime().getEnd();
 
-			TimedObject originalTime = lineToAdjust.getTime();
-			LocalTime originalStart = originalTime.getStart();
+                TimedLine fullIntersect = linesAPI.intersected(timedLines, targetStart, targetEnd);
 
-			TimedLine referenceLine = linesAPI.closestByStart(referenceLines, originalStart, delay);
+                if (fullIntersect != null && !lineToAdjust.equals(fullIntersect)) {
+                    continue;
+                }
 
-			if (referenceLine != null) {
-				LocalTime targetStart = referenceLine.getTime().getStart();
-				LocalTime targetEnd = referenceLine.getTime().getEnd();
+                TimedLine startIntersect = linesAPI.intersected(timedLines, targetStart);
+                TimedLine endIntersect = linesAPI.intersected(timedLines, targetEnd);
 
-				TimedLine fullIntersect = linesAPI.intersected(timedLines, targetStart, targetEnd);
+                if (startIntersect == null || originalTime.equals(startIntersect.getTime())) {
+                    originalTime.setStart(targetStart);
+                } else {
+                    originalTime.setStart(startIntersect.getTime().getEnd());
+                }
 
-				if (fullIntersect != null && !lineToAdjust.equals(fullIntersect)) {
-					continue;
-				}
+                if (endIntersect == null || originalTime.getStart().equals(endIntersect.getTime().getStart())) {
+                    originalTime.setEnd(targetEnd);
+                } else {
+                    originalTime.setEnd(endIntersect.getTime().getStart());
+                }
+            }
+        }
 
-				TimedLine startIntersect = linesAPI.intersected(timedLines, targetStart);
-				TimedLine endIntersect = linesAPI.intersected(timedLines, targetEnd);
+        expandLongLines(timedLines, referenceLines, 1500);
+    }
 
-				if (startIntersect == null || originalTime.equals(startIntersect.getTime())) {
-					originalTime.setStart(targetStart);
-				} else {
-					originalTime.setStart(startIntersect.getTime().getEnd());
-				}
+    /**
+     * Expand lines in the adjusted file that should be displayed during 2 lines of the
+     * reference file
+     *
+     * @param adjustedLines  the adjusted lines (ascending sort)
+     * @param referenceLines the reference lines (ascending sort)
+     */
+    private static void expandLongLines(List<? extends TimedLine> adjustedLines,
+                                        List<? extends TimedLine> referenceLines, int delay) {
 
-				if (endIntersect == null || originalTime.getStart().equals(endIntersect.getTime().getStart())) {
-					originalTime.setEnd(targetEnd);
-				} else {
-					originalTime.setEnd(endIntersect.getTime().getStart());
-				}
-			}
-		}
+        TimedLinesAPI linesAPI = new TimedLinesAPI();
+        for (int i = 0; i < adjustedLines.size(); i++) {
 
-		expandLongLines(timedLines, referenceLines, 1500);
-	}
+            TimedObject currentElement = adjustedLines.get(i).getTime();
 
-	/**
-	 * Expand lines in the adjusted file that should be displayed during 2 lines of the
-	 * reference file
-	 * 
-	 * @param adjustedLines the adjusted lines (ascending sort)
-	 * @param referenceLines the reference lines (ascending sort)
-	 */
-	private static void expandLongLines(List<? extends TimedLine> adjustedLines,
-			List<? extends TimedLine> referenceLines, int delay) {
+            int index = linesAPI.findByTime(referenceLines, currentElement);
+            if (index >= 0) {
 
-		TimedLinesAPI linesAPI = new TimedLinesAPI();
-		for (int i = 0; i < adjustedLines.size(); i++) {
+                int nextReferenceIndex = index + 1;
+                if (nextReferenceIndex < referenceLines.size() && i + 1 < adjustedLines.size()) {
 
-			TimedObject currentElement = adjustedLines.get(i).getTime();
+                    TimedObject nextReference = referenceLines.get(nextReferenceIndex).getTime();
+                    TimedObject nextElement = adjustedLines.get(i + 1).getTime();
 
-			int index = linesAPI.findByTime(referenceLines, currentElement);
-			if (index >= 0) {
+                    if (linesAPI.isEqualsOrAfter(currentElement, nextReference)
+                            && linesAPI.getDelay(currentElement.getEnd(), nextReference.getStart()) < delay
+                            && linesAPI.isEqualsOrAfter(nextReference, nextElement)) {
 
-				int nextReferenceIndex = index + 1;
-				if (nextReferenceIndex < referenceLines.size() && i + 1 < adjustedLines.size()) {
-
-					TimedObject nextReference = referenceLines.get(nextReferenceIndex).getTime();
-					TimedObject nextElement = adjustedLines.get(i + 1).getTime();
-
-					if (linesAPI.isEqualsOrAfter(currentElement, nextReference)
-							&& linesAPI.getDelay(currentElement.getEnd(), nextReference.getStart()) < delay
-							&& linesAPI.isEqualsOrAfter(nextReference, nextElement)) {
-
-						currentElement.setEnd(nextReference.getEnd());
-					}
-				}
-			}
-		}
-	}
+                        currentElement.setEnd(nextReference.getEnd());
+                    }
+                }
+            }
+        }
+    }
 }

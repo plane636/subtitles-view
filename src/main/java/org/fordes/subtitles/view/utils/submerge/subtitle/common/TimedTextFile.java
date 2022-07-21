@@ -9,25 +9,25 @@ import java.util.Set;
  */
 public interface TimedTextFile extends Serializable {
 
-	/**
-	 * Get the filename
-	 * 
-	 * @return the filename
-	 */
-	String getFileName();
+    /**
+     * Get the filename
+     *
+     * @return the filename
+     */
+    String getFileName();
 
-	/**
-	 * Set the filename
-	 * 
-	 * @param fileName: the filename
-	 */
-	void setFileName(String fileName);
+    /**
+     * Set the filename
+     *
+     * @param fileName: the filename
+     */
+    void setFileName(String fileName);
 
-	/**
-	 * Get the timed lines
-	 * 
-	 * @return lines
-	 */
-	Set<? extends TimedLine> getTimedLines();
+    /**
+     * Get the timed lines
+     *
+     * @return lines
+     */
+    Set<? extends TimedLine> getTimedLines();
 
 }
