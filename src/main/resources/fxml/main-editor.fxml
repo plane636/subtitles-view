@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.fordes.subtitles.view.enums.*?>
+<?import org.fxmisc.flowless.VirtualizedScrollPane?>
+<?import org.fxmisc.richtext.StyleClassedTextArea?>
 <?import java.lang.*?>
 <GridPane fx:id="root" prefHeight="1000.0" prefWidth="800.0" stylesheets="/css/main-editor.css"
           GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS"
@@ -18,7 +19,7 @@
                         vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="ALWAYS"/>
     </rowConstraints>
-    <HBox fx:id="toolbarPanel" maxHeight="50.0" prefHeight="50.0" prefWidth="200.0" styleClass="bar"
+    <HBox fx:id="toolbarPanel" maxHeight="40.0" prefHeight="40.0" prefWidth="200.0" styleClass="bar"
           GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
         <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" userData="SEARCH"
                 HBox.hgrow="NEVER">
@@ -111,11 +112,11 @@
                 <String fx:value="item"/>
             </styleClass>
             <tooltip>
-                <Tooltip text="刷新"/>
+                <Tooltip text="重新读取文件，未保存的修改将丢失"/>
             </tooltip>
         </Button>
         <Button mnemonicParsing="false" onAction="#hideToolbar" prefHeight="50.0" prefWidth="50.0"
-                   HBox.hgrow="NEVER">
+                HBox.hgrow="NEVER">
             <FontIcon fx:constant="EDIT_BAR_HIDE"/>
             <styleClass>
                 <String fx:value="no-border"/>
@@ -133,15 +134,44 @@
             <Insets left="30.0" right="30.0"/>
         </GridPane.margin>
     </Separator>
-    <TextArea fx:id="editor" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
-              GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+    <VirtualizedScrollPane GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
+                           GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+        <content>
+            <StyleClassedTextArea fx:id="editor" prefWidth="800" wrapText="true">
+                <styleClass>
+                    <String fx:value="no-border"/>
+                </styleClass>
+            </StyleClassedTextArea>
+        </content>
         <GridPane.margin>
-            <Insets bottom="10.0" left="20.0" right="10.0" top="10.0"/>
+            <Insets bottom="45.0" left="20.0" right="10.0" top="10.0"/>
         </GridPane.margin>
-        <styleClass>
-            <String fx:value="no-border"/>
-        </styleClass>
-    </TextArea>
+    </VirtualizedScrollPane>
+    <HBox styleClass="bottom" minHeight="40.0" maxHeight="40" minWidth="400.0" maxWidth="400.0"
+          GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+        <Label fx:id="indicator" textAlignment="RIGHT" alignment="CENTER_RIGHT" text="-" userData="第 {}行, 第 {}列"
+               minHeight="40" maxHeight="40" minWidth="280" maxWidth="280" onMouseClicked="#onIndicatorClicked"
+               GridPane.rowIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM"/>
+        <ToggleButton text="简洁模式" fx:id="editMode" minHeight="40.0" maxHeight="40" minWidth="120.0" maxWidth="120.0"
+                      mnemonicParsing="false" GridPane.halignment="RIGHT" GridPane.rowIndex="1" userData="完整模式"
+                      GridPane.valignment="BOTTOM" onAction="#changeEditMode">
+            <styleClass>
+                <String fx:value="transparent"/>
+                <String fx:value="no-border"/>
+            </styleClass>
+            <graphic>
+                <Label fx:id="editModeIcon">
+                    <styleClass>
+                        <String fx:value="font-icon"/>
+                    </styleClass>
+                    <FontIcon fx:constant="SWITCH_OFF_DARK"/>
+                </Label>
+            </graphic>
+        </ToggleButton>
+        <GridPane.margin>
+            <Insets bottom="5.0"/>
+        </GridPane.margin>
+    </HBox>
     <fx:include source="edit-tool.fxml" visible="false" GridPane.rowIndex="1"
                 GridPane.halignment="RIGHT" GridPane.valignment="TOP"/>
 </GridPane>

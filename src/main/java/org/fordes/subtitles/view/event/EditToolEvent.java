@@ -2,10 +2,11 @@ package org.fordes.subtitles.view.event;
 
 import javafx.event.Event;
 import javafx.event.EventType;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleButton;
 import lombok.Getter;
 import org.fordes.subtitles.view.enums.EditToolEventEnum;
 import org.fordes.subtitles.view.model.DTO.Subtitle;
+import org.fxmisc.richtext.StyleClassedTextArea;
 
 
 /**
@@ -18,18 +19,23 @@ public class EditToolEvent extends Event {
     public static final EventType<EditToolEvent> EVENT_TYPE = new EventType(ANY, "editToolEvent");
 
     @Getter
-    private final TextArea source;
+    private final StyleClassedTextArea source;
 
     @Getter
     private final Subtitle subtitle;
 
     @Getter
+    private final ToggleButton editMode;
+
+    @Getter
     private final EditToolEventEnum type;
 
-    public EditToolEvent(TextArea source, Subtitle subtitle, EditToolEventEnum type) {
+    public EditToolEvent(StyleClassedTextArea source, Subtitle subtitle,
+                         ToggleButton editMode, EditToolEventEnum type) {
         super(EVENT_TYPE);
         this.source = source;
         this.subtitle = subtitle;
+        this.editMode = editMode;
         this.type = type;
     }
 

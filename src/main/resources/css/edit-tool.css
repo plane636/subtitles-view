@@ -86,9 +86,9 @@
 }
 
 .text-field .error {
-    -fx-text-fill: -fx-error-0;
+    -fx-text-fill: -fx-error-0 !important;
 }
 
 .dark .text-field .error {
-    -fx-text-fill: -fx-error-1;
+    -fx-text-fill: -fx-error-1 !important;
 }

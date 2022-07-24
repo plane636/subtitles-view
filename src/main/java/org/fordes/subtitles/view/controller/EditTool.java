@@ -6,26 +6,32 @@ import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.enums.EditToolEventEnum;
 import org.fordes.subtitles.view.enums.FileEnum;
 import org.fordes.subtitles.view.event.EditToolEvent;
+import org.fordes.subtitles.view.event.LoadingEvent;
 import org.fordes.subtitles.view.event.ToastConfirmEvent;
 import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.fordes.subtitles.view.model.DTO.Subtitle;
 import org.fordes.subtitles.view.utils.SubtitleUtil;
 import org.fordes.subtitles.view.utils.submerge.subtitle.ass.ASSTime;
+import org.fordes.subtitles.view.utils.submerge.subtitle.common.TimedLine;
 import org.fordes.subtitles.view.utils.submerge.subtitle.common.TimedTextFile;
 import org.fordes.subtitles.view.utils.submerge.subtitle.srt.SRTTime;
+import org.fxmisc.richtext.StyleClassedTextArea;
+import org.fxmisc.richtext.model.TwoDimensional;
 import org.mozilla.universalchardet.Constants;
 import org.springframework.stereotype.Component;
 
@@ -59,15 +65,16 @@ public class EditTool extends DelayInitController {
     private ChoiceBox<TimelineType> timeline_option;
 
     @FXML
-    private TextField timeline_input;
+    private TextField timeline_input, jump_input;
 
     @Resource
     private ThreadPoolExecutor globalExecutor;
 
     private static Subtitle subtitle;
 
-    private static TextArea area;
+    private static StyleClassedTextArea area;
 
+    private static ToggleButton editMode;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -94,29 +101,40 @@ public class EditTool extends DelayInitController {
             }
             subtitle = editToolEvent.getSubtitle();
             area = editToolEvent.getSource();
+            editMode = editToolEvent.getEditMode();
             switch (editToolEvent.getType()) {
                 case SEARCH: //搜索
-//                    testLab.setText("搜索");
                     break;
-                case REPLACE://替换
-//                    testLab.setText("替换");
-                    break;
-                case JUMP://跳转
-//                    testLab.setText("跳转");
-                    break;
-                case FONT: //字体（样式）
 
-//                    testLab.setText("字体");
+                case REPLACE://替换
                     break;
+
+                case JUMP://跳转
+                    break;
+
+                case FONT: //字体（样式）
+                    font_family.getSelectionModel().select(ApplicationInfo.config.getFontFace());
+                    font_size.getSelectionModel().select(ApplicationInfo.config.getFontSize());
+                    break;
+
                 case TIMELINE: //时间轴
-//                    testLab.setText("时间轴");
+                    TimedLine start = CollUtil.getFirst(subtitle.getTimedTextFile().getTimedLines());
+                    timeline_input.setPromptText(start.getTime().getStart().toString());
                     break;
+
                 case CODE://编码
                     code_choice.getSelectionModel().select(subtitle.getCharset());
-//                    testLab.setText("编码");
                     break;
+
                 case REF: //刷新
-//                    testLab.setText("刷新");
+                    try {
+                        SubtitleUtil.readSubtitleFile(subtitle);
+                        area.clear();
+                        area.append(SubtitleUtil.subtitleDisplay(subtitle.getTimedTextFile(), editMode.isSelected()), StrUtil.EMPTY);
+                    } catch (Exception e) {
+                        log.error(ExceptionUtil.stacktraceToString(e));
+                        ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("编码更改出错", "已切换回原编码~"));
+                    }
                     break;
             }
         });
@@ -131,21 +149,20 @@ public class EditTool extends DelayInitController {
 
         //初始化字体大小
         font_size.getItems().addAll(CollUtil.newArrayList(12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72));
-        font_size.getSelectionModel().select(ApplicationInfo.config.getFontSize());
 
         //初始化字体列表
         font_family.getItems().addAll(Font.getFontNames());
-        font_family.getSelectionModel().select(ApplicationInfo.config.getFontFace());
 
         timeline_option.getItems().addAll(TimelineType.values());
         timeline_option.getSelectionModel().selectedItemProperty().addListener((observableValue, strings, t1)
                 -> timeline_input.setPromptText(t1.desc));
         timeline_option.getSelectionModel().select(0);
 
-        timeline_input.textProperty().addListener((observableValue, s, t1) -> {
-            timeline_input.getStyleClass().remove("error");
-        });
+        timeline_input.textProperty().addListener((observableValue, s, t1)
+                -> timeline_input.getStyleClass().remove("error"));
+        timeline_input.setOnAction(this::applyTimeline);
 
+        jump_input.setOnAction(this::applyJump);
     }
 
 
@@ -154,6 +171,7 @@ public class EditTool extends DelayInitController {
         actionEvent.consume();
         area = null;
         subtitle = null;
+        editMode = null;
         root.setVisible(false);
     }
 
@@ -164,7 +182,8 @@ public class EditTool extends DelayInitController {
             try {
                 subtitle.setCharset(code_choice.getSelectionModel().getSelectedItem());
                 SubtitleUtil.readSubtitleFile(subtitle);
-                area.setText(SubtitleUtil.subtitleDisplay(subtitle.getTimedTextFile(), false));
+                area.clear();
+                area.append(SubtitleUtil.subtitleDisplay(subtitle.getTimedTextFile(), editMode.isSelected()), StrUtil.EMPTY);
             } catch (Exception e) {
                 log.error(ExceptionUtil.stacktraceToString(e));
                 ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("编码更改出错", "已切换回原编码~"));
@@ -183,7 +202,8 @@ public class EditTool extends DelayInitController {
             try {
                 ApplicationInfo.config.setFontSize(Convert.toInt(font_size.getValue()));
                 ApplicationInfo.config.setFontFace(font_family.getValue());
-                area.setFont(new Font(ApplicationInfo.config.getFontFace(), ApplicationInfo.config.getFontSize()));
+                area.setStyle(StrUtil.format(StyleClassConstant.FONT_STYLE_TEMPLATE,
+                        ApplicationInfo.config.getFontSize(), ApplicationInfo.config.getFontFace()));
                 area.requestFocus();
             } catch (Exception e) {
                 log.error(ExceptionUtil.stacktraceToString(e));
@@ -193,8 +213,8 @@ public class EditTool extends DelayInitController {
                 font_size.setValue(originalFontSize);
                 ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("字体更改出错", "已切换回原字体~"));
             }
-
         }
+        actionEvent.consume();
     }
 
     @FXML
@@ -222,9 +242,16 @@ public class EditTool extends DelayInitController {
                 TimedTextFile original = subtitle.getTimedTextFile();
                 try {
                     TimedTextFile target = SubtitleUtil
-                            .reviseTimeLine(subtitle.getTimedTextFile(), newTime, null, false);
+                            .reviseTimeLine(subtitle.getTimedTextFile(), newTime, null, editMode.isSelected());
                     subtitle.setTimedTextFile(target);
-                    area.setText(SubtitleUtil.subtitleDisplay(subtitle.getTimedTextFile(), false));
+                    SubtitleUtil.writeSubtitleToFile(subtitle, success -> {
+                        ApplicationInfo.stage.fireEvent(new LoadingEvent(!success));
+                        if (success) {
+                            area.clear();
+                            area.append(SubtitleUtil.subtitleDisplay(subtitle.getTimedTextFile(),
+                                    editMode.isSelected()), StrUtil.EMPTY);
+                        } else throw new RuntimeException("写入失败");
+                    });
                 } catch (Exception e) {
                     log.error(ExceptionUtil.stacktraceToString(e));
                     subtitle.setTimedTextFile(original);
@@ -235,8 +262,26 @@ public class EditTool extends DelayInitController {
         actionEvent.consume();
     }
 
+    //TODO 越界检查
+    @FXML
+    private void applyJump(ActionEvent actionEvent) {
+        if (subtitle != null && area != null) {
+            String text = jump_input.getText();
+            int value = NumberUtil.isInteger(text)? NumberUtil.parseInt(text) : 0;
+            if (value > 0)  {
+                timeline_input.getStyleClass().remove("error");
+                TwoDimensional.Position position = area.position(value, 1);
+                area.moveTo(position.toOffset());
+                area.requestFollowCaret();
+            }else {
+                timeline_input.getStyleClass().add("error");
+            }
+        }
+        actionEvent.consume();
+    }
+
     @AllArgsConstructor
-    static enum TimelineType {
+    enum TimelineType {
 
         TIMELINE("时间轴", null, "形如: xx:xx:xx:xx"),
         SECOND("秒", ChronoUnit.SECONDS, "整数，时间偏移量"),

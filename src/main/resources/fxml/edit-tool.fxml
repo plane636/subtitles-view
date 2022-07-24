@@ -185,14 +185,14 @@
         <rowConstraints>
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         </rowConstraints>
-        <TextField prefHeight="50" prefWidth="150" promptText="跳转至">
+        <TextField fx:id="jump_input" prefHeight="50" prefWidth="150" promptText="跳转至">
             <styleClass>
                 <String fx:value="no-border"/>
                 <String fx:value="transparent"/>
                 <String fx:value="left-item"/>
             </styleClass>
         </TextField>
-        <Button id="edit_tool_jump_btn" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="1">
+        <Button onAction="#applyJump" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="1">
             <tooltip>
                 <Tooltip text="跳转至(指定行)"/>
             </tooltip>
@@ -284,7 +284,7 @@
                 <String fx:value="left-item"/>
             </styleClass>
         </ChoiceBox>
-        <JFXComboBox fx:id="font_size" editable="true" prefHeight="50" prefWidth="80" GridPane.columnIndex="1">
+        <JFXComboBox fx:id="font_size" editable="true" prefHeight="45" maxHeight="45" prefWidth="80" GridPane.columnIndex="1">
             <tooltip>
                 <Tooltip text="字体显示大小"/>
             </tooltip>

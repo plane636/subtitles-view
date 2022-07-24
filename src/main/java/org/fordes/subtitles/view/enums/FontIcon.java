@@ -46,7 +46,12 @@ public enum FontIcon {
 
     EDIT_BAR_REPLACE_ITEM("\ue63e"),
 
-    EDIT_BAR_REPLACE_ALL("\ue642");
+    EDIT_BAR_REPLACE_ALL("\ue642"),
+
+    SWITCH_OFF_LIGHT("\ue612"),
+    SWITCH_ON_LIGHT("\ue611"),
+    SWITCH_OFF_DARK("\ue613"),
+    SWITCH_ON_DARK("\ue615");
 
     private final String unicode;
 

@@ -31,5 +31,8 @@ public abstract class DelayInitController implements Initializable {
         });
     }
 
+    /**
+     * 懒初始化，在首次显示时执行
+     */
     public void delayInit() {}
 }

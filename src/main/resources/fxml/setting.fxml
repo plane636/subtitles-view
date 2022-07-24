@@ -116,13 +116,13 @@
             <TextField fx:id="outPath" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
                        minWidth="-Infinity" prefHeight="40.0" prefWidth="300.0" GridPane.columnIndex="1"
                        GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER"/>
-            <JFXRadioButton mnemonicParsing="false" text="简洁模式" userData="true" GridPane.columnIndex="1"
+            <JFXRadioButton mnemonicParsing="false" text="简洁模式" userData="false" GridPane.columnIndex="1"
                             GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                 <toggleGroup>
                     <ToggleGroup fx:id="editorModeGroup"/>
                 </toggleGroup>
             </JFXRadioButton>
-            <JFXRadioButton mnemonicParsing="false" text="完整模式" toggleGroup="$editorModeGroup" userData="false"
+            <JFXRadioButton mnemonicParsing="false" text="完整模式" toggleGroup="$editorModeGroup" userData="true"
                             GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3"
                             GridPane.valignment="CENTER">
                 <GridPane.margin>

@@ -1,7 +1,7 @@
 package org.fordes.subtitles.view.model.DTO;
 
 /**
- * @author ChengFengsheng on 2022/7/19
+ * @author fordes on 2022/7/19
  */
 
 import lombok.Data;

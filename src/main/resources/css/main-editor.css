@@ -27,3 +27,44 @@
     -fx-background-color: -fx-dark-3;
     -fx-text-fill: -fx-white-0;
 }
+
+.text-area .scroll-pane .content {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-insets: 0;
+    -fx-background-insets: 0;
+}
+
+
+.text-area .scroll-bar,
+.text-area .track {
+    -fx-max-width: 15;
+    -fx-min-width: 15;
+
+}
+
+.bottom .toggle-button,
+.bottom .label {
+    -fx-text-fill: -fx-dark-1;
+    -fx-font-size: 15;
+}
+
+.dark .bottom .label {
+    -fx-text-fill: -fx-white-1;
+}
+
+.bottom .toggle-button .label {
+    -fx-padding: 0;
+    -fx-font-family: iconfont;
+    -fx-font-size: 26;
+    -fx-text-fill: -fx-dark-1;
+}
+
+.bottom .toggle-button:selected .label {
+    -fx-text-fill: -fx-focus-0;
+}
+
+.dark .bottom .toggle-button:selected .label {
+    -fx-text-fill: -fx-focus-1;
+}
+

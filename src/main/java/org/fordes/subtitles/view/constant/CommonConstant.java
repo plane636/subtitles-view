@@ -35,4 +35,8 @@ public class CommonConstant {
      * 7z解压命令 递归子目录、全部解压到指定文件夹、只解压指定格式文件
      */
     public static final String UN_ARCHIVE_COMMAND_FORMAT = SEVEN_ZIP_PATH+ " e -aoa -bse0 -r {} -o{} {} -y";
+
+    public static final String CONCISE_MODE = "简洁模式";
+
+    public static final String FULL_MODE = "完整模式";
 }

@@ -26,6 +26,7 @@
         <sevenzipjbinding.version>16.02-2.01</sevenzipjbinding.version>
         <javapackager.version>1.6.6</javapackager.version>
         <juniversalchardet.version>2.4.0</juniversalchardet.version>
+        <richtextfx.version>0.10.9</richtextfx.version>
 
         <!--javapackager configuration-->
         <platform>windows</platform>
@@ -162,6 +163,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-json</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.fxmisc.richtext</groupId>
+            <artifactId>richtextfx</artifactId>
+            <version>${richtextfx.version}</version>
         </dependency>
 
     </dependencies>

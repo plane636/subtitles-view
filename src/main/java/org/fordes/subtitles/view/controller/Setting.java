@@ -41,6 +41,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -88,35 +91,71 @@ public class Setting extends DelayInitController {
     @Resource
     private ConfigMapper configMapper;
 
+    @Resource
+    private ThreadPoolExecutor globalExecutor;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        globalExecutor.execute(() -> {
+
+            //初始化首选项
+            fontFace.getItems().addAll(Font.getFontNames());
+            fontSize.getItems().addAll(CollUtil.newArrayList(10, 12, 14, 16, 18, 20, 24, 36));
+            initPreference();
+
+            //首选项监听事件
+            themeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
+                Boolean value = Convert.toBool(t1.getUserData());
+                ApplicationInfo.stage.fireEvent(new ThemeChangeEvent(value));
+                ApplicationInfo.config.setTheme(value);
+            });
+
+            editorModeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
+                ApplicationInfo.config.setEditMode(Convert.toBool(t1.getUserData()));
+            });
+            exitModeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
+                ApplicationInfo.config.setExitMode(Convert.toBool(t1.getUserData()));
+            });
+            fontFace.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1) -> {
+                ApplicationInfo.config.setFontFace(t1);
+            });
+            fontSize.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1) -> {
+                ApplicationInfo.config.setFontSize(t1);
+            });
+            outPath.textProperty().addListener((observableValue, s, t1) -> {
+                ApplicationInfo.config.setOutPath(StrUtil.trim(t1));
+            });
+            //初始化接口选项
+            initInterface();
+
+        });
+        super.initialize(url, resourceBundle);
+    }
 
     @Override
     public void delayInit() {
-        initInterface();
-        initPreference();
         //监听器用于保存配置
         root.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
             if (!t1) {
-                ApplicationInfo.config.setEditMode(Convert.toBool(editorModeGroup.getSelectedToggle().getUserData()));
-                ApplicationInfo.config.setExitMode(Convert.toBool(exitModeGroup.getSelectedToggle().getUserData()));
-                ApplicationInfo.config.setTheme(Convert.toBool(themeGroup.getSelectedToggle().getUserData()));
-                ApplicationInfo.config.setFontFace(fontFace.getValue());
-                ApplicationInfo.config.setFontSize(fontSize.getValue());
-                if (FileUtil.exist(outPath.getText().trim())) {
+                if (FileUtil.exist(ApplicationInfo.config.getOutPath())) {
                     ApplicationInfo.config.setOutPath(outPath.getText().trim());
-                }else {
+                } else {
                     outPath.setText(ApplicationInfo.config.getOutPath());
                 }
                 configMapper.updateById(ApplicationInfo.config);
+            } else {
+                //每次显示前重新初始化一次
+                initPreference();
             }
         });
+
+
         super.delayInit();
     }
 
-    void initPreference() {
-        //编辑器 字体/字体大小
-        fontFace.getItems().addAll(Font.getFontNames());
-        fontSize.getItems().addAll(CollUtil.newArrayList(10, 12, 14, 16, 18, 20, 24, 36));
 
+
+    void initPreference() {
         //读取配置设置默认值
         fontFace.getSelectionModel().select(ApplicationInfo.config.getFontFace());
         fontSize.getSelectionModel().select(ApplicationInfo.config.getFontSize());
@@ -137,9 +176,6 @@ public class Setting extends DelayInitController {
         });
         outPath.setText(ApplicationInfo.config.getOutPath());
 
-        //主题监听，实时生效
-        themeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) ->
-                ApplicationInfo.stage.fireEvent(new ThemeChangeEvent(Convert.toBool(t1.getUserData()))));
     }
 
     void initInterface() {
@@ -237,17 +273,17 @@ public class Setting extends DelayInitController {
         save.setUserData(infoDto);
         save.setOnAction(event -> {
 
-                JSONObject param = new JSONObject();
-                infoPanel.getChildren().forEach(e -> {
-                    if (e instanceof TextField) {
-                        param.putOpt((String) e.getUserData(), ((TextField) e).getText());
-                    }
-                });
-                ServiceInfo info = new ServiceInfo()
-                        .setId(infoDto.getInfoId())
-                        .setSupport(infoDto.getId())
-                        .setVersion(version.getValue().getId())
-                        .setInfo(param.toString());
+            JSONObject param = new JSONObject();
+            infoPanel.getChildren().forEach(e -> {
+                if (e instanceof TextField) {
+                    param.putOpt((String) e.getUserData(), ((TextField) e).getText());
+                }
+            });
+            ServiceInfo info = new ServiceInfo()
+                    .setId(infoDto.getInfoId())
+                    .setSupport(infoDto.getId())
+                    .setVersion(version.getValue().getId())
+                    .setInfo(param.toString());
             try {
                 int result = info.getId() != null ?
                         serviceInfoMapper.updateById(info) : serviceInfoMapper.insert(info);
@@ -256,7 +292,7 @@ public class Setting extends DelayInitController {
                     ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("保存成功", "接口信息已经保存"));
                     return;
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 log.error("接口信息保存失败 => {}", JSONUtil.toJsonStr(info));
                 log.error(ExceptionUtil.stacktraceToString(e));
             }

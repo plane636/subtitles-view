@@ -26,4 +26,6 @@ public class StyleClassConstant {
     public static final String SUBTITLE_SEARCH_ITEM_TEXT = "text";
 
     public static final String CONTENT_EXCLUSIVE = "content-exclusive";
+
+    public static final String FONT_STYLE_TEMPLATE = "-fx-font-size: {};-fx-font-family: {}";
 }
