@@ -3,7 +3,7 @@ package org.fordes.subtitles.view.enums;
 /**
  * 编辑工具 事件类型枚举
  *
- * @author fordes123 on 2022/7/15
+ * @author fordes on 2022/7/15
  */
 public enum EditToolEventEnum {
 
@@ -13,6 +13,6 @@ public enum EditToolEventEnum {
     FONT, //字体（样式）
     TIMELINE, //时间轴
     CODE,//编码
-    REF; //刷新
-
+    REF, //刷新
+    TRANSLATE //翻译
 }

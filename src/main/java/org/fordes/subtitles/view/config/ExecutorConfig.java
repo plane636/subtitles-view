@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * @author fordes123 on 2022/7/11
+ * @author fordes on 2022/7/11
  */
 @Configuration
 public class ExecutorConfig {

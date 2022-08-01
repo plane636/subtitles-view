@@ -38,5 +38,8 @@ public class Config implements Serializable {
     @TableField(value = "out_path")
     private String outPath = CommonConstant.PATH_HOME;
 
+    @TableField(value = "language_list_mode")
+    private Boolean languageListMode = Boolean.TRUE;
+
     private static final long serialVersionUID = 1L;
 }

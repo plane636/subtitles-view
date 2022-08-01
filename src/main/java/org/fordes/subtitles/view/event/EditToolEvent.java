@@ -12,11 +12,11 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 /**
  * 编辑工具 事件
  *
- * @author fordes123 on 2022/7/15
+ * @author fordes on 2022/7/15
  */
 public class EditToolEvent extends Event {
 
-    public static final EventType<EditToolEvent> EVENT_TYPE = new EventType(ANY, "editToolEvent");
+    public static final EventType<EditToolEvent> EVENT_TYPE = new EventType<>(ANY, "editToolEvent");
 
     @Getter
     private final StyleClassedTextArea source;

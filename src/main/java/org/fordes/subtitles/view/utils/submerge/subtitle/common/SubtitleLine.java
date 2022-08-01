@@ -29,13 +29,7 @@ public class SubtitleLine<T extends TimedObject> implements TimedLine, Serializa
      *
      * @return the comparator
      */
-    public static Comparator<TimedLine> timeComparator = new Comparator<TimedLine>() {
-
-        @Override
-        public int compare(TimedLine o1, TimedLine o2) {
-            return o1.getTime().compareTo(o2.getTime());
-        }
-    };
+    public static Comparator<TimedLine> timeComparator = Comparator.comparing(TimedLine::getTime);
 
     /**
      * Constructor
@@ -105,6 +99,7 @@ public class SubtitleLine<T extends TimedObject> implements TimedLine, Serializa
         return this.textLines;
     }
 
+    @Override
     public void setTextLines(List<String> textLines) {
         this.textLines = textLines;
     }

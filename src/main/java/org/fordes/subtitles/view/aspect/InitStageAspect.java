@@ -24,7 +24,9 @@ import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.core.StageReadyEvent;
 import org.fordes.subtitles.view.event.ThemeChangeEvent;
 import org.fordes.subtitles.view.mapper.ConfigMapper;
+import org.fordes.subtitles.view.mapper.InterfaceMapper;
 import org.fordes.subtitles.view.model.ApplicationInfo;
+import org.fordes.subtitles.view.utils.CacheUtil;
 import org.fordes.subtitles.view.utils.FileUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -34,6 +36,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.io.IOException;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Consumer;
 
 /**
@@ -50,6 +53,12 @@ public class InitStageAspect {
     private ConfigMapper configMapper;
 
     @Resource
+    private InterfaceMapper interfaceMapper;
+
+    @Resource
+    private ThreadPoolExecutor globalExecutor;
+
+    @Resource
     private ConfigurableApplicationContext context;
 
     private final FXMLLoader loader = new FXMLLoader();
@@ -61,6 +70,9 @@ public class InitStageAspect {
                 //读取设置
                 ApplicationInfo.config = configMapper.selectOne(new QueryWrapper<>());
                 Assert.notNull(ApplicationInfo.config);
+
+                globalExecutor.execute(() -> CacheUtil.initLanguageDict(interfaceMapper.getLanguageList()));
+
 
                 //获取注解值
                 MethodSignature signature = (MethodSignature) point.getSignature();

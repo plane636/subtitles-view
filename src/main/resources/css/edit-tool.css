@@ -85,10 +85,10 @@
     -fx-background-radius: 0 0 5 0;
 }
 
-.text-field .error {
+.error {
     -fx-text-fill: -fx-error-0 !important;
 }
 
-.dark .text-field .error {
+.dark .error {
     -fx-text-fill: -fx-error-1 !important;
 }

@@ -2,6 +2,7 @@ package org.fordes.subtitles.view.controller;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.StrUtil;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -16,10 +17,7 @@ import org.fordes.subtitles.view.constant.CommonConstant;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.enums.EditToolEventEnum;
 import org.fordes.subtitles.view.enums.FontIcon;
-import org.fordes.subtitles.view.event.EditToolEvent;
-import org.fordes.subtitles.view.event.FileOpenEvent;
-import org.fordes.subtitles.view.event.LoadingEvent;
-import org.fordes.subtitles.view.event.ToastConfirmEvent;
+import org.fordes.subtitles.view.event.*;
 import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.fordes.subtitles.view.model.DTO.Subtitle;
 import org.fordes.subtitles.view.utils.SubtitleUtil;
@@ -65,6 +63,22 @@ public class MainEditor extends DelayInitController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        ApplicationInfo.stage.addEventHandler(TranslateEvent.EVENT_TYPE, event -> {
+
+            if (TranslateEvent.SUCCESS.equals(event.getMsg())) {
+                editor.clear();
+                editor.append(SubtitleUtil.toStr(subtitle.getTimedTextFile(),
+                        editMode.isSelected()), StrUtil.EMPTY);
+                editor.moveTo(0);
+            }
+            Platform.runLater(() -> {
+                ApplicationInfo.stage.fireEvent(new ToastConfirmEvent(event.getMsg(), event.getDetail()));
+                ApplicationInfo.stage.fireEvent(new LoadingEvent(false));
+            });
+
+        });
+
         globalExecutor.execute(() -> {
             ApplicationInfo.stage.addEventHandler(FileOpenEvent.FILE_OPEN_EVENT, fileOpenEvent -> {
                 if (fileOpenEvent.getRecord().getFormat().subtitle) {
@@ -72,7 +86,7 @@ public class MainEditor extends DelayInitController {
                     log.debug("主编辑器 => {}", subtitle.getFile().getPath());
                     try {
                         ApplicationInfo.stage.fireEvent(new LoadingEvent(true));
-                        SubtitleUtil.readSubtitleFile(subtitle);
+                        SubtitleUtil.parse(subtitle);
                         root.setVisible(true);
                     } catch (Exception e) {
                         log.error(ExceptionUtil.stacktraceToString(e));
@@ -83,21 +97,24 @@ public class MainEditor extends DelayInitController {
                 }
             });
 
+
+
             //载入设置
             root.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
                 if (t1) {
                     editor.setStyle(StrUtil.format(StyleClassConstant.FONT_STYLE_TEMPLATE,
                             ApplicationInfo.config.getFontSize(), ApplicationInfo.config.getFontFace()));
                     editor.clear();
-                    editor.append(SubtitleUtil.subtitleDisplay(subtitle.getTimedTextFile(), editMode.isSelected()), StrUtil.EMPTY);
+                    editor.append(SubtitleUtil.toStr(subtitle.getTimedTextFile(), editMode.isSelected()), StrUtil.EMPTY);
                     //编辑器模式
                     ctrlEditMode(ApplicationInfo.config.getEditMode());
                 }
             });
             //编辑模式监听
             editMode.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+                ctrlEditMode(t1);
                 editor.clear();
-                editor.append(SubtitleUtil.subtitleDisplay(subtitle.getTimedTextFile(), t1), "");
+                editor.append(SubtitleUtil.toStr(subtitle.getTimedTextFile(), t1), "");
             });
             //行列号监听
             editor.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
@@ -176,7 +193,6 @@ public class MainEditor extends DelayInitController {
 
     @FXML
     private void changeEditMode(ActionEvent actionEvent) {
-        ctrlEditMode(editMode.isSelected());
         actionEvent.consume();
     }
 

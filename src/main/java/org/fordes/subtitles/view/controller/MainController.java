@@ -1,6 +1,5 @@
 package org.fordes.subtitles.view.controller;
 
-import com.jfoenix.controls.JFXSpinner;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
@@ -9,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.constant.CommonConstant;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
 public class MainController implements Initializable {
 
     @FXML
-    private JFXSpinner loading;
+    private StackPane loading;
 
     @FXML
     private ColumnConstraints sidebarColumn;

@@ -39,4 +39,8 @@ public class CommonConstant {
     public static final String CONCISE_MODE = "简洁模式";
 
     public static final String FULL_MODE = "完整模式";
+
+    public static final String TRANSLATE_REPLACE =  "替换模式";
+
+    public static final String TRANSLATE_BILINGUAL =  "双语模式";
 }

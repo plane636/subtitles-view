@@ -1,10 +1,11 @@
 package org.fordes.subtitles.view.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import org.fordes.subtitles.view.enums.ServiceProvider;
 import org.fordes.subtitles.view.enums.ServiceType;
-import org.fordes.subtitles.view.model.DTO.Preferences;
-import org.fordes.subtitles.view.model.DTO.ServiceInfoDto;
-import org.fordes.subtitles.view.model.PO.ServiceProvider;
-import org.fordes.subtitles.view.model.PO.ServiceVersion;
+import org.fordes.subtitles.view.model.DTO.AvailableServiceInfo;
+import org.fordes.subtitles.view.model.PO.ServiceInterface;
+import org.fordes.subtitles.view.model.PO.Version;
 
 import java.util.List;
 
@@ -13,13 +14,26 @@ import java.util.List;
  *
  * @author fordes on 2022/4/17
  */
-public interface InterfaceService {
+public interface InterfaceService extends IService<ServiceInterface> {
 
-    List<ServiceProvider> getProviders(ServiceType support);
 
-    List<ServiceVersion> getVersions(ServiceType type, ServiceProvider provider);
+    /**
+     * 获取指定接口的版本信息
+     *
+     * @param type     服务类型 {@link ServiceType}
+     * @param provider 服务提供商 {@link ServiceProvider}
+     * @return { @link Version}
+     */
+    List<Version> getVersions(ServiceType type, ServiceProvider provider);
 
-    ServiceInfoDto getServiceInfo(ServiceType type, ServiceProvider provider);
+    ServiceInterface getInterface(ServiceType type, ServiceProvider provider);
 
-    List<Preferences> getPreferences(ServiceType type);
+
+    /**
+     * 获取可用的服务接口
+     *
+     * @param type 服务类型 {@link ServiceType}
+     * @return {@link AvailableServiceInfo}
+     */
+    List<AvailableServiceInfo> getAvailableService(ServiceType type);
 }

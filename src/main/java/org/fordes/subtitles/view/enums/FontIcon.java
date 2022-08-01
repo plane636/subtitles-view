@@ -51,7 +51,9 @@ public enum FontIcon {
     SWITCH_OFF_LIGHT("\ue612"),
     SWITCH_ON_LIGHT("\ue611"),
     SWITCH_OFF_DARK("\ue613"),
-    SWITCH_ON_DARK("\ue615");
+    SWITCH_ON_DARK("\ue615"),
+
+    EDIT_BAR_TRANSLATE("\ue6fb");
 
     private final String unicode;
 

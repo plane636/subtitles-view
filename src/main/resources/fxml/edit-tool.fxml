@@ -28,14 +28,14 @@
         <rowConstraints>
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         </rowConstraints>
-        <TextField prefHeight="50" prefWidth="200" promptText="查找">
+        <TextField fx:id="search_input" prefHeight="50" prefWidth="200" promptText="查找">
             <styleClass>
                 <String fx:value="no-border"/>
                 <String fx:value="transparent"/>
                 <String fx:value="left-item"/>
             </styleClass>
         </TextField>
-        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="1">
+        <Button onAction="#applySearch" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="1">
             <styleClass>
                 <String fx:value="no-border"/>
                 <String fx:value="transparent"/>
@@ -74,8 +74,8 @@
                         <FontIcon fx:constant="EDIT_BAR_OPTION"/>
                     </Label>
                 </graphic>
-                <CheckMenuItem mnemonicParsing="false" selected="true" text="区分大小写"/>
-                <CheckMenuItem mnemonicParsing="false" text="正则表达式"/>
+                <CheckMenuItem fx:id="search_case" mnemonicParsing="false" selected="false" text="区分大小写"/>
+                <CheckMenuItem fx:id="search_regex" mnemonicParsing="false" text="正则表达式"/>
             </Menu>
         </MenuBar>
     </GridPane>
@@ -93,21 +93,21 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         </rowConstraints>
-        <TextField prefHeight="50" prefWidth="200" promptText="查找">
+        <TextField fx:id="replace_find_input" prefHeight="50" prefWidth="200" promptText="查找">
             <styleClass>
                 <String fx:value="no-border"/>
                 <String fx:value="transparent"/>
                 <String fx:value="left-top-item"/>
             </styleClass>
         </TextField>
-        <TextField prefHeight="50" prefWidth="200" promptText="替换" GridPane.columnSpan="2" GridPane.rowIndex="1">
+        <TextField fx:id="replace_input" prefHeight="50" prefWidth="200" promptText="替换" GridPane.columnSpan="2" GridPane.rowIndex="1">
             <styleClass>
                 <String fx:value="no-border"/>
                 <String fx:value="transparent"/>
                 <String fx:value="left-bottom-item"/>
             </styleClass>
         </TextField>
-        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="1">
+        <Button onAction="#applyReplaceFind" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="1">
             <tooltip>
                 <Tooltip text="查找下一个"/>
             </tooltip>
@@ -134,8 +134,8 @@
                         <FontIcon fx:constant="EDIT_BAR_OPTION"/>
                     </Label>
                 </graphic>
-                <CheckMenuItem mnemonicParsing="false" selected="true" text="区分大小写"/>
-                <CheckMenuItem mnemonicParsing="false" text="正则表达式"/>
+                <CheckMenuItem fx:id="replace_case" mnemonicParsing="false" selected="true" text="区分大小写"/>
+                <CheckMenuItem fx:id="replace_regex" mnemonicParsing="false" text="正则表达式"/>
             </Menu>
         </MenuBar>
         <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="3" onAction="#onClose">
@@ -150,7 +150,7 @@
             </styleClass>
             <FontIcon fx:constant="SCENE_CLOSE"/>
         </Button>
-        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="2" GridPane.rowIndex="1">
+        <Button onAction="#applyReplaceNext" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="2" GridPane.rowIndex="1">
             <tooltip>
                 <Tooltip text="替换"/>
             </tooltip>
@@ -161,7 +161,7 @@
             </styleClass>
             <FontIcon fx:constant="EDIT_BAR_REPLACE_ITEM"/>
         </Button>
-        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="3" GridPane.rowIndex="1">
+        <Button onAction="#applyReplaceAll" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="3" GridPane.rowIndex="1">
             <tooltip>
                 <Tooltip text="全部替换"/>
             </tooltip>
@@ -362,6 +362,90 @@
             <FontIcon fx:constant="SCENE_CLOSE"/>
         </Button>
         <Button onAction="#applyTimeline" mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="2">
+            <tooltip>
+                <Tooltip text="执行"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+            </styleClass>
+            <FontIcon fx:constant="EDIT_BAR_REPLACE_ITEM"/>
+        </Button>
+    </GridPane>
+    <!--翻译面板-->
+    <GridPane maxHeight="100" maxWidth="400" prefHeight="100.0" prefWidth="400.0" styleClass="toolPanel"
+              userData="TRANSLATE" visible="false" GridPane.rowSpan="2" GridPane.halignment="RIGHT"
+              GridPane.valignment="TOP">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="125.0" minWidth="125.0" prefWidth="125.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="125.0" minWidth="125.0" prefWidth="125.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <ChoiceBox fx:id="translate_source" accessibleText="翻译源" cache="true" prefHeight="50" prefWidth="175" GridPane.columnSpan="2" GridPane.rowIndex="0" GridPane.columnIndex="0">
+            <tooltip>
+                <Tooltip text="翻译源"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+            </styleClass>
+        </ChoiceBox>
+        <ChoiceBox fx:id="translate_mode"  prefHeight="50" prefWidth="125" GridPane.rowIndex="0" GridPane.columnIndex="2">
+            <tooltip>
+                <Tooltip text="翻译源"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+            </styleClass>
+        </ChoiceBox>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50" GridPane.columnIndex="3" onAction="#onClose">
+            <tooltip>
+                <Tooltip text="关闭"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+                <String fx:value="right-top-item"/>
+            </styleClass>
+            <FontIcon fx:constant="SCENE_CLOSE"/>
+        </Button>
+        <ChoiceBox fx:id="translate_original" prefHeight="50" prefWidth="125" GridPane.rowIndex="1" GridPane.columnIndex="0">
+            <tooltip>
+                <Tooltip text="源语言"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="left-item"/>
+            </styleClass>
+        </ChoiceBox>
+        <Button mnemonicParsing="false" prefHeight="50" prefWidth="50"  GridPane.rowIndex="1" GridPane.columnIndex="1">
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+            </styleClass>
+            <FontIcon fx:constant="EDIT_BAR_REF"/>
+        </Button>
+        <ChoiceBox fx:id="translate_target" cache="true"   prefHeight="50" prefWidth="125"  GridPane.rowIndex="1" GridPane.columnIndex="2">
+            <tooltip>
+                <Tooltip text="目标语言"/>
+            </tooltip>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="left-item"/>
+            </styleClass>
+        </ChoiceBox>
+        <Button onAction="#applyTranslate" mnemonicParsing="false" prefHeight="50" prefWidth="50"  GridPane.rowIndex="1" GridPane.columnIndex="3">
             <tooltip>
                 <Tooltip text="执行"/>
             </tooltip>

@@ -62,9 +62,9 @@
                 GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM"
                 GridPane.hgrow="NEVER" GridPane.vgrow="NEVER"/>
     <!--全局loading-->
-    <JFXSpinner fx:id="loading" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                minWidth="-Infinity" prefHeight="50.0" prefWidth="50.0" visible="false"
-                GridPane.columnIndex="1" GridPane.rowIndex="1"
-                GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER"
-                GridPane.vgrow="ALWAYS"/>
+    <StackPane fx:id="loading" prefWidth="1200" prefHeight="800" visible="false" GridPane.rowIndex="1" styleClass="transparent"
+               GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+        <JFXSpinner StackPane.alignment="CENTER" maxWidth="150" maxHeight="150" prefHeight="150" prefWidth="150"/>
+    </StackPane>
+
 </GridPane>

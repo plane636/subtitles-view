@@ -1,7 +1,7 @@
 package org.fordes.subtitles.view.model.search;
 
+import cn.hutool.http.ContentType;
 import lombok.Builder;
-import org.fordes.subtitles.view.enums.ContentType;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -29,6 +29,6 @@ public class Cases implements Serializable {
     public Cases next;
 
     public void setType(String val) {
-        this.type = ContentType.of(val);
+        this.type = ContentType.valueOf(val);
     }
 }

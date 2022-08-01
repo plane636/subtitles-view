@@ -14,14 +14,33 @@ import java.io.Serializable;
  */
 @Data
 @Accessors(chain = true)
-@TableName(value = "service_provider")
-public class ServiceProvider implements Serializable {
+@TableName(value = "version")
+public class Version implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    @TableField(value = "interface_id")
+    private Integer interfaceId;
+
     @TableField(value = "\"name\"")
     private String name;
+
+    @TableField(value = "concurrent")
+    private Integer concurrent;
+
+    @TableField(value = "carrying")
+    private Integer carrying;
+
+    @TableField(value = "server_url")
+    private String serverUrl;
+
+    @TableField(value = "remark")
+    private String remark;
+
+    public String toString() {
+        return this.name;
+    }
 
     private static final long serialVersionUID = 1L;
 }

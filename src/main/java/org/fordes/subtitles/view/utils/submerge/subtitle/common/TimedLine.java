@@ -18,6 +18,12 @@ public interface TimedLine extends Serializable, Comparable<TimedLine>, Comparat
     List<String> getTextLines();
 
     /**
+     * Set the text lines
+     *
+     */
+    void setTextLines(List<String> textLines);
+
+    /**
      * Get the timed object
      *
      * @return the time

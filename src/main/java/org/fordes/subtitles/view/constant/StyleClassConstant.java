@@ -28,4 +28,6 @@ public class StyleClassConstant {
     public static final String CONTENT_EXCLUSIVE = "content-exclusive";
 
     public static final String FONT_STYLE_TEMPLATE = "-fx-font-size: {};-fx-font-family: {}";
+
+    public static final String ERROR = "error";
 }

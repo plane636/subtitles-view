@@ -103,6 +103,19 @@
             </tooltip>
         </Button>
         <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0"
+                userData="TRANSLATE" HBox.hgrow="NEVER">
+            <FontIcon fx:constant="EDIT_BAR_TRANSLATE"/>
+            <styleClass>
+                <String fx:value="no-border"/>
+                <String fx:value="transparent"/>
+                <String fx:value="font-icon"/>
+                <String fx:value="item"/>
+            </styleClass>
+            <tooltip>
+                <Tooltip text="对字幕内容进行翻译"/>
+            </tooltip>
+        </Button>
+        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0"
                 userData="REF" HBox.hgrow="NEVER">
             <FontIcon fx:constant="EDIT_BAR_REF"/>
             <styleClass>

@@ -8,8 +8,8 @@
 
     -fx-dark-0: #000000;
     -fx-dark-1: #101010;
-    -fx-dark-2: #202020;
-    -fx-dark-3: #242424;
+    -fx-dark-2: #1a1a1a;
+    -fx-dark-3: #212121;
     -fx-dark-4: #282828;
     -fx-dark-5: #303030;
 
@@ -392,5 +392,8 @@
 
 
 
+.jfx-spinner .arc {
+    -fx-stroke-width: 8.0;
+}
 
 

@@ -12,29 +12,26 @@ import cn.hutool.json.JSONUtil;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.fxml.FXML;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.VPos;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextFlow;
-import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
+import org.fordes.subtitles.view.enums.ServiceProvider;
 import org.fordes.subtitles.view.enums.ServiceType;
 import org.fordes.subtitles.view.event.ThemeChangeEvent;
 import org.fordes.subtitles.view.event.ToastConfirmEvent;
 import org.fordes.subtitles.view.mapper.ConfigMapper;
-import org.fordes.subtitles.view.mapper.ServiceInfoMapper;
 import org.fordes.subtitles.view.model.ApplicationInfo;
-import org.fordes.subtitles.view.model.DTO.ServiceInfoDto;
-import org.fordes.subtitles.view.model.PO.ServiceInfo;
-import org.fordes.subtitles.view.model.PO.ServiceProvider;
-import org.fordes.subtitles.view.model.PO.ServiceVersion;
+import org.fordes.subtitles.view.model.PO.ServiceInterface;
+import org.fordes.subtitles.view.model.PO.Version;
 import org.fordes.subtitles.view.service.InterfaceService;
 import org.fordes.subtitles.view.utils.FileUtils;
 import org.springframework.stereotype.Component;
@@ -44,7 +41,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 语音转换 控制器
@@ -56,16 +52,16 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Setting extends DelayInitController {
 
     @FXML
-    private GridPane infoPanel;
+    private VBox infoPanel;
 
     @FXML
     private TextFlow tips;
 
     @FXML
-    private ToggleGroup themeGroup, editorModeGroup, exitModeGroup;
+    private ToggleGroup themeGroup, editorModeGroup, exitModeGroup, languageListGroup;
 
     @FXML
-    private JFXComboBox<ServiceVersion> version;
+    private JFXComboBox<Version> version;
 
     @FXML
     private JFXComboBox<ServiceType> type;
@@ -84,9 +80,6 @@ public class Setting extends DelayInitController {
 
     @Resource
     private InterfaceService interfaceService;
-
-    @Resource
-    private ServiceInfoMapper serviceInfoMapper;
 
     @Resource
     private ConfigMapper configMapper;
@@ -110,21 +103,18 @@ public class Setting extends DelayInitController {
                 ApplicationInfo.config.setTheme(value);
             });
 
-            editorModeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
-                ApplicationInfo.config.setEditMode(Convert.toBool(t1.getUserData()));
-            });
-            exitModeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
-                ApplicationInfo.config.setExitMode(Convert.toBool(t1.getUserData()));
-            });
-            fontFace.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1) -> {
-                ApplicationInfo.config.setFontFace(t1);
-            });
-            fontSize.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1) -> {
-                ApplicationInfo.config.setFontSize(t1);
-            });
-            outPath.textProperty().addListener((observableValue, s, t1) -> {
-                ApplicationInfo.config.setOutPath(StrUtil.trim(t1));
-            });
+            editorModeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1)
+                    -> ApplicationInfo.config.setEditMode(Convert.toBool(t1.getUserData())));
+            exitModeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1)
+                    -> ApplicationInfo.config.setExitMode(Convert.toBool(t1.getUserData())));
+            fontFace.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1)
+                    -> ApplicationInfo.config.setFontFace(t1));
+            fontSize.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1)
+                    -> ApplicationInfo.config.setFontSize(t1));
+            outPath.textProperty().addListener((observableValue, s, t1)
+                    -> ApplicationInfo.config.setOutPath(StrUtil.trim(t1)));
+            languageListGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) ->
+                    ApplicationInfo.config.setLanguageListMode(Convert.toBool(t1.getUserData())));
             //初始化接口选项
             initInterface();
 
@@ -181,64 +171,29 @@ public class Setting extends DelayInitController {
     void initInterface() {
         //接口类型
         type.getItems().addAll(ServiceType.values());
-        type.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(ServiceType type) {
-                return type.getDesc();
-            }
-
-            @Override
-            public ServiceType fromString(String s) {
-                return null;
-            }
-        });
-        type.getSelectionModel().selectedItemProperty().addListener((observableValue, type, t1) -> {
-            provider.getItems().clear();
-            if (null != t1) {
-                provider.getItems().addAll(interfaceService.getProviders(t1));
-                if (provider.getItems().size() == 1) {
-                    provider.getSelectionModel().select(0);
-                }
-            }
-        });
         //服务商
-        provider.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(ServiceProvider provider) {
-                return provider.getName();
-            }
+        provider.getItems().addAll(ServiceProvider.values());
 
-            @Override
-            public ServiceProvider fromString(String s) {
-                return null;
+
+        type.getSelectionModel().selectedItemProperty().addListener((observableValue, type, t1) -> {
+            if (null != t1 && provider.getValue() != null) {
+                version.getItems().clear();
+                version.getItems().addAll(interfaceService.getVersions(t1, provider.getValue()));
             }
         });
+
         provider.getSelectionModel().selectedItemProperty().addListener((observableValue, supportDto, t1) -> {
-            version.getItems().clear();
-            if (null != t1) {
+            if (null != t1 && type.getValue() != null) {
+                version.getItems().clear();
                 version.getItems().addAll(interfaceService.getVersions(type.getValue(), t1));
-                if (version.getItems().size() == 1) {
-                    version.getSelectionModel().select(0);
-                }
             }
         });
-        //套餐版本
-        version.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(ServiceVersion serviceVersion) {
-                return serviceVersion.getName();
-            }
 
-            @Override
-            public ServiceVersion fromString(String s) {
-                return null;
-            }
-        });
         version.getSelectionModel().selectedItemProperty().addListener((observableValue, serviceVersion, t1) -> {
             if (null != t1) {
                 tips.setVisible(false);
                 version.setTooltip(new Tooltip(t1.getRemark()));
-                buildInfoFrame(interfaceService.getServiceInfo(type.getValue(), provider.getValue()));
+                buildInfoFrame(interfaceService.getInterface(type.getValue(), provider.getValue()));
             } else {
                 tips.setVisible(true);
             }
@@ -247,30 +202,33 @@ public class Setting extends DelayInitController {
         tips.visibleProperty().addListener((observableValue, aBoolean, t1) -> infoPanel.setVisible(!t1));
     }
 
-    void buildInfoFrame(ServiceInfoDto infoDto) {
+    void buildInfoFrame(ServiceInterface info) {
         infoPanel.getChildren().clear();
-        JSONObject paramJson = JSONUtil.parseObj(null != infoDto.getInfoId() ? infoDto.getInfo() : infoDto.getParams());
-        AtomicReference<Integer> sort = new AtomicReference<>(0);
-        paramJson.forEach((k, v) -> {
+
+        (info.getAuth() == null ? info.getTemplate(): info.getAuth()).forEach((k, v) -> {
+
+            HBox hBox = new HBox();
+            hBox.setMinHeight(90);
+            hBox.setAlignment(Pos.CENTER_LEFT);
+
             Label label = new Label(k);
+            label.setMinSize(120, 90);
             label.getStyleClass().add("item");
-            GridPane.setHalignment(label, HPos.LEFT);
-            GridPane.setValignment(label, VPos.CENTER);
-            GridPane.setMargin(label, new Insets(0, 0, 0, 20));
-            infoPanel.add(label, 0, sort.get());
+            HBox.setMargin(label, new Insets(0,0,0,30));
+            hBox.getChildren().add(label);
 
             TextField textField = new TextField(ObjectUtil.isNotEmpty(v) ? v.toString() : StrUtil.EMPTY);
             textField.getStyleClass().add("item");
             textField.setUserData(k);
-            GridPane.setHalignment(textField, HPos.LEFT);
-            GridPane.setValignment(textField, VPos.CENTER);
-            infoPanel.add(textField, 1, sort.getAndSet(sort.get() + 1));
+            textField.setMinSize(140, 90);
+            hBox.getChildren().add(textField);
+            infoPanel.getChildren().add(hBox);
         });
 
         JFXButton save = new JFXButton("保存");
         save.setPrefSize(80, 30);
         save.getStyleClass().add("normal-button");
-        save.setUserData(infoDto);
+        save.setUserData(info);
         save.setOnAction(event -> {
 
             JSONObject param = new JSONObject();
@@ -279,15 +237,10 @@ public class Setting extends DelayInitController {
                     param.putOpt((String) e.getUserData(), ((TextField) e).getText());
                 }
             });
-            ServiceInfo info = new ServiceInfo()
-                    .setId(infoDto.getInfoId())
-                    .setSupport(infoDto.getId())
-                    .setVersion(version.getValue().getId())
-                    .setInfo(param.toString());
+            ServiceInterface data = (ServiceInterface) save.getUserData();
+            data.setVersion(version.getValue().getId()).setAuth(param.toString());
             try {
-                int result = info.getId() != null ?
-                        serviceInfoMapper.updateById(info) : serviceInfoMapper.insert(info);
-                if (result > 0) {
+                if (interfaceService.updateById(info)) {
                     tips.setVisible(true);
                     ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("保存成功", "接口信息已经保存"));
                     return;
@@ -298,22 +251,21 @@ public class Setting extends DelayInitController {
             }
             ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("保存失败", "数据操作失败，错误已记录"));
         });
-        GridPane.setHalignment(save, HPos.LEFT);
-        GridPane.setValignment(save, VPos.CENTER);
-        GridPane.setMargin(save, new Insets(0, 0, 0, 220));
-        infoPanel.add(save, 1, sort.get());
+        HBox hBox = new HBox();
+        hBox.setMinHeight(90);
+        hBox.setAlignment(Pos.CENTER_RIGHT);
+        HBox.setMargin(save, new Insets(0,30,0,0));
+        hBox.getChildren().add(save);
 
-        if (StrUtil.isNotEmpty(infoDto.getPage())) {
+        if (StrUtil.isNotEmpty(info.getPage())) {
             JFXButton applyFor = new JFXButton("去申请");
             applyFor.setPrefSize(80, 30);
             applyFor.getStyleClass().add("normal-button");
-            applyFor.setTooltip(new Tooltip(infoDto.getPage()));
-            applyFor.setOnAction(event -> DesktopUtil.browse(infoDto.getPage()));
-            GridPane.setHalignment(applyFor, HPos.LEFT);
-            GridPane.setValignment(applyFor, VPos.CENTER);
-            GridPane.setMargin(applyFor, new Insets(0, 0, 0, 120));
-            infoPanel.add(applyFor, 1, sort.get());
+            applyFor.setTooltip(new Tooltip(info.getPage()));
+            applyFor.setOnAction(event -> DesktopUtil.browse(info.getPage()));
+            hBox.getChildren().add(applyFor);
         }
+        infoPanel.getChildren().add(hBox);
     }
 
     @FXML
