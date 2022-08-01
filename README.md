@@ -19,37 +19,64 @@
 - 🎈 深色浅色模式一键切换
 - ⛏ 更多特性待开发...
 
-
 ## 🎉 应用界面
 
-![浅色模式](https://img.imgdb.cn/item/6040c730360785be54651ff5.jpg "⚠️界面可能已经更新，请以具体程序为准")
+![浅色模式](./screenshot/home.png "⚠️界面可能已经更新，请以具体程序为准")
 
 ## ☑️ TODO
 
 - [x] 框架搭建以及迁移重构
 - [x] UI调整，深浅色跟随系统等
-- [x] 字幕搜索、下载支持
-- [ ] 文字翻译服务适配
+- [x] 字幕搜索、下载支持：`字幕库`、`伪射手网`、`A4k字幕网`
+- [x] 文字翻译服务适配：`百度翻译`、`阿里翻译`、`腾讯翻译`、`火山翻译`
 - [ ] 语音转换服务适配
 - [ ] 简单的视频处理支持，如字幕分离、水印、格式转换等
+
+## 🧑🏻‍🔧技术栈
+
+- `Maven`
+- `JavaFX`
+- `SpringBoot`
+- `SQLite`
+- `Mybatis-Plus`
 
 ## 📢 项目说明
 
 - 兴趣之作，欢迎提出任何修改意见，但不保证任何更新以及功能的可靠性
 - 设计支持跨平台，但未经测试，现阶段以`Windows`平台为主
-- 程序无任何收费和用户信息收集行为。所有在线服务如：语音转写、在线翻译均为第三方提供，于本程序无关
+- 程序无任何收费和用户信息收集行为。所有在线服务如：语音转写、在线翻译均为第三方提供，与本程序无关
 
-## 🛠 编译使用
+## 🛠 快速开始
 
-- 程序基于`Maven`构建，可自行克隆项目进行编译
-- 重构工作进行中，暂无[📌Releases](https://github.com/fordes123/Subtitles-View/releases/) 版本，体验预览可下载 [🤖CI](https://github.com/fordes123/subtitles-view/actions) 版本
-- 暂不提供除`Windows`外其他平台程序包，可`Fork`项目后利用 [Github Actions](https://github.com/features/actions) 自行编译(`mac`、`linux`)
+### 从源代码构建
+
+```shell
+# 请保证你的JDK版本不低于11，否则无法通过编译
+git clone https://github.com/fordes123/subtitles-view.git
+cd subtitles-view
+mvn clean install
+mvn run
+```
+
+或者
+
+fork 本项目, 在 `WorkFlows` 中运行 `CI Build`, Github Action 将根据配置自动为你构建对应程序包
+<details>
+<summary>查看引导</summary>
+<img src="./screenshot/action.png" alt="">
+</details>
+
+### 获取可执行文件
+
+- 正式发行版 [🚀 Releases](https://github.com/fordes123/Subtitles-View/releases/)
+- 自动构建的测试版 [🤖 CI](https://github.com/fordes123/subtitles-view/actions)
+
+（由于正在积极开发中，暂时没有 Release 版本，预览以及体验可使用 CI 版本）
 
 ## 🤝 交流反馈
 
 - 提交 [📌Issues](https://github.com/fordes123/Subtitles-View/issues)
 - 博客评论区 [📌Blog Page](https://blog.fordes.top/archives/subtitles-view.html)
-
 
 ## 📜 开源许可
 
