@@ -210,7 +210,7 @@
                         </goals>
                         <configuration>
                             <platform>${platform}</platform>
-                            <mainClass>org.fordes.subtitle.view.SubtitlesViewApplication</mainClass>
+                            <mainClass>org.fordes.subtitles.view.SubtitlesViewApplication</mainClass>
                             <bundleJre>${bundleJre}</bundleJre>
                             <customizedJre>${customizedJre}</customizedJre>
                             <generateInstaller>${generateInstaller}</generateInstaller>
