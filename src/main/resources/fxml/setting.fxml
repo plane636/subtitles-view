@@ -8,7 +8,7 @@
 <?import javafx.scene.text.*?>
 
 <StackPane fx:id="root" stylesheets="/css/setting.css" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
-           GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/16"
+           GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/11"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.fordes.subtitles.view.controller.Setting">
     <ScrollPane>
         <styleClass>

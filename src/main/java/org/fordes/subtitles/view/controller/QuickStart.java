@@ -1,6 +1,7 @@
 package org.fordes.subtitles.view.controller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Singleton;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -8,12 +9,12 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.constant.CommonConstant;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.enums.FileEnum;
 import org.fordes.subtitles.view.event.FileOpenEvent;
-import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.fordes.subtitles.view.utils.FileUtils;
 import org.springframework.stereotype.Component;
 
@@ -44,11 +45,11 @@ public class QuickStart {
     @FXML
     private void chooseFile(ActionEvent event) {
         File file = FileUtils.chooseFile(CommonConstant.TITLE_ALL_FILE, FileEnum.values())
-                .showOpenDialog(ApplicationInfo.stage);
+                .showOpenDialog(Singleton.get(Stage.class));
 
         //读取文件信息
         if (FileUtil.exist(file) && FileEnum.isSupport(FileUtil.getSuffix(file))) {
-            ApplicationInfo.stage.fireEvent(new FileOpenEvent(dragFile));
+            Singleton.get(Stage.class).fireEvent(new FileOpenEvent(dragFile));
         } else {
             root.getStyleClass().clear();
             clues.setText(TIPS_DEFAULT);
@@ -85,7 +86,7 @@ public class QuickStart {
     private void onDragDropped(DragEvent dragEvent) {
         try {
             if (dragFile != null) {
-                ApplicationInfo.stage.fireEvent(new FileOpenEvent(dragFile));
+                Singleton.get(Stage.class).fireEvent(new FileOpenEvent(dragFile));
             }
         } catch (Exception e) {
             clues.setText(OPEN_FILE_ERROR);

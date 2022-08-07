@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.swing.DesktopUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -23,24 +24,21 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
+import org.fordes.subtitles.view.config.ApplicationConfig;
 import org.fordes.subtitles.view.enums.ServiceProvider;
 import org.fordes.subtitles.view.enums.ServiceType;
 import org.fordes.subtitles.view.event.ThemeChangeEvent;
 import org.fordes.subtitles.view.event.ToastConfirmEvent;
-import org.fordes.subtitles.view.mapper.ConfigMapper;
-import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.fordes.subtitles.view.model.PO.ServiceInterface;
 import org.fordes.subtitles.view.model.PO.Version;
 import org.fordes.subtitles.view.service.InterfaceService;
 import org.fordes.subtitles.view.utils.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 语音转换 控制器
@@ -78,103 +76,46 @@ public class Setting extends DelayInitController {
     @FXML
     private TextField outPath;
 
-    @Resource
-    private InterfaceService interfaceService;
+    private final InterfaceService interfaceService;
 
-    @Resource
-    private ConfigMapper configMapper;
+    private final ApplicationConfig config;
 
-    @Resource
-    private ThreadPoolExecutor globalExecutor;
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        globalExecutor.execute(() -> {
-
-            //初始化首选项
-            fontFace.getItems().addAll(Font.getFontNames());
-            fontSize.getItems().addAll(CollUtil.newArrayList(10, 12, 14, 16, 18, 20, 24, 36));
-            initPreference();
-
-            //首选项监听事件
-            themeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
-                Boolean value = Convert.toBool(t1.getUserData());
-                ApplicationInfo.stage.fireEvent(new ThemeChangeEvent(value));
-                ApplicationInfo.config.setTheme(value);
-            });
-
-            editorModeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1)
-                    -> ApplicationInfo.config.setEditMode(Convert.toBool(t1.getUserData())));
-            exitModeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1)
-                    -> ApplicationInfo.config.setExitMode(Convert.toBool(t1.getUserData())));
-            fontFace.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1)
-                    -> ApplicationInfo.config.setFontFace(t1));
-            fontSize.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1)
-                    -> ApplicationInfo.config.setFontSize(t1));
-            outPath.textProperty().addListener((observableValue, s, t1)
-                    -> ApplicationInfo.config.setOutPath(StrUtil.trim(t1)));
-            languageListGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) ->
-                    ApplicationInfo.config.setLanguageListMode(Convert.toBool(t1.getUserData())));
-            //初始化接口选项
-            initInterface();
-
-        });
-        super.initialize(url, resourceBundle);
+    @Autowired
+    public Setting(ApplicationConfig config, InterfaceService interfaceService) {
+        this.config = config;
+        this.interfaceService = interfaceService;
     }
 
     @Override
-    public void delayInit() {
-        //监听器用于保存配置
-        root.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
-            if (!t1) {
-                if (FileUtil.exist(ApplicationInfo.config.getOutPath())) {
-                    ApplicationInfo.config.setOutPath(outPath.getText().trim());
-                } else {
-                    outPath.setText(ApplicationInfo.config.getOutPath());
-                }
-                configMapper.updateById(ApplicationInfo.config);
-            } else {
-                //每次显示前重新初始化一次
-                initPreference();
-            }
+    public void delay() {
+        Stage stage = Singleton.get(Stage.class);
+        //初始化首选项
+        fontFace.getItems().addAll(Font.getFontNames());
+        fontSize.getItems().addAll(CollUtil.newArrayList(10, 12, 14, 16, 18, 20, 24, 36));
+        applyConfig();
+
+        //首选项监听事件
+        themeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
+            Boolean value = Convert.toBool(t1.getUserData());
+            config.setTheme(value);
+            stage.fireEvent(new ThemeChangeEvent(value));
         });
 
+        editorModeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1)
+                -> config.setEditMode(Convert.toBool(t1.getUserData())));
+        exitModeGroup.selectedToggleProperty().addListener((observableValue, toggle, t1)
+                -> config.setExitMode(Convert.toBool(t1.getUserData())));
+        fontFace.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1)
+                -> config.setFontFace(t1));
+        fontSize.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1)
+                -> config.setFontSize(t1));
+        outPath.textProperty().addListener((observableValue, s, t1)
+                -> config.setOutPath(StrUtil.trim(t1)));
+        languageListGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) ->
+                config.setLanguageListMode(Convert.toBool(t1.getUserData())));
 
-        super.delayInit();
-    }
-
-
-
-    void initPreference() {
-        //读取配置设置默认值
-        fontFace.getSelectionModel().select(ApplicationInfo.config.getFontFace());
-        fontSize.getSelectionModel().select(ApplicationInfo.config.getFontSize());
-        editorModeGroup.getToggles().forEach(item -> {
-            if (Convert.toBool(item.getUserData()).equals(ApplicationInfo.config.getEditMode())) {
-                item.setSelected(true);
-            }
-        });
-        themeGroup.getToggles().forEach(item -> {
-            if (ObjectUtil.equal(ApplicationInfo.config.getTheme(), Convert.toBool(item.getUserData()))) {
-                item.setSelected(true);
-            }
-        });
-        exitModeGroup.getToggles().forEach(item -> {
-            if (Convert.toBool(item.getUserData()).equals(ApplicationInfo.config.getExitMode())) {
-                item.setSelected(true);
-            }
-        });
-        outPath.setText(ApplicationInfo.config.getOutPath());
-
-    }
-
-    void initInterface() {
         //接口类型
         type.getItems().addAll(ServiceType.values());
-        //服务商
-        provider.getItems().addAll(ServiceProvider.values());
-
-
         type.getSelectionModel().selectedItemProperty().addListener((observableValue, type, t1) -> {
             if (null != t1 && provider.getValue() != null) {
                 version.getItems().clear();
@@ -182,6 +123,8 @@ public class Setting extends DelayInitController {
             }
         });
 
+        //服务商
+        provider.getItems().addAll(ServiceProvider.values());
         provider.getSelectionModel().selectedItemProperty().addListener((observableValue, supportDto, t1) -> {
             if (null != t1 && type.getValue() != null) {
                 version.getItems().clear();
@@ -189,6 +132,7 @@ public class Setting extends DelayInitController {
             }
         });
 
+        //版本
         version.getSelectionModel().selectedItemProperty().addListener((observableValue, serviceVersion, t1) -> {
             if (null != t1) {
                 tips.setVisible(false);
@@ -202,10 +146,55 @@ public class Setting extends DelayInitController {
         tips.visibleProperty().addListener((observableValue, aBoolean, t1) -> infoPanel.setVisible(!t1));
     }
 
+    @Override
+    public void async() {
+        //监听器用于保存配置
+        root.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
+            if (!t1) {
+                if (FileUtil.exist(config.getOutPath())) {
+                    config.setOutPath(outPath.getText().trim());
+                } else {
+                    outPath.setText(config.getOutPath());
+                }
+                config.dump();
+            } else {
+                //每次显示前重新初始化一次
+                applyConfig();
+            }
+        });
+    }
+
+
+    /**
+     * 从配置文件应用设置项
+     */
+    void applyConfig() {
+        //读取配置设置默认值
+        fontFace.getSelectionModel().select(config.getFontFace());
+        fontSize.getSelectionModel().select(config.getFontSize());
+        editorModeGroup.getToggles().forEach(item -> {
+            if (Convert.toBool(item.getUserData()).equals(config.getEditMode())) {
+                item.setSelected(true);
+            }
+        });
+        themeGroup.getToggles().forEach(item -> {
+            if (ObjectUtil.equal(config.getTheme(), Convert.toBool(item.getUserData()))) {
+                item.setSelected(true);
+            }
+        });
+        exitModeGroup.getToggles().forEach(item -> {
+            if (Convert.toBool(item.getUserData()).equals(config.getExitMode())) {
+                item.setSelected(true);
+            }
+        });
+        outPath.setText(config.getOutPath());
+
+    }
+
     void buildInfoFrame(ServiceInterface info) {
         infoPanel.getChildren().clear();
 
-        (info.getAuth() == null ? info.getTemplate(): info.getAuth()).forEach((k, v) -> {
+        (info.getAuth() == null ? info.getTemplate() : info.getAuth()).forEach((k, v) -> {
 
             HBox hBox = new HBox();
             hBox.setMinHeight(90);
@@ -214,7 +203,7 @@ public class Setting extends DelayInitController {
             Label label = new Label(k);
             label.setMinSize(120, 90);
             label.getStyleClass().add("item");
-            HBox.setMargin(label, new Insets(0,0,0,30));
+            HBox.setMargin(label, new Insets(0, 0, 0, 30));
             hBox.getChildren().add(label);
 
             TextField textField = new TextField(ObjectUtil.isNotEmpty(v) ? v.toString() : StrUtil.EMPTY);
@@ -242,19 +231,19 @@ public class Setting extends DelayInitController {
             try {
                 if (interfaceService.updateById(info)) {
                     tips.setVisible(true);
-                    ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("保存成功", "接口信息已经保存"));
+                    Singleton.get(Stage.class).fireEvent(new ToastConfirmEvent("保存成功", "接口信息已经保存"));
                     return;
                 }
             } catch (Exception e) {
                 log.error("接口信息保存失败 => {}", JSONUtil.toJsonStr(info));
                 log.error(ExceptionUtil.stacktraceToString(e));
             }
-            ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("保存失败", "数据操作失败，错误已记录"));
+            Singleton.get(Stage.class).fireEvent(new ToastConfirmEvent("保存失败", "数据操作失败，错误已记录"));
         });
         HBox hBox = new HBox();
         hBox.setMinHeight(90);
         hBox.setAlignment(Pos.CENTER_RIGHT);
-        HBox.setMargin(save, new Insets(0,30,0,0));
+        HBox.setMargin(save, new Insets(0, 30, 0, 0));
         hBox.getChildren().add(save);
 
         if (StrUtil.isNotEmpty(info.getPage())) {
@@ -270,7 +259,7 @@ public class Setting extends DelayInitController {
 
     @FXML
     private void onChooseOutPath(MouseEvent event) {
-        File path = FileUtils.choosePath(outPath.getText().trim()).showDialog(ApplicationInfo.stage);
+        File path = FileUtils.choosePath(outPath.getText().trim()).showDialog(Singleton.get(Stage.class));
         if (path != null && StrUtil.isNotEmpty(path.getPath())) {
             outPath.setText(path.getPath());
         }

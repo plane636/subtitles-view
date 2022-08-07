@@ -4,10 +4,11 @@ import javafx.stage.StageStyle;
 
 import java.lang.annotation.*;
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
+@Inherited
 @Documented
-public @interface InitStage {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface JFXApplication {
 
     /**
      * fxml文件路径
@@ -20,11 +21,6 @@ public @interface InitStage {
     String[] css() default {};
 
     /**
-     * 编码
-     */
-    String encoding() default "UTF-8";
-
-    /**
      * 标题
      */
     String title() default "";
@@ -32,12 +28,10 @@ public @interface InitStage {
     /**
      * Stage 样式
      */
-    StageStyle style() default StageStyle.TRANSPARENT;
+    StageStyle style() default StageStyle.DECORATED;
 
-    /**
-     * scene 填充色
-     */
-    String fill() default "TRANSPARENT";
+
+    boolean osThemeDetector() default false;
 
     /**
      * 深色模式 StyleClass，如无将不会自动跟随深色模式
@@ -63,5 +57,5 @@ public @interface InitStage {
     /**
      * 系统托盘
      */
-    Tray systemTray();
+    Tray systemTray() default @Tray;
 }

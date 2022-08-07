@@ -4,13 +4,14 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
 import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.StrUtil;
 import javafx.application.Platform;
+import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.event.LoadingEvent;
 import org.fordes.subtitles.view.event.TranslateEvent;
-import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.fordes.subtitles.view.model.DTO.Subtitle;
 import org.fordes.subtitles.view.model.DTO.TranslateResult;
 import org.fordes.subtitles.view.model.PO.Version;
@@ -38,7 +39,7 @@ public abstract class TranslateService {
     public void translate(Subtitle subtitle, String target, String original, Version version,
                           boolean mode, Map<String, Object> config) {
         TimeInterval interval = DateUtil.timer();
-        ApplicationInfo.stage.fireEvent(new LoadingEvent(true));
+        Singleton.get(Stage.class).fireEvent(new LoadingEvent(true));
         //根据接口限制，重设线程池
         int threadNum = Math.min(globalExecutor.getMaximumPoolSize(), version.getConcurrent() - 1);
         globalExecutor.setCorePoolSize(threadNum);
@@ -80,14 +81,14 @@ public abstract class TranslateService {
             log.error(ExceptionUtil.stacktraceToString(ex));
 //            ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("翻译失败", ex.getMessage()));
             Platform.runLater(() ->
-                    ApplicationInfo.stage.fireEvent(new TranslateEvent(TranslateEvent.FAIL, ex.getMessage())));
+                    Singleton.get(Stage.class).fireEvent(new TranslateEvent(TranslateEvent.FAIL, ex.getMessage())));
             return;
         } finally {
             log.debug("翻译线程结束，耗时：{} ms", interval.intervalMs());
         }
 //        ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("翻译完成", StrUtil.format("总耗时：{} ms", interval.intervalMs())));
 //        Platform.runLater(() -> ApplicationInfo.stage.fireEvent(new LoadingEvent(false)));
-        Platform.runLater(() -> ApplicationInfo.stage.fireEvent(new TranslateEvent(TranslateEvent.SUCCESS,
+        Platform.runLater(() -> Singleton.get(Stage.class).fireEvent(new TranslateEvent(TranslateEvent.SUCCESS,
                 StrUtil.format("总耗时：{} ms", interval.intervalMs()))));
     }
 

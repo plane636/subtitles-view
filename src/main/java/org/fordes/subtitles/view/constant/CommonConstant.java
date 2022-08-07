@@ -25,16 +25,16 @@ public class CommonConstant {
 
     public static final String DOWNLOAD_PATH = TEMP_PATH+ "download\\";
 
-    public static final String FILE_PATH = TEMP_PATH+ "file\\";
+//    public static final String FILE_PATH = TEMP_PATH+ "file\\";
 
-    public static final String LIB_PATH = ROOT_PATH+  "\\lib\\";
-
-    public static final String SEVEN_ZIP_PATH = LIB_PATH+ "7z";
+//    public static final String LIB_PATH = ROOT_PATH+  "\\lib\\";
+//
+//    public static final String SEVEN_ZIP_PATH = LIB_PATH+ "7z";
 
     /**
      * 7z解压命令 递归子目录、全部解压到指定文件夹、只解压指定格式文件
      */
-    public static final String UN_ARCHIVE_COMMAND_FORMAT = SEVEN_ZIP_PATH+ " e -aoa -bse0 -r {} -o{} {} -y";
+//    public static final String UN_ARCHIVE_COMMAND_FORMAT = SEVEN_ZIP_PATH+ " e -aoa -bse0 -r {} -o{} {} -y";
 
     public static final String CONCISE_MODE = "简洁模式";
 
@@ -43,4 +43,8 @@ public class CommonConstant {
     public static final String TRANSLATE_REPLACE =  "替换模式";
 
     public static final String TRANSLATE_BILINGUAL =  "双语模式";
+
+    public static final String URL_HOME = "https://github.com/fordes123/subtitles-view";
+
+    public static final String URL_ISSUES = URL_HOME + "/issues";
 }

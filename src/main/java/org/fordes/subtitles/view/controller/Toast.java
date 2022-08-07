@@ -1,25 +1,22 @@
 package org.fordes.subtitles.view.controller;
 
+import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.StrUtil;
 import com.jfoenix.controls.JFXButton;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 import org.fordes.subtitles.view.event.AbstractToastEvent;
 import org.fordes.subtitles.view.handler.ToastEventHandler;
 import org.fordes.subtitles.view.handler.ToastHandler;
-import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.springframework.stereotype.Component;
-
-import java.net.URL;
-import java.util.ResourceBundle;
 
 /**
  * @author fordes on 2022/1/28
  */
 @Component
-public class Toast implements Initializable {
+public class Toast extends DelayInitController {
 
     @FXML
     private JFXButton _perform, _choose1, _choose2;
@@ -31,14 +28,14 @@ public class Toast implements Initializable {
     private GridPane root;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void async() {
         //选择型toast和确认型toast互斥
         _perform.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
             _choose1.setVisible(!t1);
             _choose2.setVisible(!t1);
         });
         //为stage添加toast事件处理
-        ApplicationInfo.stage.addEventHandler(AbstractToastEvent.TOAST_EVENT_TYPE, new ToastEventHandler() {
+        Singleton.get(Stage.class).addEventHandler(AbstractToastEvent.TOAST_EVENT_TYPE, new ToastEventHandler() {
             @Override
             public void onConfirmEvent(String caption, String text, String perform, ToastHandler handler) {
                 _caption.setText(caption);

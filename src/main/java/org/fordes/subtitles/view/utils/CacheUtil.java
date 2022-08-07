@@ -4,9 +4,10 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import org.fordes.subtitles.view.enums.ServiceProvider;
 import org.fordes.subtitles.view.enums.ServiceType;
-import org.fordes.subtitles.view.model.ApplicationInfo;
+import org.fordes.subtitles.view.mapper.InterfaceMapper;
 import org.fordes.subtitles.view.model.PO.Language;
 
 import java.util.Arrays;
@@ -65,13 +66,6 @@ public class CacheUtil {
     }
 
     /**
-     * {@link #getLanguageDict(ServiceType, ServiceProvider, boolean)}
-     */
-    public static List<Language> getLanguageDict(ServiceType type, ServiceProvider provider) {
-        return getLanguageDict(type, provider, ApplicationInfo.config.getLanguageListMode());
-    }
-
-    /**
      * 获取语言字典
      *
      * @param type     {@link ServiceType}
@@ -80,6 +74,9 @@ public class CacheUtil {
      * @return {@link List<Language>}
      */
     public static List<Language> getLanguageDict(ServiceType type, ServiceProvider provider, boolean general) {
+        if (languageMap.isEmpty()) {
+            CacheUtil.initLanguageDict(SpringUtil.getBean(InterfaceMapper.class).getLanguageList());
+        }
         List<Language> result = languageMap.get(type).get(provider);
         return general ?
                 result.stream().filter(Language::isGeneral).collect(Collectors.toList()) : result;

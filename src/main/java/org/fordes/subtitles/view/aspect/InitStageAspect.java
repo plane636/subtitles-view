@@ -1,195 +1,116 @@
 package org.fordes.subtitles.view.aspect;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.hutool.core.io.resource.ClassPathResource;
-import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jthemedetecor.OsThemeDetector;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.fordes.subtitles.view.annotation.InitStage;
+import org.fordes.subtitles.view.annotation.JFXApplication;
 import org.fordes.subtitles.view.annotation.Tray;
-import org.fordes.subtitles.view.constant.StyleClassConstant;
+import org.fordes.subtitles.view.core.ProxyApplication;
 import org.fordes.subtitles.view.core.StageReadyEvent;
-import org.fordes.subtitles.view.event.ThemeChangeEvent;
-import org.fordes.subtitles.view.mapper.ConfigMapper;
-import org.fordes.subtitles.view.mapper.InterfaceMapper;
-import org.fordes.subtitles.view.model.ApplicationInfo;
-import org.fordes.subtitles.view.utils.CacheUtil;
-import org.fordes.subtitles.view.utils.FileUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.io.IOException;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.function.Consumer;
 
 /**
- * 切面初始化stage
+ * 切面执行初始化
  *
- * @author fordes on 2022/2/3
+ * @author fordes on 2022/8/5
  */
 @Slf4j
 @Aspect
 @Component
+@AllArgsConstructor
 public class InitStageAspect {
 
-    @Resource
-    private ConfigMapper configMapper;
+    private final ConfigurableApplicationContext context;
 
-    @Resource
-    private InterfaceMapper interfaceMapper;
+    private static final FXMLLoader loader = new FXMLLoader();
 
-    @Resource
-    private ThreadPoolExecutor globalExecutor;
+    private static final String HANDLE_EVENT = "handleEvent";
 
-    @Resource
-    private ConfigurableApplicationContext context;
+    @Before("@within(org.fordes.subtitles.view.annotation.JFXApplication)")
+    public void handle(JoinPoint jp) throws Throwable {
 
-    private final FXMLLoader loader = new FXMLLoader();
+        MethodSignature signature = (MethodSignature) jp.getSignature();
 
-    @Before("@annotation(org.fordes.subtitles.view.annotation.InitStage)")
-    public void handle(JoinPoint point) throws IOException {
-        for (Object arg : point.getArgs()) {
-            if (arg instanceof StageReadyEvent) {
-                //读取设置
-                ApplicationInfo.config = configMapper.selectOne(new QueryWrapper<>());
-                Assert.notNull(ApplicationInfo.config);
+        if (HANDLE_EVENT.equals(signature.getMethod().getName())) {
+            Stage stage = (Stage) ((StageReadyEvent) jp.getArgs()[0]).getSource();
+            JFXApplication property  = jp.getTarget().getClass().getAnnotation(JFXApplication.class);
 
-                globalExecutor.execute(() -> CacheUtil.initLanguageDict(interfaceMapper.getLanguageList()));
+            //执行前置方法
+            ProxyApplication application = (ProxyApplication) jp.getTarget();
+            application.loadFXMLBefore(stage, property);
 
-
-                //获取注解值
-                MethodSignature signature = (MethodSignature) point.getSignature();
-                InitStage property = signature.getMethod().getAnnotation(InitStage.class);
-
+            //加载fxml
+            Parent root;
+            if (property.value() != null && !property.value().equals("")) {
                 //加载根布局
-                ClassPathResource resource = new ClassPathResource(property.value());
                 loader.setControllerFactory(context::getBean);
-                loader.setLocation(resource.getUrl());
-                ApplicationInfo.stage = ((StageReadyEvent) arg).stage;
-                ApplicationInfo.root = loader.load();
+                loader.setLocation(context.getResource(property.value()).getURL());
+                root = loader.load();
+            } else root = new StackPane();
 
-                //设置scene
-                Scene scene = new Scene(ApplicationInfo.root);
-                scene.setFill(Color.valueOf(property.fill()));
-
-                //设置stage
-                ApplicationInfo.stage.initStyle(property.style());
-                ApplicationInfo.stage.setTitle(property.title());
-                ApplicationInfo.stage.setFullScreenExitHint(property.fullScreenExitHint());
-                //监听全屏状态，切换样式
-                ApplicationInfo.stage.fullScreenProperty().addListener((observableValue, aBoolean, t1) -> {
-                    ApplicationInfo.root.getStyleClass().remove(t1 ?
-                            StyleClassConstant.NORMAL_SCREEN : StyleClassConstant.FULL_SCREEN);
-                    ApplicationInfo.root.getStyleClass().add(t1 ?
-                            StyleClassConstant.FULL_SCREEN : StyleClassConstant.NORMAL_SCREEN);
-                });
-                ApplicationInfo.stage.setScene(scene);
-
-                //加载字体
-                if (ArrayUtil.isNotEmpty(property.fonts())) {
-                    for (String path : property.fonts()) {
-                        Font.loadFont(FileUtils.getStream(path), 0);
-                    }
+            //加载字体
+            if (property.fonts() != null && property.fonts().length != 0) {
+                for (String path : property.fonts()) {
+                    Font.loadFont(context.getResource(path).getInputStream(), 0);
                 }
-
-                //设置css
-                ApplicationInfo.root.getStylesheets().addAll(property.css());
-
-                //设置程序图标
-                if (ArrayUtil.isNotEmpty(property.icons())) {
-                    for (String icon : property.icons()) {
-                        ApplicationInfo.stage.getIcons().add(new Image(FileUtils.getStream(icon)));
-                    }
-                }
-
-                //注册OS主题检测器
-                setThemeDetector(property);
-                //设置系统托盘
-                setSysTray(property);
-
-                ApplicationInfo.stage.fireEvent(new ThemeChangeEvent(ApplicationInfo.config.getTheme()));
-                return;
             }
-        }
-    }
 
-    void setThemeDetector(InitStage property) {
-        if (StrUtil.isNotEmpty(property.darkStyleClass())) {
-            OsThemeDetector detector = OsThemeDetector.getDetector();
-            Consumer<Boolean> themeListener = isDark -> {
-                if (isDark) {
-                    if (!ApplicationInfo.root.getStyleClass().contains(property.darkStyleClass())) {
-                        ApplicationInfo.root.getStyleClass().add(property.darkStyleClass());
-                    }
-                } else {
-                    ApplicationInfo.root.getStyleClass().remove(property.darkStyleClass());
+            //设置程序图标
+            if (property.icons() != null && property.icons().length != 0) {
+                for (String icon : property.icons()) {
+                    stage.getIcons().add(new Image(context.getResource(icon).getInputStream()));
                 }
-            };
-            //监听主题切换事件
-            ApplicationInfo.stage.addEventHandler(ThemeChangeEvent.EVENT_TYPE, event -> {
-                Boolean isDark = event.getIsDark();
-                if (ObjectUtil.isEmpty(isDark)) {
-                    detector.registerListener(themeListener);
-                    isDark = detector.isDark();
-                } else {
-                    try {
-                        detector.removeListener(themeListener);
-                    } catch (Exception ignored) {
-                    }
-                }
-                themeListener.accept(isDark);
-            });
-        }
-    }
+            }
 
-    /**
-     * 设置系统托盘
-     */
-    void setSysTray(InitStage property) {
-        Tray tray = property.systemTray();
-        try {
+            //设置样式
+            Scene scene = new Scene(root);
+            stage.initStyle(property.style());
+            stage.setTitle(property.title());
+            stage.setFullScreenExitHint(property.fullScreenExitHint());
+            stage.setScene(scene);
+            if (property.css() != null && property.css().length != 0) {
+            root.getStylesheets().addAll(property.css());
+            }
 
-            if (tray.value()) {
+            //注册OS主题检测器
+            if (property.osThemeDetector()) {
+                OsThemeDetector detector = OsThemeDetector.getDetector();
+                application.registerOsThemeDetector(detector, stage, property);
+            }
+
+            //注册系统托盘
+            Tray tray = property.systemTray();
+            if (tray != null && tray.value()) {
                 System.setProperty("java.awt.headless", String.valueOf(tray.headless()));
-                if (SystemTray.isSupported() && StrUtil.isNotEmpty(tray.image())) {
-                    TrayIcon trayIcon = new TrayIcon(ImageIO.read(FileUtils.getStream(tray.image())));
+                if (SystemTray.isSupported() && tray.image() != null && !tray.image().equals("")) {
+                    TrayIcon trayIcon = new TrayIcon(ImageIO.read(context.getResource(tray.image()).getInputStream()));
                     trayIcon.setToolTip(tray.toolTip());
                     trayIcon.setImageAutoSize(tray.imageAutoSize());
                     trayIcon.setActionCommand(tray.actionCommand());
-                    trayIcon.addMouseListener(new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(java.awt.event.MouseEvent e) {
-                            //TODO
-                            if (e.getButton() == java.awt.event.MouseEvent.BUTTON1) {
-                                //左键点击
-                            } else if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
-                                //右键点击
-                            }
-                        }
-                    });
+                    application.initSystemTray(trayIcon, stage, tray);
                     SystemTray.getSystemTray().add(trayIcon);
+                } else {
+                    log.error("SystemTray is not support!");
                 }
             }
-        } catch (AWTException | IOException e) {
-            log.error("系统托盘不受支持或初始化失败！");
-            log.error(ExceptionUtil.stacktraceToString(e));
+
+            //执行后置方法
+            application.initAfter(stage);
         }
     }
 }

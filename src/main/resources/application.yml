@@ -7,11 +7,10 @@ logging:
 spring:
   application:
     name: subtitles-view
-  config:
-    activate:
-      on-profile:
+  profiles:
+    active: dev
   datasource:
-    url: jdbc:sqlite::resource:db/subtitles-view
+    url: jdbc:sqlite::resource:db/subtitles-view.sqlite
     driver-class-name: org.sqlite.JDBC
 
 
@@ -34,3 +33,10 @@ mybatis-plus:
     banner: off
     db-config:
       update-strategy: not_null
+
+config:
+  editMode: false
+  exitMode: false
+  languageListMode: true
+  fontSize: 18
+  currentTheme: false

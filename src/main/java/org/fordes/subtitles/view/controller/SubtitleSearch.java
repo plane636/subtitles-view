@@ -2,6 +2,8 @@ package org.fordes.subtitles.view.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Dict;
+import cn.hutool.core.lang.Singleton;
+import cn.hutool.core.swing.DesktopUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -19,21 +21,21 @@ import javafx.scene.control.*;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
+import org.fordes.subtitles.view.constant.CommonConstant;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.event.FileOpenEvent;
 import org.fordes.subtitles.view.event.LoadingEvent;
 import org.fordes.subtitles.view.event.ToastChooseEvent;
 import org.fordes.subtitles.view.event.ToastConfirmEvent;
 import org.fordes.subtitles.view.mapper.SearchCasesMapper;
-import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.fordes.subtitles.view.model.PO.SearchCases;
 import org.fordes.subtitles.view.model.search.Cases;
 import org.fordes.subtitles.view.model.search.Result;
 import org.fordes.subtitles.view.service.SearchService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * @author fordes on 2022/2/6
@@ -51,9 +53,6 @@ public class SubtitleSearch extends DelayInitController {
     @FXML
     private JFXNodesList nodesList;
 
-    @Resource
-    private SearchCasesMapper casesMapper;
-
     private ToggleGroup engineGroup;
 
     private static final SearchService SERVICE = new SearchService();
@@ -62,8 +61,29 @@ public class SubtitleSearch extends DelayInitController {
 
     static final String KEYWORD = "keyword";
 
+    private final SearchCasesMapper casesMapper;
+
+    @Autowired
+    public SubtitleSearch(SearchCasesMapper casesMapper) {
+        this.casesMapper = casesMapper;
+    }
+
     @Override
-    public void delayInit() {
+    public void delay() {
+        //选择默认接口
+        if (engineGroup.getToggles().isEmpty()) {
+            Singleton.get(Stage.class).fireEvent(new ToastConfirmEvent("未找到搜索源", "字幕搜索无法使用！"));
+            searchField.setDisable(true);
+        } else {
+            Toggle engine = CollUtil.getFirst(engineGroup.getToggles());
+            engine.setSelected(true);
+            searchField.setPromptText(StrUtil
+                    .format("从{}搜索", ((SearchCases) engine.getUserData()).getName()));
+        }
+    }
+
+    @Override
+    public void async() {
         //读取字幕搜索接口
         engineGroup = new ToggleGroup();
         casesMapper.selectList(new QueryWrapper<>()).forEach(e -> {
@@ -86,20 +106,9 @@ public class SubtitleSearch extends DelayInitController {
             nodesList.addAnimatedNode(engine);
         });
 
-        //选择默认接口
-        if (engineGroup.getToggles().isEmpty()) {
-            ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("未找到搜索源", "字幕搜索无法使用！"));
-            searchField.setDisable(true);
-        } else {
-            Toggle engine = CollUtil.getFirst(engineGroup.getToggles());
-            engine.setSelected(true);
-            searchField.setPromptText(StrUtil
-                    .format("从{}搜索", ((SearchCases) engine.getUserData()).getName()));
-        }
-
         //监听搜索服务运行状态，控制loading
         SERVICE.runningProperty().addListener((observableValue, aBoolean, t1)
-                -> ApplicationInfo.stage.fireEvent(new LoadingEvent(t1)));
+                -> Singleton.get(Stage.class).fireEvent(new LoadingEvent(t1)));
         //搜索完成，载入新结果
         SERVICE.setOnSucceeded(event -> {
             Result val = SERVICE.getValue();
@@ -110,14 +119,13 @@ public class SubtitleSearch extends DelayInitController {
                 listView.setUserData(val.getPage());
                 val.getData().forEach(result -> listView.getItems().add(buildItem(result)));
             }else {
-                ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("暂无结果", "换一个资源试试吧~", "确定", () -> {}));
+                Singleton.get(Stage.class).fireEvent(new ToastConfirmEvent("暂无结果", "换一个资源试试吧~", "确定", () -> {}));
             }
         });
         //搜索出错
-        //TODO 待补充
-        SERVICE.setOnFailed(event -> ApplicationInfo.stage.fireEvent(new ToastChooseEvent("搜索出错",
+        SERVICE.setOnFailed(event -> Singleton.get(Stage.class).fireEvent(new ToastChooseEvent("搜索出错",
                 "请等待后尝试重试\n或者前往项目主页反馈", "去反馈",
-                () -> {})));
+                () -> DesktopUtil.browse(CommonConstant.URL_ISSUES))));
 
         //为listview添加skin，反射获取垂直滚动条，监听滚动条判断分页
         JFXListViewSkin<StackPane> skin = new JFXListViewSkin<>(listView);
@@ -125,14 +133,11 @@ public class SubtitleSearch extends DelayInitController {
 
         VirtualFlow<?> virtualFlow = (VirtualFlow<?>) ReflectUtil.getFieldValue(skin, "flow");
         VirtualScrollBar vbar = (VirtualScrollBar) ReflectUtil.getFieldValue(virtualFlow, "vbar");
-
         vbar.valueProperty().addListener((observableValue, number, t1) -> {
             if (t1.floatValue() == 1 && listView.getUserData() != null) {
                 SERVICE.search(Result.Type.PAGE, (Cases) listView.getUserData(), SEARCH_KEY);
             }
         });
-
-        super.delayInit();
     }
 
     /**
@@ -171,7 +176,7 @@ public class SubtitleSearch extends DelayInitController {
                 Result.Item data = (Result.Item)item.getUserData();
                 if (ObjectUtil.isNull(data.next)) {
                     if (StrUtil.isNotEmpty(data.text)) {
-                        ApplicationInfo.stage.fireEvent(new FileOpenEvent(data.text));
+                        Singleton.get(Stage.class).fireEvent(new FileOpenEvent(data.text));
                     }
                 }else {
                     SERVICE.search(Result.Type.SEARCH, data.next, data.params);

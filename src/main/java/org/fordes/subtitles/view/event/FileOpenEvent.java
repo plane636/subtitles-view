@@ -1,10 +1,11 @@
 package org.fordes.subtitles.view.event;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Singleton;
 import javafx.event.Event;
 import javafx.event.EventType;
+import javafx.stage.Stage;
 import lombok.Getter;
-import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.fordes.subtitles.view.model.PO.FileRecord;
 import org.fordes.subtitles.view.utils.FileUtils;
 
@@ -26,7 +27,7 @@ public class FileOpenEvent extends Event {
         try {
             this.record = FileUtils.readFileInfo(openFile);
         }catch (IOException e) {
-            ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("出错了","打开文件失败！"));
+            Singleton.get(Stage.class).fireEvent(new ToastConfirmEvent("出错了","打开文件失败！"));
         }
     }
 
@@ -35,7 +36,7 @@ public class FileOpenEvent extends Event {
         try {
             this.record = FileUtils.readFileInfo(FileUtil.file(filePath));
         }catch (IOException e) {
-            ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("出错了","打开文件失败！"));
+            Singleton.get(Stage.class).fireEvent(new ToastConfirmEvent("出错了","打开文件失败！"));
         }
     }
 }

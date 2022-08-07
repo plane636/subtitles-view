@@ -3,22 +3,25 @@ package org.fordes.subtitles.view.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.fordes.subtitles.view.config.ApplicationConfig;
 import org.fordes.subtitles.view.constant.CommonConstant;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.enums.EditToolEventEnum;
@@ -29,7 +32,6 @@ import org.fordes.subtitles.view.event.LoadingEvent;
 import org.fordes.subtitles.view.event.ToastChooseEvent;
 import org.fordes.subtitles.view.event.ToastConfirmEvent;
 import org.fordes.subtitles.view.factory.TranslateServiceFactory;
-import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.fordes.subtitles.view.model.DTO.AvailableServiceInfo;
 import org.fordes.subtitles.view.model.DTO.Subtitle;
 import org.fordes.subtitles.view.model.PO.Language;
@@ -44,15 +46,15 @@ import org.fordes.subtitles.view.utils.submerge.subtitle.srt.SRTTime;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.TwoDimensional;
 import org.mozilla.universalchardet.Constants;
-import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.net.URL;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -61,9 +63,16 @@ import java.util.stream.Collectors;
  * @author fordes on 2022/7/15
  */
 @Slf4j
-@EnableAsync
 @Component
 public class EditTool extends DelayInitController {
+
+    private static Subtitle subtitle;
+
+    private static StyleClassedTextArea area;
+
+    private static ToggleButton editMode;
+
+    private static int max;
 
     private static final Map<EditToolEventEnum, GridPane> bindMap = MapUtil.newHashMap();
 
@@ -71,7 +80,7 @@ public class EditTool extends DelayInitController {
     private CheckMenuItem search_case, search_regex, replace_case, replace_regex;
 
     @FXML
-    private ChoiceBox<String> code_choice, font_family;
+    private JFXComboBox<String> code_choice, font_family;
 
     @FXML
     private ChoiceBox<AvailableServiceInfo> translate_source;
@@ -80,7 +89,7 @@ public class EditTool extends DelayInitController {
     private ChoiceBox<String> translate_mode;
 
     @FXML
-    private ChoiceBox<Language> translate_original, translate_target;
+    private JFXComboBox<Language> translate_original, translate_target;
 
     @FXML
     private JFXComboBox<Integer> font_size;
@@ -91,111 +100,23 @@ public class EditTool extends DelayInitController {
     @FXML
     private TextField timeline_input, jump_input, search_input, replace_input, replace_find_input;
 
-    @Resource
-    private ThreadPoolExecutor globalExecutor;
+    private final InterfaceService interfaceService;
 
-    @Resource
-    private InterfaceService interfaceService;
+    private final SidebarBottom sidebarBottom;
 
-    private static Subtitle subtitle;
+    private final ApplicationConfig config;
 
-    private static StyleClassedTextArea area;
-
-    private static ToggleButton editMode;
-
-    private static int max;
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        super.initialize(url, resourceBundle);
-        //各工具面板互斥
-        root.getChildren().forEach(node -> {
-                    if (node instanceof GridPane) {
-                        EditToolEventEnum type = EditToolEventEnum.valueOf((String) node.getUserData());
-                        bindMap.put(type, (GridPane) node);
-                        node.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
-                            if (t1) {
-                                bindMap.values().forEach(e -> e.setVisible(node.equals(e)));
-                            }
-                        });
-                    }
-                }
-        );
-        //监听编辑工具事件 唤起对应功能面板
-        ApplicationInfo.stage.addEventHandler(EditToolEvent.EVENT_TYPE, event -> {
-            if (ObjectUtil.isNull(event.getEditMode()) || ObjectUtil.isNull(event.getSource()) ||
-                    ObjectUtil.isNull(event.getType())) {
-                return;
-            }
-
-            if (bindMap.containsKey(event.getType())) {
-                root.setVisible(true);
-                bindMap.get(event.getType()).setVisible(true);
-            }
-            subtitle = event.getSubtitle();
-            area = event.getSource();
-            editMode = event.getEditMode();
-            switch (event.getType()) {
-                case SEARCH: //搜索
-                    search_input.requestFocus();
-                    break;
-
-                case REPLACE://替换
-                    replace_find_input.requestFocus();
-                    break;
-
-                case JUMP://跳转
-                    jump_input.requestFocus();
-                    max = 0;
-                    for (TimedLine timedLine : subtitle.getTimedTextFile().getTimedLines()) {
-                        max += timedLine.getTextLines().size();
-                    }
-                    break;
-
-                case FONT: //字体（样式）
-                    font_family.getSelectionModel().select(ApplicationInfo.config.getFontFace());
-                    font_size.getSelectionModel().select(ApplicationInfo.config.getFontSize());
-                    break;
-
-                case TIMELINE: //时间轴
-                    TimedLine start = CollUtil.getFirst(subtitle.getTimedTextFile().getTimedLines());
-                    timeline_input.setPromptText(start.getTime().getStart().toString());
-                    timeline_input.requestFocus();
-                    break;
-
-                case CODE://编码
-                    code_choice.getSelectionModel().select(subtitle.getCharset());
-                    break;
-
-                case TRANSLATE:
-                    List<AvailableServiceInfo> list = interfaceService.getAvailableService(ServiceType.TRANSLATE);
-                    Collection<AvailableServiceInfo> gap = CollUtil.subtract(list, translate_source.getItems());
-                    Collection<AvailableServiceInfo> neg = CollUtil.subtract(translate_source.getItems(), list);
-                    if (!gap.isEmpty()) {
-                        translate_source.getItems().addAll(gap);
-                    }
-                    if (!neg.isEmpty()) {
-                        translate_source.getItems().removeAll(neg);
-                    }
-                    break;
-
-                case REF: //刷新
-                    try {
-                        SubtitleUtil.parse(subtitle);
-                        area.clear();
-                        area.append(SubtitleUtil.toStr(subtitle.getTimedTextFile(), editMode.isSelected()), StrUtil.EMPTY);
-                    } catch (Exception e) {
-                        log.error(ExceptionUtil.stacktraceToString(e));
-                        ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("编码更改出错", "已切换回原编码~"));
-                    }
-                    break;
-            }
-        });
-        //异步执行耗时任务
-        globalExecutor.execute(this::asyncInit);
+    @Autowired
+    public EditTool(InterfaceService interfaceService,
+                    SidebarBottom sidebarBottom, ApplicationConfig config) {
+        this.interfaceService = interfaceService;
+        this.sidebarBottom = sidebarBottom;
+        this.config = config;
     }
 
-    public void asyncInit() {
+    @Override
+    public void delay() {
+
         //编码选择框
         code_choice.getItems().addAll(Arrays.stream(ReflectUtil.getFieldsValue(Constants.class))
                 .map(Object::toString).toArray(String[]::new));
@@ -213,9 +134,9 @@ public class EditTool extends DelayInitController {
         //翻译相关
         translate_original.getSelectionModel().selectedItemProperty().addListener((observableValue, strings, t1) -> {
             if (t1 != null) {
-                Collection<Language> gap = CollUtil.subtract(t1.getTarget().stream()
-                        .filter(e -> e.isGeneral() == ApplicationInfo.config.getLanguageListMode())
-                        .collect(Collectors.toList()), translate_target.getItems());
+                Collection<Language> gap = CollUtil.subtract(config.getLanguageListMode() ?
+                        t1.getTarget().stream().filter(e -> e.isGeneral() == config.getLanguageListMode()).collect(Collectors.toList()) :
+                        t1.getTarget(), translate_target.getItems());
                 Collection<Language> neg = CollUtil.subtract(translate_target.getItems(), t1.getTarget());
                 if (!gap.isEmpty()) {
                     translate_target.getItems().addAll(gap);
@@ -229,14 +150,13 @@ public class EditTool extends DelayInitController {
                 .addListener((observableValue, availableServiceInfo, t1) -> {
                     if (t1 != null) {
                         translate_original.getItems().clear();
-                        translate_original.getItems().addAll(CacheUtil.getLanguageDict(ServiceType.TRANSLATE, t1.getProvider()));
+                        translate_original.getItems().addAll(CacheUtil.getLanguageDict(ServiceType.TRANSLATE, t1.getProvider(), config.getLanguageListMode()));
                         translate_original.getSelectionModel().selectFirst();
                     }
                 });
         translate_source.getItems().clear();
         translate_source.getItems().addAll(interfaceService.getAvailableService(ServiceType.TRANSLATE));
         translate_source.getSelectionModel().selectFirst();
-
         translate_mode.getItems().addAll(CommonConstant.TRANSLATE_REPLACE, CommonConstant.TRANSLATE_BILINGUAL);
         translate_mode.getSelectionModel().selectFirst();
         //回车提交操作
@@ -252,6 +172,105 @@ public class EditTool extends DelayInitController {
                 -> search_input.getStyleClass().remove(StyleClassConstant.ERROR));
         timeline_input.textProperty().addListener((observableValue, s, t1)
                 -> timeline_input.getStyleClass().remove(StyleClassConstant.ERROR));
+
+    }
+
+    @Override
+    public void async() {
+        Stage stage = Singleton.get(Stage.class);
+        //各工具面板互斥
+        root.getChildren().forEach(node -> {
+                    if (node instanceof GridPane) {
+                        EditToolEventEnum type = EditToolEventEnum.valueOf((String) node.getUserData());
+                        bindMap.put(type, (GridPane) node);
+                        node.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
+                            if (t1) {
+                                bindMap.values().forEach(e -> e.setVisible(node.equals(e)));
+                                root.setVisible(true);
+                            }
+                        });
+                    }
+                }
+        );
+        //监听编辑工具事件 唤起对应功能面板
+        stage.addEventHandler(EditToolEvent.EVENT_TYPE, event -> {
+
+            subtitle = event.getSubtitle();
+            area = event.getSource();
+            editMode = event.getEditMode();
+            Parent parent = bindMap.get(event.getType());
+
+            switch (event.getType()) {
+                case SEARCH: //搜索
+                    search_input.requestFocus();
+                    parent.setVisible(true);
+                    break;
+
+                case REPLACE://替换
+                    replace_find_input.requestFocus();
+                    parent.setVisible(true);
+                    break;
+
+                case JUMP://跳转
+                    jump_input.requestFocus();
+                    max = 0;
+                    for (TimedLine timedLine : subtitle.getTimedTextFile().getTimedLines()) {
+                        max += timedLine.getTextLines().size();
+                    }
+                    parent.setVisible(true);
+                    break;
+
+                case FONT: //字体（样式）
+//                    font_family.getSelectionModel().select(config.getFontFace());
+                    font_size.getSelectionModel().select(config.getFontSize());
+                    parent.setVisible(true);
+                    break;
+
+                case TIMELINE: //时间轴
+                    TimedLine start = CollUtil.getFirst(subtitle.getTimedTextFile().getTimedLines());
+                    timeline_input.setPromptText(start.getTime().getStart().toString());
+                    timeline_input.requestFocus();
+                    parent.setVisible(true);
+                    break;
+
+                case CODE://编码
+                    code_choice.getSelectionModel().select(subtitle.getCharset());
+                    parent.setVisible(true);
+                    break;
+
+                case TRANSLATE:
+                    List<AvailableServiceInfo> list = interfaceService.getAvailableService(ServiceType.TRANSLATE);
+                    if (list.isEmpty()) {
+                        stage.fireEvent(new ToastChooseEvent("未配置翻译服务", "是否立即转到设置?",
+                                "确定", () -> sidebarBottom.getSetting().getOnAction().handle(null)));
+                        parent.setVisible(false);
+                    } else {
+                        Collection<AvailableServiceInfo> gap = CollUtil.subtract(list, translate_source.getItems());
+                        Collection<AvailableServiceInfo> neg = CollUtil.subtract(translate_source.getItems(), list);
+                        if (!gap.isEmpty()) {
+                            translate_source.getItems().addAll(gap);
+                        }
+                        if (!neg.isEmpty()) {
+                            translate_source.getItems().removeAll(neg);
+                        }
+                        parent.setVisible(true);
+                    }
+                    break;
+
+                case REF: //刷新
+                    try {
+                        SubtitleUtil.parse(subtitle);
+                        area.clear();
+                        area.append(SubtitleUtil.toStr(subtitle.getTimedTextFile(), editMode.isSelected()), "styled-text-area");
+                        area.setStyle(StrUtil.format(StyleClassConstant.FONT_STYLE_TEMPLATE,config.getFontSize(), config.getFontFace()));
+                    } catch (Exception e) {
+                        log.error(ExceptionUtil.stacktraceToString(e));
+                        stage.fireEvent(new ToastConfirmEvent("编码更改出错", "已切换回原编码~"));
+                    }
+                    break;
+            }
+        });
+
     }
 
     @FXML
@@ -273,7 +292,7 @@ public class EditTool extends DelayInitController {
             area.append(SubtitleUtil.toStr(subtitle.getTimedTextFile(), editMode.isSelected()), StrUtil.EMPTY);
         } catch (Exception e) {
             log.error(ExceptionUtil.stacktraceToString(e));
-            ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("编码更改出错", "已切换回原编码~"));
+            Singleton.get(Stage.class).fireEvent(new ToastConfirmEvent("编码更改出错", "已切换回原编码~"));
             subtitle.setCharset(original);
             code_choice.getSelectionModel().select(original);
         }
@@ -282,21 +301,23 @@ public class EditTool extends DelayInitController {
 
     @FXML
     private void applyFont(ActionEvent actionEvent) {
-        String originalFontFamily = ApplicationInfo.config.getFontFace();
-        Integer originalFontSize = ApplicationInfo.config.getFontSize();
+        Stage stage = Singleton.get(Stage.class);
+
+        String originalFontFamily = config.getFontFace();
+        Integer originalFontSize = config.getFontSize();
         try {
-            ApplicationInfo.config.setFontSize(Convert.toInt(font_size.getValue()));
-            ApplicationInfo.config.setFontFace(font_family.getValue());
+            config.setFontSize(Convert.toInt(font_size.getValue()));
+            config.setFontFace(font_family.getValue());
             area.setStyle(StrUtil.format(StyleClassConstant.FONT_STYLE_TEMPLATE,
-                    ApplicationInfo.config.getFontSize(), ApplicationInfo.config.getFontFace()));
+                    config.getFontSize(), config.getFontFace()));
             area.requestFocus();
         } catch (Exception e) {
             log.error(ExceptionUtil.stacktraceToString(e));
-            ApplicationInfo.config.setFontSize(originalFontSize);
-            ApplicationInfo.config.setFontFace(originalFontFamily);
+            config.setFontSize(originalFontSize);
+            config.setFontFace(originalFontFamily);
             font_family.setValue(originalFontFamily);
             font_size.setValue(originalFontSize);
-            ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("字体更改出错", "已切换回原字体~"));
+            stage.fireEvent(new ToastConfirmEvent("字体更改出错", "已切换回原字体~"));
         }
         actionEvent.consume();
     }
@@ -328,7 +349,7 @@ public class EditTool extends DelayInitController {
                         .revise(subtitle.getTimedTextFile(), newTime, null, editMode.isSelected());
                 subtitle.setTimedTextFile(target);
                 SubtitleUtil.write(subtitle, success -> {
-                    ApplicationInfo.stage.fireEvent(new LoadingEvent(!success));
+                    Singleton.get(Stage.class).fireEvent(new LoadingEvent(!success));
                     if (success) {
                         area.clear();
                         area.append(SubtitleUtil.toStr(subtitle.getTimedTextFile(),
@@ -338,7 +359,7 @@ public class EditTool extends DelayInitController {
             } catch (Exception e) {
                 log.error(ExceptionUtil.stacktraceToString(e));
                 subtitle.setTimedTextFile(original);
-                ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("时间轴更改出错", "已切换回原时间轴~"));
+                Singleton.get(Stage.class).fireEvent(new ToastConfirmEvent("时间轴更改出错", "已切换回原时间轴~"));
             }
         } else timeline_input.getStyleClass().add(StyleClassConstant.ERROR);
         actionEvent.consume();
@@ -399,10 +420,10 @@ public class EditTool extends DelayInitController {
                             replace_case.isSelected(), replace_regex.isSelected());
                 } catch (Exception e) {
                     log.error(ExceptionUtil.stacktraceToString(e));
-                    ApplicationInfo.stage.fireEvent(new ToastConfirmEvent("替换出错", "已切换回原文本~"));
+                    Singleton.get(Stage.class).fireEvent(new ToastConfirmEvent("替换出错", "已切换回原文本~"));
                 }
             }
-        } else ApplicationInfo.stage.fireEvent(new ToastChooseEvent("操作受限", "是否切换至完整模式?",
+        } else Singleton.get(Stage.class).fireEvent(new ToastChooseEvent("操作受限", "是否切换至完整模式?",
                 "切换", () -> editMode.setSelected(true)));
     }
 
@@ -415,10 +436,9 @@ public class EditTool extends DelayInitController {
         if (source != null && origin != null && target != null) {
 
             TranslateService service = TranslateServiceFactory.getService(source.getProvider().getValue());
-            ApplicationInfo.stage.fireEvent(new LoadingEvent(true));
-            globalExecutor.execute(() -> {
-                service.translate(subtitle, target.getCode(), origin.getCode(), source.getVersionInfo(), mode, source.getAuth());
-            });
+            Singleton.get(Stage.class).fireEvent(new LoadingEvent(true));
+            globalExecutor.execute(() -> service.translate(subtitle, target.getCode(), origin.getCode(),
+                    source.getVersionInfo(), mode, source.getAuth()));
         }
         actionEvent.consume();
     }

@@ -68,3 +68,19 @@
     -fx-text-fill: -fx-focus-1;
 }
 
+.dark #editMode,
+.dark #editModeIcon{
+    -fx-text-fill: -fx-white-1;
+}
+
+.styled-text-area {
+    -fx-font-color: -fx-dark-1 !important;
+    -fx-text-fill: -fx-dark-0 !important;
+    -fx-fill: -fx-dark-0 !important;
+}
+
+.dark .styled-text-area {
+    -fx-font-color: -fx-white-0 !important;
+    -fx-text-fill: -fx-white-0 !important;
+    -fx-fill: -fx-white-0 !important;
+}

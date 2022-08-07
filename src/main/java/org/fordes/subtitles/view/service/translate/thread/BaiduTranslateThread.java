@@ -51,7 +51,7 @@ public class BaiduTranslateThread extends TranslateThread implements Callable<Tr
                 .execute();
         JSONObject resp = JSONUtil.parseObj(response.body());
         TranslateResult result = TranslateResult.builder().serial(serial).build();
-        if (response.isOk() || !resp.containsKey("error_code")) {
+        if (response.isOk() && !resp.containsKey("error_code")) {
             result.setSuccess(true);
             List<JSONObject> dataList = resp.getJSONArray("trans_result").toList(JSONObject.class);
             result.setData(dataList.stream().map(e -> e.getStr("dst")).collect(Collectors.joining()));

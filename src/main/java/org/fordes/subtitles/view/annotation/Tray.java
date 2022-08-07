@@ -2,9 +2,10 @@ package org.fordes.subtitles.view.annotation;
 
 import java.lang.annotation.*;
 
+@Inherited
+@Documented
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 public @interface Tray {
 
     /**

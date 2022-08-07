@@ -4,6 +4,7 @@ import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.scene.control.ToggleButton;
 import lombok.Getter;
+import lombok.NonNull;
 import org.fordes.subtitles.view.enums.EditToolEventEnum;
 import org.fordes.subtitles.view.model.DTO.Subtitle;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -30,8 +31,10 @@ public class EditToolEvent extends Event {
     @Getter
     private final EditToolEventEnum type;
 
-    public EditToolEvent(StyleClassedTextArea source, Subtitle subtitle,
-                         ToggleButton editMode, EditToolEventEnum type) {
+    public EditToolEvent(@NonNull StyleClassedTextArea source,
+                         @NonNull Subtitle subtitle,
+                         @NonNull ToggleButton editMode,
+                         @NonNull EditToolEventEnum type) {
         super(EVENT_TYPE);
         this.source = source;
         this.subtitle = subtitle;

@@ -2,7 +2,6 @@ package org.fordes.subtitles.view.event;
 
 import javafx.event.Event;
 import javafx.event.EventType;
-import lombok.Getter;
 
 /**
  * 主题切换事件
@@ -13,11 +12,14 @@ public class ThemeChangeEvent extends Event {
 
     public static final EventType<ThemeChangeEvent> EVENT_TYPE = new EventType(ANY, "themeChangeEvent");
 
-    @Getter
-    private Boolean isDark;
+    private Boolean dark;
 
-    public ThemeChangeEvent(Boolean isDark) {
+    public Boolean isDark() {
+        return dark;
+    }
+
+    public ThemeChangeEvent(Boolean dark) {
         super(EVENT_TYPE);
-        this.isDark = isDark;
+        this.dark = dark;
     }
 }

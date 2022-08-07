@@ -250,7 +250,7 @@
             </styleClass>
             <FontIcon fx:constant="SCENE_CLOSE"/>
         </Button>
-        <ChoiceBox fx:id="code_choice" prefHeight="50" prefWidth="150" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+        <JFXComboBox fx:id="code_choice" prefHeight="50" prefWidth="150" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
             <tooltip>
                 <Tooltip text="如无乱码请勿更改"/>
             </tooltip>
@@ -259,7 +259,7 @@
                 <String fx:value="transparent"/>
                 <String fx:value="left-item"/>
             </styleClass>
-        </ChoiceBox>
+        </JFXComboBox>
     </GridPane>
     <!--样式面板-->
     <GridPane maxHeight="50" maxWidth="340" prefHeight="50.0" prefWidth="340.0" styleClass="toolPanel" userData="FONT"
@@ -274,7 +274,7 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             <RowConstraints/>
         </rowConstraints>
-        <ChoiceBox fx:id="font_family" prefHeight="50" prefWidth="160">
+        <JFXComboBox fx:id="font_family" prefHeight="50" prefWidth="160">
             <tooltip>
                 <Tooltip text="更改字体"/>
             </tooltip>
@@ -283,8 +283,8 @@
                 <String fx:value="transparent"/>
                 <String fx:value="left-item"/>
             </styleClass>
-        </ChoiceBox>
-        <JFXComboBox fx:id="font_size" editable="true" prefHeight="45" maxHeight="45" prefWidth="80" GridPane.columnIndex="1">
+        </JFXComboBox>
+        <JFXComboBox fx:id="font_size" editable="true" prefHeight="50" maxHeight="50" prefWidth="80" GridPane.columnIndex="1">
             <tooltip>
                 <Tooltip text="字体显示大小"/>
             </tooltip>
@@ -417,7 +417,7 @@
             </styleClass>
             <FontIcon fx:constant="SCENE_CLOSE"/>
         </Button>
-        <ChoiceBox fx:id="translate_original" prefHeight="50" prefWidth="125" GridPane.rowIndex="1" GridPane.columnIndex="0">
+        <JFXComboBox fx:id="translate_original" prefHeight="50" prefWidth="125" GridPane.rowIndex="1" GridPane.columnIndex="0">
             <tooltip>
                 <Tooltip text="源语言"/>
             </tooltip>
@@ -426,7 +426,7 @@
                 <String fx:value="transparent"/>
                 <String fx:value="left-item"/>
             </styleClass>
-        </ChoiceBox>
+        </JFXComboBox>
         <Button mnemonicParsing="false" prefHeight="50" prefWidth="50"  GridPane.rowIndex="1" GridPane.columnIndex="1">
             <styleClass>
                 <String fx:value="no-border"/>
@@ -435,7 +435,7 @@
             </styleClass>
             <FontIcon fx:constant="EDIT_BAR_REF"/>
         </Button>
-        <ChoiceBox fx:id="translate_target" cache="true"   prefHeight="50" prefWidth="125"  GridPane.rowIndex="1" GridPane.columnIndex="2">
+        <JFXComboBox fx:id="translate_target" prefHeight="50" prefWidth="125" GridPane.rowIndex="1" GridPane.columnIndex="2">
             <tooltip>
                 <Tooltip text="目标语言"/>
             </tooltip>
@@ -444,7 +444,7 @@
                 <String fx:value="transparent"/>
                 <String fx:value="left-item"/>
             </styleClass>
-        </ChoiceBox>
+        </JFXComboBox>
         <Button onAction="#applyTranslate" mnemonicParsing="false" prefHeight="50" prefWidth="50"  GridPane.rowIndex="1" GridPane.columnIndex="3">
             <tooltip>
                 <Tooltip text="执行"/>

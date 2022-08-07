@@ -9,13 +9,7 @@ import org.springframework.context.ApplicationEvent;
  */
 public class StageReadyEvent extends ApplicationEvent {
 
-    public final Stage stage;
-
-    public final long interval;
-
-    public StageReadyEvent(Stage stage, long interval) {
+    public StageReadyEvent(Stage stage) {
         super(stage);
-        this.stage = stage;
-        this.interval = interval;
     }
 }

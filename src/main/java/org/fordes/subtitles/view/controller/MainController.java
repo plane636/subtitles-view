@@ -1,7 +1,7 @@
 package org.fordes.subtitles.view.controller;
 
+import cn.hutool.core.lang.Singleton;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -9,24 +9,21 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.fordes.subtitles.view.constant.CommonConstant;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
 import org.fordes.subtitles.view.enums.FontIcon;
 import org.fordes.subtitles.view.event.FileOpenEvent;
 import org.fordes.subtitles.view.event.LoadingEvent;
-import org.fordes.subtitles.view.model.ApplicationInfo;
 import org.springframework.stereotype.Component;
-
-import java.net.URL;
-import java.util.ResourceBundle;
 
 /**
  * @author fordes on 2022/1/19
  */
 @Slf4j
 @Component
-public class MainController implements Initializable {
+public class MainController extends DelayInitController {
 
     @FXML
     private StackPane loading;
@@ -59,7 +56,17 @@ public class MainController implements Initializable {
     private final static double RESIZE_WIDTH = 5.00;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void delay() {
+        content.getChildren().forEach(node ->
+                node.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
+                    if (t1) {
+                        content.getChildren().forEach(e -> e.setVisible(e.equals(node)));
+                    }
+                }));
+    }
+
+    @Override
+    public void async() {
         //绑定侧边按键和对应面板显示
         sidebarBeforeController.getQuickStart().setOnAction(event -> {
             sidebarBeforeController.getQuickStart().setSelected(true);
@@ -99,7 +106,7 @@ public class MainController implements Initializable {
                 }));
 
 
-        ApplicationInfo.stage.addEventHandler(FileOpenEvent.FILE_OPEN_EVENT, fileOpenEvent -> {
+        Singleton.get(Stage.class).addEventHandler(FileOpenEvent.FILE_OPEN_EVENT, fileOpenEvent -> {
             if (fileOpenEvent.getRecord().getFormat().media) {
                 sidebarAfterController.getItemGroup().selectToggle(null);
                 sidebarBeforeController.getItemGroup().selectToggle(null);
@@ -109,7 +116,7 @@ public class MainController implements Initializable {
             }
         });
 
-        ApplicationInfo.stage.addEventHandler(LoadingEvent.EVENT_TYPE, loadingEvent
+        Singleton.get(Stage.class).addEventHandler(LoadingEvent.EVENT_TYPE, loadingEvent
                 -> loading.setVisible(loadingEvent.isAlive()));
     }
 
@@ -125,8 +132,8 @@ public class MainController implements Initializable {
         event.consume();
         double x = event.getSceneX();
         double y = event.getSceneY();
-        double width = ApplicationInfo.stage.getWidth() - 20;
-        double height = ApplicationInfo.stage.getHeight() - 20;
+        double width = Singleton.get(Stage.class).getWidth() - 20;
+        double height = Singleton.get(Stage.class).getHeight() - 20;
         Cursor cursorType = Cursor.DEFAULT;
         bit = 0;
         if (y >= height - RESIZE_WIDTH) {
@@ -144,18 +151,19 @@ public class MainController implements Initializable {
             bit |= 1 << 2;
             cursorType = Cursor.E_RESIZE;
         }
-        ApplicationInfo.root.setCursor(cursorType);
+        getScene().getRoot().setCursor(cursorType);
     }
 
     @FXML
     private void mouseDraggedHandle(MouseEvent event) {
+        Stage stage = Singleton.get(Stage.class);
         event.consume();
         double x = event.getSceneX();
         double y = event.getSceneY();
-        double nextX = ApplicationInfo.stage.getX();
-        double nextY = ApplicationInfo.stage.getY();
-        double nextWidth = ApplicationInfo.stage.getWidth();
-        double nextHeight = ApplicationInfo.stage.getHeight();
+        double nextX = stage.getX();
+        double nextY = stage.getY();
+        double nextWidth = stage.getWidth();
+        double nextHeight = stage.getHeight();
         if ((bit & 1 << 2) != 0) {
             nextWidth = x;
         }
@@ -168,17 +176,18 @@ public class MainController implements Initializable {
         if (nextHeight <= CommonConstant.SCENE_MIN_HEIGHT) {
             nextHeight = CommonConstant.SCENE_MIN_HEIGHT;
         }
-        ApplicationInfo.stage.setX(nextX);
-        ApplicationInfo.stage.setY(nextY);
-        ApplicationInfo.stage.setWidth(nextWidth);
-        ApplicationInfo.stage.setHeight(nextHeight);
+        stage.setX(nextX);
+        stage.setY(nextY);
+        stage.setWidth(nextWidth);
+        stage.setHeight(nextHeight);
     }
 
     @FXML
     private void titleBarDraggedHandle(MouseEvent event) {
+        Stage stage = Singleton.get(Stage.class);
+        stage.setX(event.getScreenX() - xOffset);
+        stage.setY(event.getScreenY() - yOffset);
         event.consume();
-        ApplicationInfo.stage.setX(event.getScreenX() - xOffset);
-        ApplicationInfo.stage.setY(event.getScreenY() - yOffset);
     }
 
     @FXML

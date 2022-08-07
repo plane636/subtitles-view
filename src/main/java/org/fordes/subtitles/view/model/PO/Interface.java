@@ -4,8 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 @TableName(value = "interface")
@@ -28,22 +29,5 @@ public class Interface implements Serializable {
     @TableField(value = "\"template\"")
     private String template;
 
-    @TableField(value = "version")
-    private Integer version;
-
     private static final long serialVersionUID = 1L;
-
-    public static final String COL_ID = "id";
-
-    public static final String COL_PROVIDER = "provider";
-
-    public static final String COL_TYPE = "type";
-
-    public static final String COL_AUTH = "auth";
-
-    public static final String COL_PAGE = "page";
-
-    public static final String COL_TEMPLATE = "template";
-
-    public static final String COL_VERSION = "version";
 }
