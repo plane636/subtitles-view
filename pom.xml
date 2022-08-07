@@ -24,7 +24,7 @@
         <sqlite.version>3.36.0.3</sqlite.version>
         <mybatis-plus.version>3.5.1</mybatis-plus.version>
         <sevenzipjbinding.version>16.02-2.01</sevenzipjbinding.version>
-        <javapackager.version>1.6.6</javapackager.version>
+        <javapackager.version>1.6.7</javapackager.version>
         <juniversalchardet.version>2.4.0</juniversalchardet.version>
         <richtextfx.version>0.10.9</richtextfx.version>
 
@@ -217,6 +217,7 @@
                             <administratorRequired>false</administratorRequired>
                             <createZipball>${createZipball}</createZipball>
                             <createTarball>${createTarball}</createTarball>
+                            <vmArgs>-XX:TieredStopAtLevel=1 -noverify</vmArgs>
                         </configuration>
                     </execution>
                 </executions>
