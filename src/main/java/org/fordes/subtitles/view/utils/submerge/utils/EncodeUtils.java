@@ -37,15 +37,15 @@ public class EncodeUtils {
 	 * @throws IOException
 	 */
 	public static String guessEncoding(InputStream is) throws IOException {
-		//先使用hutool的charset检测
-		Charset charset = CharsetDetector.detect(is);
-		if (charset != null) {
-			return charset.name();
-		}
-		//使用juniversalchardet检测
+		//先使用juniversalchardet检测
 		String code =  guessEncoding(IoUtil.readBytes(is));
 		if (code != null) {
 			return code;
+		}
+		//使用hutool的charset检测
+		Charset charset = CharsetDetector.detect(is);
+		if (charset != null) {
+			return charset.name();
 		}
 		//默认使用UTF-8
 		log.debug("文件编码检测失败，使用默认编码UTF-8");
