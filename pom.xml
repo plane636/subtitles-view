@@ -46,16 +46,11 @@
 
     <dependencies>
 
-        <!--spring-boot-->
+        <!--javafx springboot 整合-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-        <!-- aop -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <groupId>com.github.fordes123</groupId>
+            <artifactId>spring-boot-jfx</artifactId>
+            <version>0.0.1</version>
         </dependency>
 
         <!--test-->
@@ -109,13 +104,6 @@
             <groupId>com.jfoenix</groupId>
             <artifactId>jfoenix</artifactId>
             <version>${jfoenix.version}</version>
-        </dependency>
-
-        <!--系统深浅色检测支持-->
-        <dependency>
-            <groupId>com.github.Dansoftowner</groupId>
-            <artifactId>jSystemThemeDetector</artifactId>
-            <version>${jSystemThemeDetector.version}</version>
         </dependency>
 
         <!--jsoup，html解析-->

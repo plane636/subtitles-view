@@ -8,16 +8,19 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.fordes.subtitles.view.annotation.JFXApplication;
-import org.fordes.subtitles.view.annotation.Tray;
+import org.fordes.jfx.annotation.JFXApplication;
+import org.fordes.jfx.annotation.Tray;
+import org.fordes.jfx.core.ProxyApplication;
+import org.fordes.jfx.core.ProxyLauncher;
+import org.fordes.jfx.core.StageReadyEvent;
 import org.fordes.subtitles.view.config.ApplicationConfig;
 import org.fordes.subtitles.view.constant.StyleClassConstant;
-import org.fordes.subtitles.view.core.ProxyApplication;
-import org.fordes.subtitles.view.core.ProxyLauncher;
-import org.fordes.subtitles.view.core.StageReadyEvent;
 import org.fordes.subtitles.view.event.ThemeChangeEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.awt.*;
+import java.io.IOException;
 
 /**
  * @author fordes
@@ -46,7 +49,7 @@ public class SubtitlesViewApplication extends ProxyApplication {
     }
 
     @Override
-    public void handleEvent(StageReadyEvent event) {
+    public void handleEvent(StageReadyEvent event) throws IOException, AWTException {
         super.handleEvent(event);
         log.info("{} 启动成功! 耗时: {} ms", applicationName, System.currentTimeMillis() - timeMillis);
     }
