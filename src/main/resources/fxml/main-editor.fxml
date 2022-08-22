@@ -185,6 +185,6 @@
             <Insets bottom="5.0"/>
         </GridPane.margin>
     </HBox>
-    <fx:include source="edit-tool.fxml" visible="false" GridPane.rowIndex="1"
+    <fx:include fx:id="editTool" source="edit-tool.fxml" visible="false" GridPane.rowIndex="1"
                 GridPane.halignment="RIGHT" GridPane.valignment="TOP"/>
 </GridPane>

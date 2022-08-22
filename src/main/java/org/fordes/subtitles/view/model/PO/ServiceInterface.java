@@ -1,6 +1,5 @@
 package org.fordes.subtitles.view.model.PO;
 
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -11,7 +10,6 @@ import org.fordes.subtitles.view.enums.ServiceProvider;
 import org.fordes.subtitles.view.enums.ServiceType;
 
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * @author fordes on 2022/4/19
@@ -41,19 +39,14 @@ public class ServiceInterface implements Serializable {
      * 授权信息
      */
     @TableField(value = "auth")
-    private Map<String, Object> auth;
+    private String auth;
 
     /**
      * 授权信息模板
      */
     @TableField(value = "template")
-    private Map<String, Object> template;
+    private String template;
 
-    /**
-     * 版本
-     */
-    @TableField(value = "version")
-    private Integer version;
 
     /**
      * 主页
@@ -62,12 +55,4 @@ public class ServiceInterface implements Serializable {
     private String page;
 
     private static final long serialVersionUID = 1L;
-
-    public void setAuth(String auth) {
-        this.auth = JSONUtil.parseObj(auth);
-    }
-
-    public void setTemplate(String template) {
-        this.template = JSONUtil.parseObj(template);
-    }
 }

@@ -8,6 +8,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -192,6 +193,12 @@ public class EditTool extends DelayInitController {
                     }
                 }
         );
+
+        root.visibleProperty().addListener((observableValue, aBoolean, t1) -> {
+            if (!t1) {
+                bindMap.values().forEach(e -> e.setVisible(false));
+            }
+        });
         //监听编辑工具事件 唤起对应功能面板
         stage.addEventHandler(EditToolEvent.EVENT_TYPE, event -> {
 
@@ -438,7 +445,7 @@ public class EditTool extends DelayInitController {
             TranslateService service = TranslateServiceFactory.getService(source.getProvider().getValue());
             Singleton.get(Stage.class).fireEvent(new LoadingEvent(true));
             globalExecutor.execute(() -> service.translate(subtitle, target.getCode(), origin.getCode(),
-                    source.getVersionInfo(), mode, source.getAuth()));
+                    source.getVersionInfo(), mode, JSONUtil.parseObj(source.getAuth())));
         }
         actionEvent.consume();
     }

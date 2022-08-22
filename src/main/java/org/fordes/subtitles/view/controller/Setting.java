@@ -193,26 +193,28 @@ public class Setting extends DelayInitController {
 
     void buildInfoFrame(ServiceInterface info) {
         infoPanel.getChildren().clear();
+        JSONUtil.parseObj(StrUtil.isBlank(info.getAuth()) ?
+                        info.getTemplate() :
+                        info.getAuth())
+                .forEach((k, v) -> {
 
-        (info.getAuth() == null ? info.getTemplate() : info.getAuth()).forEach((k, v) -> {
+                    HBox hBox = new HBox();
+                    hBox.setMinHeight(90);
+                    hBox.setAlignment(Pos.CENTER_LEFT);
 
-            HBox hBox = new HBox();
-            hBox.setMinHeight(90);
-            hBox.setAlignment(Pos.CENTER_LEFT);
+                    Label label = new Label(k);
+                    label.setMinSize(120, 90);
+                    label.getStyleClass().add("item");
+                    HBox.setMargin(label, new Insets(0, 0, 0, 30));
+                    hBox.getChildren().add(label);
 
-            Label label = new Label(k);
-            label.setMinSize(120, 90);
-            label.getStyleClass().add("item");
-            HBox.setMargin(label, new Insets(0, 0, 0, 30));
-            hBox.getChildren().add(label);
-
-            TextField textField = new TextField(ObjectUtil.isNotEmpty(v) ? v.toString() : StrUtil.EMPTY);
-            textField.getStyleClass().add("item");
-            textField.setUserData(k);
-            textField.setMinSize(140, 90);
-            hBox.getChildren().add(textField);
-            infoPanel.getChildren().add(hBox);
-        });
+                    TextField textField = new TextField(ObjectUtil.isNotEmpty(v) ? v.toString() : StrUtil.EMPTY);
+                    textField.getStyleClass().add("item");
+                    textField.setUserData(k);
+                    textField.setMinSize(140, 90);
+                    hBox.getChildren().add(textField);
+                    infoPanel.getChildren().add(hBox);
+                });
 
         JFXButton save = new JFXButton("保存");
         save.setPrefSize(80, 30);
@@ -227,7 +229,7 @@ public class Setting extends DelayInitController {
                 }
             });
             ServiceInterface data = (ServiceInterface) save.getUserData();
-            data.setVersion(version.getValue().getId()).setAuth(param.toString());
+            data.setAuth(param.toString());
             try {
                 if (interfaceService.updateById(info)) {
                     tips.setVisible(true);

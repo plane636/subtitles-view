@@ -11,6 +11,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
@@ -36,6 +37,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class MainEditor extends DelayInitController {
+
+    @FXML
+    private GridPane editTool;
 
     @FXML
     private Label indicator, editModeIcon;
@@ -150,6 +154,8 @@ public class MainEditor extends DelayInitController {
                 editor.append(SubtitleUtil.toStr(subtitle.getTimedTextFile(), editMode.isSelected()), "styled-text-area");
                 //编辑器模式
                 ctrlEditMode(config.getEditMode());
+            }else {
+                editTool.setVisible(false);
             }
         });
     }
